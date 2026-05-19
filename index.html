@@ -1774,6 +1774,7 @@ function Solicitacoes(){
   var sisen=useState(false);var isento=sisen[0];var setIsento=sisen[1];
   var sisen=useState(false);var isento=sisen[0];var setIsento=sisen[1];
   var ssug=useState([]);var sugs=ssug[0];var setSugs=ssug[1];
+  var sext=useState([]);var extras=sext[0];var setExtras=sext[1];
   var t=useToast();var toast=t[0];var notify=t[1];
   var filtered=all.filter(function(r){if(!srch)return true;var q=srch.toLowerCase();
   return r.nom.toLowerCase().indexOf(q)>=0
@@ -1789,12 +1790,30 @@ function Solicitacoes(){
   function handleSub(id){var s=subcats.find(function(x){return x.id===parseInt(id);});/* Normalizar: se tem 'm' (propriedade antiga) mas nao 'ml', converter */if(s&&s.m&&!s.ml)s=Object.assign({},s,{ml:s.m});setSubInfo(s||null);setHoras(1);setMetros(1);setForm(function(f){return Object.assign({},f,{subId:s?s.id:null,sn:s?s.nome:'',taxa:s?s.taxa:0});});}
   function handleSolInput(v){setField('nom',v);if(locked){setLocked(false);setForm(function(f){return Object.assign({},f,{solId:null});});}if(v.length<2){setSugs([]);return;}var q=v.toLowerCase();setSugs(INIT_SOLS.filter(function(s){return s.nome.toLowerCase().indexOf(q)>=0;}).slice(0,6));}
   function selectSol(s){setForm(function(f){return Object.assign({},f,{solId:s.id,nom:s.nome,bairro:s.bairro||f.bairro,rua:s.rua||f.rua,num:s.numero||f.num,ref:s.ref||'',tel:s.telefone||'',email:s.email||''});});/* Bloquear apenas campos que ja tinham valor no cadastro */setSolFilled({nom:!!s.nome,bairro:!!s.bairro,rua:!!s.rua,num:!!s.numero,tel:!!s.telefone,email:!!s.email,ref:!!s.ref});setSugs([]);setLocked(true);}
+  var EMPTY_EXTRA={rua:'',num:'',bairro:'',ref:'',catId:'',cn:'',fp:'',subId:null,sn:'',taxa:0,urg:'Não',horas:1,metros:1,subcats:[],subInfo:null};
+  function setExtraFld(i,k,v){var _t={};_t[k]=v;setExtras(function(p){return p.map(function(ex,j){return j===i?Object.assign({},ex,_t):ex;});});}
+  function handleExtraCat(i,catId){var cat=CATS.find(function(c){return c.id===parseInt(catId);});var subs=SUBS[parseInt(catId)]||[];setExtras(function(p){return p.map(function(ex,j){return j===i?Object.assign({},ex,{catId:parseInt(catId),cn:cat?cat.nome:'',fp:cat?cat.fp:'',subId:null,sn:'',taxa:0,subcats:subs,subInfo:null}):ex;});});}
+  function handleExtraSub(i,subId){setExtras(function(p){return p.map(function(ex,j){if(j!==i)return ex;var s=ex.subcats.find(function(x){return x.id===parseInt(subId);});if(s&&s.m&&!s.ml)s=Object.assign({},s,{ml:s.m});return Object.assign({},ex,{subId:s?s.id:null,sn:s?s.nome:'',taxa:s?s.taxa:0,subInfo:s||null});});});}
   function makeProtocol(){var y=new Date().getFullYear();var max=all.reduce(function(m,r){var n=parseInt(r.prot.split('-')[2]||0);return n>m?n:m;},0);return 'SMTT-'+y+'-'+String(max+1).padStart(6,'0');}
   function save(){if(!form.nom||!form.rua||!form.num||!form.bairro||!form.catId||!form.dt){notify('Preencha os campos obrigat\xf3rios!');return;}var taxa=(form.fp==='Isento')?0:(subInfo?subInfo.taxa*(subInfo.h?horas:subInfo.ml?metros:1):form.taxa||0);if(form.id){INIT_REQS.forEach(function(r,i){if(r.id===form.id)INIT_REQS[i]=Object.assign({},form,{taxa:taxa});});setAll(function(prev){return prev.map(function(r){return r.id===form.id?Object.assign({},form,{taxa:taxa}):r;});});if(form.solId){var si2=INIT_SOLS.findIndex(function(x){return x.id===form.solId;});if(si2>=0){var upd2={};if(form.tel&&!INIT_SOLS[si2].telefone)upd2.telefone=form.tel;if(form.email&&!INIT_SOLS[si2].email)upd2.email=form.email;if(form.ref&&!INIT_SOLS[si2].ref)upd2.ref=form.ref;if(Object.keys(upd2).length)INIT_SOLS[si2]=Object.assign({},INIT_SOLS[si2],upd2);}}SGSS_SESSION.acoes.unshift({tipo:'Edição',prot:form.prot||'',dt:new Date().toLocaleTimeString('pt-BR')});
     saveSession();
     notify('Solicita��o atualizada!');sgssSave();}else{var novo=Object.assign({},form,{id:uid(),prot:makeProtocol(),status:'N�o Conclu�do',func:'',enc:0,taxa:taxa});INIT_REQS.push(novo);SGSS_SESSION.reqs.unshift({prot:novo.prot,nom:novo.nom,sn:novo.sn||'',dt:novo.dt});
     saveSession();/* Se nao houver solicitante vinculado, criar automaticamente em INIT_SOLS */if(!novo.solId||!INIT_SOLS.find(function(s){return s.id===novo.solId;})){var nSolAuto={id:uid(),nome:novo.nom,rua:novo.rua||'',numero:novo.num||'',bairro:novo.bairro,telefone:novo.tel||'',email:novo.email||'',ref:novo.ref||''};INIT_SOLS.push(nSolAuto);}setAll(function(prev){return prev.concat([novo]);});if(novo.solId){var si=INIT_SOLS.findIndex(function(x){return x.id===novo.solId;});if(si>=0){var upd={};if(novo.tel&&!INIT_SOLS[si].telefone)upd.telefone=novo.tel;if(novo.email&&!INIT_SOLS[si].email)upd.email=novo.email;if(novo.ref&&!INIT_SOLS[si].ref)upd.ref=novo.ref;if(Object.keys(upd).length)INIT_SOLS[si]=Object.assign({},INIT_SOLS[si],upd);}}imprimirComprovanteServico(novo);
-    notify('Solicita��o registrada! Protocolo: '+novo.prot);sgssSave();}setForm(null);setSubcats([]);setSubInfo(null);setHoras(1);setLocked(false);setSugs([]);
+    var _allNovos=[novo];
+    extras.forEach(function(ex){
+      if(!ex.catId)return;
+      var _taxa=(ex.fp==='Isento')?0:(ex.subInfo?ex.subInfo.taxa*(ex.subInfo.h?ex.horas:ex.subInfo.ml?ex.metros:1):ex.taxa||0);
+      var novoEx={id:uid(),prot:makeProtocol(),nom:novo.nom,solId:novo.solId||null,dt:novo.dt,urg:ex.urg||'Não',
+        rua:ex.rua||novo.rua,num:ex.num||novo.num,bairro:ex.bairro||novo.bairro,ref:ex.ref||novo.ref,
+        tel:novo.tel,email:novo.email,catId:ex.catId,cn:ex.cn,fp:ex.fp,subId:ex.subId,sn:ex.sn,
+        taxa:_taxa,status:'Não Concluído',func:'',enc:0};
+      INIT_REQS.push(novoEx);
+      SGSS_SESSION.reqs.unshift({prot:novoEx.prot,nom:novoEx.nom,sn:novoEx.sn||'',dt:novoEx.dt});
+      _allNovos.push(novoEx);
+    });
+    if(_allNovos.length>1){setAll(function(prev){return prev.concat(_allNovos.slice(1));});}
+    var _nExtra=extras.filter(function(e){return e.catId;}).length;
+    notify('Solicitação registrada! Protocolo: '+novo.prot+(_nExtra>0?' (+ '+_nExtra+' adicional)':''));sgssSave();}setForm(null);setSubcats([]);setSubInfo(null);setHoras(1);setLocked(false);setSugs([]);setExtras([]);
   }
   function del(id,prot){showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir solicita\u00e7\u00e3o?',sub:prot,corpo:'O registro permanecer\u00e1 no Hist\u00f3rico.',lblOk:'Excluir',cor:'red',onOk:function(){var ix=INIT_REQS.findIndex(function(r){return r.id===id;});if(ix>=0)INIT_REQS.splice(ix,1);setAll(function(prev){return prev.filter(function(r){return r.id!==id;});});SGSS_SESSION.acoes.unshift({tipo:'Exclusão',prot:'',dt:new Date().toLocaleTimeString('pt-BR')});
     saveSession();notify('Solicita\xe7\xe3o exclu\xedda!');sgssSave();
@@ -1828,6 +1847,25 @@ function Solicitacoes(){
         ce('div',{className:'fg'},ce('label',null,'Telefone'),ce('input',{value:form.tel||'',onChange:function(e){setField('tel',maskPhone(e.target.value));},className:(locked&&solFilled.tel)?'readonly':'',readOnly:locked&&!!solFilled.tel,maxLength:15})),
         ce('div',{className:'fg'},ce('label',null,'E-mail'),ce('input',{value:form.email||'',onChange:function(e){setField('email',e.target.value);},className:(locked&&solFilled.email)?'readonly':'',readOnly:locked&&!!solFilled.email}))
       ),
+      extras.map(function(ex,i){return ce('div',{key:i,style:{marginTop:8,background:'#eff6ff',border:'2px dashed #93c5fd',borderRadius:10,padding:'12px 14px'}},
+        ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}},
+          ce('span',{style:{fontWeight:700,color:'#1d4ed8',fontSize:13}},'\ud83d\udccb Serviço Adicional #'+(i+2)),
+          ce('button',{style:{background:'none',border:'1px solid #fca5a5',color:'#dc2626',borderRadius:5,padding:'2px 8px',cursor:'pointer',fontSize:11},onClick:function(){setExtras(function(p){return p.filter(function(_,j){return j!==i;});});}},'\ud83d\uddd1️ Remover')
+        ),
+        ce('div',{className:'form-grid'},
+          ce('div',{className:'fg'},ce('label',null,'Urgência'),ce('select',{value:ex.urg||'Não',onChange:function(e){setExtraFld(i,'urg',e.target.value);}},ce('option',null,'Não'),ce('option',null,'Sim'))),
+          ce('div',{className:'fg s2'},ce('label',null,'Tipo de Serviço ',ce('span',{className:'req'},'*')),ce('select',{value:ex.catId||'',onChange:function(e){handleExtraCat(i,e.target.value);}},ce('option',{value:''},'Selecione o serviço...'),CATS.map(function(c){return ce('option',{key:c.id,value:c.id},c.nome+' ('+c.fp+')');}))),
+          ex.subcats&&ex.subcats.length>0?ce('div',{className:'fg s2'},ce('label',null,'Subcategoria'),ce('select',{value:ex.subId||'',onChange:function(e){handleExtraSub(i,e.target.value);}},ce('option',{value:''},'Selecione...'),ex.subcats.map(function(s){return ce('option',{key:s.id,value:s.id},s.nome);}))):null
+        ),
+        ce('div',{style:{fontSize:11,fontWeight:600,color:'#1d4ed8',margin:'8px 0 4px'}},'\ud83d\udccd Endereço deste serviço'),
+        ce('div',{className:'form-grid'},
+          ce('div',{className:'fg s2'},ce('label',null,'Rua'),ce('input',{value:ex.rua||'',onChange:function(e){setExtraFld(i,'rua',e.target.value);},placeholder:'Deixar em branco = mesmo do solicitante'})),
+          ce('div',{className:'fg'},ce('label',null,'Número'),ce('input',{value:ex.num||'',onChange:function(e){setExtraFld(i,'num',e.target.value);}})),
+          ce('div',{className:'fg'},ce('label',null,'Bairro'),ce('input',{value:ex.bairro||'',onChange:function(e){setExtraFld(i,'bairro',e.target.value);}})),
+          ce('div',{className:'fg s2'},ce('label',null,'Ponto de Referência'),ce('input',{value:ex.ref||'',onChange:function(e){setExtraFld(i,'ref',e.target.value);}}))
+        )
+      );}),
+      ce('button',{style:{marginTop:8,marginBottom:4,width:'100%',padding:'8px',border:'2px dashed #93c5fd',borderRadius:8,background:'#eff6ff',color:'#1d4ed8',fontWeight:700,fontSize:13,cursor:'pointer'},onClick:function(){setExtras(function(p){return p.concat([Object.assign({},EMPTY_EXTRA)]);});}},'+ Adicionar Serviço'),
       ce('div',{className:'form-actions'},ce('button',{className:'btn btn-s',onClick:function(){setForm(null);setSubcats([]);setSubInfo(null);setLocked(false);setSugs([]);setIsento(false);setMetros(1);setSolFilled({});}},'Cancelar'),
         ce('div',{style:{display:'flex',alignItems:'center',gap:8,background:'#fffbeb',border:'1px solid #fde68a',borderRadius:8,padding:'8px 12px'}},
           ce('input',{type:'checkbox',id:'cb-isento',checked:isento,onChange:function(e){setIsento(e.target.checked);if(e.target.checked){setField('fp','Isento');setField('taxa',0);}else{setField('fp','N\u00e3o Pago');}}}),
@@ -3015,6 +3053,7 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
     setForm(null);
     if(_fdata.id){
       setFuncs(function(prev){return prev.map(function(f){return f.id===_fdata.id?Object.assign({},_fdata):f;});});
+      var _ix=FUNC_LIST.findIndex(function(x){return x.id===_fdata.id;});if(_ix>=0)FUNC_LIST[_ix]=Object.assign({},_fdata);
       SGSS_SESSION.acoes.unshift({tipo:'Editar Funcionário',prot:form.nome||'',dt:new Date().toLocaleTimeString('pt-BR')});
     saveSession();notify('Funcion\u00e1rio atualizado!');sgssSave();
     }else{
