@@ -1683,77 +1683,51 @@ function TiposServico(){
 }
 
 /* ── SOLICITAÇÕES ── */
-function imprimirComprovanteServico(r){
-  var w=window.open('','_blank','width=780,height=700,scrollbars=yes');
+function imprimirComprovanteServico(r,allReqs){
+  var parts=allReqs&&allReqs.length?allReqs:[r];
+  var main=parts[0];
+  var w=window.open('','_blank','width=820,height=750,scrollbars=yes');
   if(!w){alert('Permita pop-ups!');return;}
-  var dt=r.dt||new Date().toLocaleDateString('pt-BR');
-  var badgeSt=r.status==='Conclu\u00eddo'?'background:#dcfce7;color:#166534'
-    :r.status==='Em andamento'?'background:#dbeafe;color:#1e40af'
-    :'background:#fef9c3;color:#854d0e';
-  var urgStr=r.urg==='Sim'?'<span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:800;margin-left:8px">\u26a0\ufe0f URGENTE</span>':'';
-  var rows=[
-    {l:'Solicitante',v:r.nom},
-    {l:'Telefone',v:r.tel||'—'},
-    {l:'Endereço',v:r.rua?(r.rua+(r.num?', '+r.num:''))||'—':'—'},
-    {l:'Bairro',v:r.bairro||'—'},
-    {l:'Funcionário Resp.',v:r.func||'A designar'}
-  ];
-  var infoHtml=rows.map(function(x){
-    return '<div class="info-item"><div class="info-lbl">'+x.l+'</div><div class="info-val">'+(x.v||'—')+'</div></div>';
+  var dt=main.dt||new Date().toLocaleDateString('pt-BR');
+  function bst(s){return s==='É Concluído'||s==='Concluído'?'background:#dcfce7;color:#166534':s==='Em andamento'?'background:#dbeafe;color:#1e40af':'background:#fef9c3;color:#854d0e';}
+  function urg(u){return u==='Sim'?'<span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:800;margin-left:6px">⚠️ URGENTE</span>':'';}
+  var svcBlocks=parts.map(function(s,i){
+    var endStr=s.rua?(s.rua+(s.num?', '+s.num:'')+(s.bairro?' – '+s.bairro:'')):(s.bairro||'—');
+    return '<div style="border:2px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin:10px 0;background:#f8fafc">'
+      +(parts.length>1?'<div style="font-size:10px;font-weight:700;color:#1d4ed8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Serviço '+(i+1)+'</div>':'')
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px">'
+      +'<div><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Protocolo</div>'
+      +'<div style="font-size:20px;font-weight:900;color:#1e3a5f;letter-spacing:1px">'+(s.prot||'---')+'</div></div>'
+      +'<div style="text-align:right"><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Data</div>'
+      +'<div style="font-size:14px;font-weight:700;color:#1e293b">'+dt+'</div></div></div>'
+      +'<div style="font-size:14px;font-weight:700;color:#1e3a5f">'+(s.sn||'---')+urg(s.urg)+'</div>'
+      +(s.cn&&s.cn!==s.sn?'<div style="font-size:11px;color:#64748b;margin-top:2px">'+s.cn+'</div>':'')
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">'
+      +'<div style="border-left:3px solid #2563eb;padding:5px 8px;background:#fff;border-radius:0 4px 4px 0"><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Endereço</div><div style="font-size:12px;font-weight:600;color:#1e293b;margin-top:2px">'+endStr+'</div></div>'
+      +'<div style="border-left:3px solid #2563eb;padding:5px 8px;background:#fff;border-radius:0 4px 4px 0"><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Status</div><div style="margin-top:3px"><span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;'+bst(s.status)+';display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:800">'+(s.status||'Registrado')+'</span></div></div>'
+      +'</div>'+(s.obs?'<div style="margin-top:6px;padding:6px 8px;background:#fffbeb;border-left:3px solid #f59e0b;border-radius:0 4px 4px 0;font-size:11px"><b>Obs:</b> '+s.obs+'</div>':'')+'</div>';
   }).join('');
-  var obsHtml=r.obs?'<div style="margin:10px 0;padding:10px 14px;background:#fffbeb;border-left:3px solid #f59e0b;border-radius:0 6px 6px 0;font-size:12px"><b>Obs:</b> '+r.obs+'</div>':'';
-  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
-    +'<style>'+PRINT_CSS
-    +'body{padding:24px;background:#f8fafc}'
-    +'.comp-wrap{background:#fff;border-radius:12px;padding:28px 32px;max-width:680px;margin:0 auto;box-shadow:0 2px 8px rgba(0,0,0,.1)}'
-    +'.prot-box{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#1e3a5f;color:#fff;border-radius:10px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin:16px 0}'
-    +'.prot-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;opacity:.75}'
-    +'.prot-val{font-size:24px;font-weight:900;letter-spacing:1px}'
-    +'.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}'
-    +'.info-item{border-left:3px solid #2563eb;padding:8px 12px;background:#f8fafc;border-radius:0 6px 6px 0}'
-    +'.info-lbl{font-size:9.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px}'
-    +'.info-val{font-size:13px;font-weight:600;color:#1e293b;margin-top:3px}'
-    +'.svc-box{border:2px solid #e2e8f0;border-radius:8px;padding:14px 16px;margin:14px 0}'
-    +'.svc-lbl{font-size:9.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}'
-    +'.svc-val{font-size:15px;font-weight:700;color:#1e3a5f}'
-    +'.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px;padding-top:16px;border-top:1px solid #e2e8f0}'
-    +'.sig-line{height:1px;background:#1e293b;margin-top:40px;margin-bottom:6px}'
-    +'.sig-lbl{font-size:10px;color:#64748b;text-align:center;font-weight:600}'
-    +'.wm{text-align:center;font-size:9px;color:#cbd5e1;margin-top:14px;letter-spacing:.5px}'
-    +'.btn-pr{display:block;margin:16px auto 0;padding:10px 28px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
-    +'@media print{.btn-pr{display:none!important}}'
-    +'</style></head><body>'
-    +'<div class="comp-wrap">'
-    +buildHeader('&#128203; Comprovante de Solicita&ccedil;&atilde;o de Servi&ccedil;o','Emitido em: '+new Date().toLocaleDateString('pt-BR'))
-    +'<div class="prot-box">'
-    +'<div><div class="prot-label">N&uacute;mero do Protocolo</div>'
-    +'<div class="prot-val">'+(r.prot||'---')+'</div></div>'
-    +'<div style="text-align:right"><div class="prot-label">Data de Registro</div>'
-    +'<div style="font-size:15px;font-weight:700">'+dt+'</div></div>'
-    +'</div>'
-    +'<div class="svc-box">'
-    +'<div class="svc-lbl">Servi&ccedil;o Solicitado</div>'
-    +'<div class="svc-val">'+(r.sn||'---')+urgStr+'</div>'
-    +(r.cn&&r.cn!==r.sn?'<div style="font-size:11px;color:#64748b;margin-top:4px">'+(r.cn||'')+'</div>':'')
-    +'</div>'
-    +'<div class="info-grid">'+infoHtml+'</div>'
-    +obsHtml
-    +'<div class="info-grid" style="grid-template-columns:auto 1fr;align-items:center">'
-    +'<div class="info-item"><div class="info-lbl">Status Atual</div>'
-    +'<div class="info-val"><span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;'+badgeSt+';display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800">'+(r.status||'Registrado')+'</span></div></div>'
-    +'<div class="info-item"><div class="info-lbl">Forma de Pagamento</div>'
-    +'<div class="info-val">'+(r.fp||'A definir')+'</div></div>'
-    +'</div>'
-    +'<div class="sig-grid">'
-    +'<div><div class="sig-line"></div><div class="sig-lbl">Assinatura e Carimbo &mdash; SMTT</div></div>'
-    +'<div><div class="sig-line"></div><div class="sig-lbl">Recebido pelo Solicitante</div></div>'
-    +'</div>'
-    +'<div class="wm">SMTT CACEQUI &bull; SGSS &bull; PROTOCOLO EMITIDO ELETRONICAMENTE</div>'
-    +'</div>'
-    +'<button class="btn-pr" onclick="window.print()">&#128424;&#65039; Imprimir Comprovante</button>'
-    +'</body></html>');
+  var infoHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0">'
+    +[{l:'Solicitante',v:main.nom},{l:'Telefone',v:main.tel||'—'},{l:'Funcionário Resp.',v:main.func||'A designar'},{l:'Forma de Pagamento',v:main.fp||'A definir'}]
+    .map(function(x){return '<div style="border-left:3px solid #2563eb;padding:6px 10px;background:#f8fafc;border-radius:0 4px 4px 0"><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">'+x.l+'</div><div style="font-size:12px;font-weight:600;color:#1e293b;margin-top:2px">'+(x.v||'—')+'</div></div>';}).join('')+'</div>';
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS
+    +'body{padding:20px;background:#f8fafc}.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:700px;margin:0 auto;box-shadow:0 2px 8px rgba(0,0,0,.1)}'
+    +'.sg{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;padding-top:14px;border-top:1px solid #e2e8f0}'
+    +'.sl{height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px}.slb{font-size:10px;color:#64748b;text-align:center;font-weight:600}'
+    +'.btn-pr{display:block;margin:14px auto 0;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
+    +'@media print{.btn-pr{display:none!important}}</style></head><body><div class="wrap">'
+    +buildHeader('&#128203; Comprovante de Solicita&ccedil;&atilde;o'+(parts.length>1?' &mdash; <span style="color:#1d4ed8">'+parts.length+' serviços</span>':''),'Emitido em: '+new Date().toLocaleDateString('pt-BR'))
+    +'<div style="border-left:3px solid #1e3a5f;padding:8px 12px;background:#f1f5f9;border-radius:0 6px 6px 0;margin:8px 0">'
+    +'<div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Solicitante</div>'
+    +'<div style="font-size:15px;font-weight:700;color:#1e3a5f">'+(main.nom||'—')+'</div>'
+    +(main.tel?'<div style="font-size:12px;color:#475569;margin-top:2px">Tel: '+main.tel+'</div>':'')
+    +'</div>'+svcBlocks+infoHtml
+    +'<div class="sg"><div><div class="sl"></div><div class="slb">Assinatura e Carimbo &mdash; SMTT</div></div>'
+    +'<div><div class="sl"></div><div class="slb">Recebido pelo Solicitante</div></div></div>'
+    +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px;letter-spacing:.5px">SMTT CACEQUI &bull; SGSS &bull; PROTOCOLO EMITIDO ELETRONICAMENTE</div>'
+    +'</div><button class="btn-pr" onclick="window.print()">&#128424;&#65039; Imprimir Comprovante</button></body></html>');
   w.document.close();
-}
+}}
 
 function Solicitacoes(){
   var sall=useState(INIT_REQS.map(function(x){return Object.assign({},x);}));var all=sall[0];var setAll=sall[1];
@@ -1798,7 +1772,7 @@ function Solicitacoes(){
   function save(){if(!form.nom||!form.rua||!form.num||!form.bairro||!form.catId||!form.dt){notify('Preencha os campos obrigat\xf3rios!');return;}var taxa=(form.fp==='Isento')?0:(subInfo?subInfo.taxa*(subInfo.h?horas:subInfo.ml?metros:1):form.taxa||0);if(form.id){INIT_REQS.forEach(function(r,i){if(r.id===form.id)INIT_REQS[i]=Object.assign({},form,{taxa:taxa});});setAll(function(prev){return prev.map(function(r){return r.id===form.id?Object.assign({},form,{taxa:taxa}):r;});});if(form.solId){var si2=INIT_SOLS.findIndex(function(x){return x.id===form.solId;});if(si2>=0){var upd2={};if(form.tel&&!INIT_SOLS[si2].telefone)upd2.telefone=form.tel;if(form.email&&!INIT_SOLS[si2].email)upd2.email=form.email;if(form.ref&&!INIT_SOLS[si2].ref)upd2.ref=form.ref;if(Object.keys(upd2).length)INIT_SOLS[si2]=Object.assign({},INIT_SOLS[si2],upd2);}}SGSS_SESSION.acoes.unshift({tipo:'Edição',prot:form.prot||'',dt:new Date().toLocaleTimeString('pt-BR')});
     saveSession();
     notify('Solicita��o atualizada!');sgssSave();}else{var novo=Object.assign({},form,{id:uid(),prot:makeProtocol(),status:'N�o Conclu�do',func:'',enc:0,taxa:taxa});INIT_REQS.push(novo);SGSS_SESSION.reqs.unshift({prot:novo.prot,nom:novo.nom,sn:novo.sn||'',dt:novo.dt});
-    saveSession();/* Se nao houver solicitante vinculado, criar automaticamente em INIT_SOLS */if(!novo.solId||!INIT_SOLS.find(function(s){return s.id===novo.solId;})){var nSolAuto={id:uid(),nome:novo.nom,rua:novo.rua||'',numero:novo.num||'',bairro:novo.bairro,telefone:novo.tel||'',email:novo.email||'',ref:novo.ref||''};INIT_SOLS.push(nSolAuto);}setAll(function(prev){return prev.concat([novo]);});if(novo.solId){var si=INIT_SOLS.findIndex(function(x){return x.id===novo.solId;});if(si>=0){var upd={};if(novo.tel&&!INIT_SOLS[si].telefone)upd.telefone=novo.tel;if(novo.email&&!INIT_SOLS[si].email)upd.email=novo.email;if(novo.ref&&!INIT_SOLS[si].ref)upd.ref=novo.ref;if(Object.keys(upd).length)INIT_SOLS[si]=Object.assign({},INIT_SOLS[si],upd);}}imprimirComprovanteServico(novo);
+    saveSession();/* Se nao houver solicitante vinculado, criar automaticamente em INIT_SOLS */if(!novo.solId||!INIT_SOLS.find(function(s){return s.id===novo.solId;})){var nSolAuto={id:uid(),nome:novo.nom,rua:novo.rua||'',numero:novo.num||'',bairro:novo.bairro,telefone:novo.tel||'',email:novo.email||'',ref:novo.ref||''};INIT_SOLS.push(nSolAuto);}setAll(function(prev){return prev.concat([novo]);});if(novo.solId){var si=INIT_SOLS.findIndex(function(x){return x.id===novo.solId;});if(si>=0){var upd={};if(novo.tel&&!INIT_SOLS[si].telefone)upd.telefone=novo.tel;if(novo.email&&!INIT_SOLS[si].email)upd.email=novo.email;if(novo.ref&&!INIT_SOLS[si].ref)upd.ref=novo.ref;if(Object.keys(upd).length)INIT_SOLS[si]=Object.assign({},INIT_SOLS[si],upd);}}var _grupoId=uid();
     var _allNovos=[novo];
     extras.forEach(function(ex){
       if(!ex.catId)return;
@@ -1807,11 +1781,13 @@ function Solicitacoes(){
         rua:ex.rua||novo.rua,num:ex.num||novo.num,bairro:ex.bairro||novo.bairro,ref:ex.ref||novo.ref,
         tel:novo.tel,email:novo.email,catId:ex.catId,cn:ex.cn,fp:ex.fp,subId:ex.subId,sn:ex.sn,
         taxa:_taxa,status:'Não Concluído',func:'',enc:0};
+      novoEx.grupo=_grupoId;
       INIT_REQS.push(novoEx);
       SGSS_SESSION.reqs.unshift({prot:novoEx.prot,nom:novoEx.nom,sn:novoEx.sn||'',dt:novoEx.dt});
       _allNovos.push(novoEx);
     });
-    if(_allNovos.length>1){setAll(function(prev){return prev.concat(_allNovos.slice(1));});}
+    if(_allNovos.length>1){novo.grupo=_grupoId;INIT_REQS[INIT_REQS.length-1-_allNovos.length+1].grupo=_grupoId;setAll(function(prev){return prev.concat(_allNovos.slice(1));});}
+    imprimirComprovanteServico(novo,_allNovos);
     var _nExtra=extras.filter(function(e){return e.catId;}).length;
     notify('Solicitação registrada! Protocolo: '+novo.prot+(_nExtra>0?' (+ '+_nExtra+' adicional)':''));sgssSave();}setForm(null);setSubcats([]);setSubInfo(null);setHoras(1);setLocked(false);setSugs([]);setExtras([]);
   }
@@ -1912,6 +1888,7 @@ function Solicitacoes(){
               ce('button',{className:'btn btn-s',style:{padding:'3px 7px',fontSize:11,marginLeft:3},onClick:function(){setEditId(null);setEditD({});}},'\u2715')
             ):ce(React.Fragment,null,
               ce('button',{className:'btn-icon',title:'Visualizar / Imprimir',onClick:function(){setDocItem(r);}},'\ud83d\udc41\ufe0f'),
+              ce('button',{className:'btn-icon',title:'Imprimir Comprovante',style:{fontSize:13},onClick:function(){var _gp=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];imprimirComprovanteServico(r,_gp);}},'\ud83d\udda8\ufe0f'),
               ce('button',{className:'btn-icon',title:'Editar campos',onClick:function(){setEditId(r.id);setEditD(Object.assign({},r));}},'\u270f\ufe0f'),
               ce('button',{className:'btn-icon',title:'Editar (form completo)',onClick:function(){setSubcats(SUBS[r.catId]||[]);setSubInfo(null);setHoras(1);setLocked(false);setForm(Object.assign({},r));}},'\ud83d\udcdd'),
               ce('button',{className:'btn-icon',style:{color:'#dc2626'},title:'Excluir',onClick:function(){showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir solicita\u00e7\u00e3o?',corpo:'O registro permanecer\u00e1 acess\u00edvel no Hist\u00f3rico.',lblOk:'Excluir',cor:'red',onOk:function(){
