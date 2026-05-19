@@ -1174,8 +1174,7 @@ function PainelFuncionario(p){
               +'<p style="font-size:11px;color:#64748b;margin-bottom:12px">'+(func.cargo||'')+'</p>'
               +cardsHtml+tblHtml
               +'<button class="btn-pr" onclick="window.print()">\ud83d\udda8\ufe0f Imprimir / Salvar PDF</button>'
-              +'<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js",{scope:"/sgss-smtt/"}).then(function(r){console.log("SW OK",r.scope);}).catch(function(e){console.log("SW err",e);});});}</script>
-</body></html>');
+              +'</body></html>');
             w.document.close();
           }},'\ud83d\udda8\ufe0f Imprimir / PDF')
         )
@@ -3035,7 +3034,6 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
       if(ix>=0)FUNC_LIST[ix]=nf;
       return nf;
     });});
-    sgssSave();
   }
   function saveEdit(){setFuncs(function(prev){return prev.map(function(f){return f.id===editId?Object.assign({},editD):f;});});var ix=FUNC_LIST.findIndex(function(x){return x.id===editId;});if(ix>=0)FUNC_LIST[ix]=Object.assign({},editD);setEditId(null);setEditD({});SGSS_SESSION.acoes.unshift({tipo:'Editar Funcionário (inline)',prot:editD.nome||'',dt:new Date().toLocaleTimeString('pt-BR')});
     saveSession();notify('\u2705 Funcion\u00e1rio atualizado!');sgssSave();}
@@ -4098,5 +4096,6 @@ if(window._sgssLoaded){_mountApp();} else {
   window._sgssOnLoaded=_mountApp;
 }
 </script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js",{scope:"/sgss-smtt/"}).then(function(r){console.log("SW OK",r.scope);}).catch(function(e){console.log("SW err",e);});});}</script>
 </body>
 </html>
