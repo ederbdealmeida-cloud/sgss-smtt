@@ -637,7 +637,7 @@ function sgssLoad(){
     if(!d)return false;
     if(d.reqs&&d.reqs.length){INIT_REQS.length=0;d.reqs.forEach(function(r){INIT_REQS.push(r);});SGSS_LOAD_STATUS.reqs=d.reqs.length;}
     if(d.sols&&d.sols.length){INIT_SOLS.length=0;d.sols.forEach(function(s){INIT_SOLS.push(s);});}
-    if(d.funcs&&d.funcs.length){FUNC_LIST.length=0;var _si={},_sn={};d.funcs.slice().sort(function(a,b){return (b.id||0)-(a.id||0);}).forEach(function(f){var nk=(f.nome||'').trim().toLowerCase();if(!_si[f.id]&&!_sn[nk]){_si[f.id]=true;_sn[nk]=true;FUNC_LIST.push(f);}});FUNC_LIST.sort(function(a,b){return (a.id||0)-(b.id||0);});FUNC_LIST_NEXT_ID=FUNC_LIST.length>0?Math.max.apply(null,FUNC_LIST.map(function(f){return f.id;}))+1:1;}
+    if(d.funcs&&d.funcs.length){FUNC_LIST.length=0;var _si={},_sn={};d.funcs.slice().sort(function(a,b){return (b.id||0)-(a.id||0);}).forEach(function(f){if(!f.id||isNaN(f.id))return;var nk=(f.nome||'').trim().toLowerCase();if(!_si[f.id]&&!_sn[nk]){_si[f.id]=true;_sn[nk]=true;FUNC_LIST.push(f);}});FUNC_LIST.sort(function(a,b){return (a.id||0)-(b.id||0);});FUNC_LIST_NEXT_ID=FUNC_LIST.length>0?Math.max.apply(null,FUNC_LIST.map(function(f){return f.id||0;}))+1:1;}
     if(d.cats&&d.cats.length){CATS.length=0;d.cats.forEach(function(c){CATS.push(c);});}
     if(d.subs){Object.keys(d.subs).forEach(function(k){SUBS[k]=(d.subs[k]||[]).map(function(s){return(s.m&&!s.ml)?Object.assign({},s,{ml:s.m}):s;});});}
     if(d.users&&d.users.length){USERS_LIST.length=0;d.users.forEach(function(u){USERS_LIST.push(u);});USERS_NEXT_ID=Math.max.apply(null,USERS_LIST.map(function(u){return u.id;}))+1;}
@@ -2795,7 +2795,7 @@ function Configuracoes(){
                   var d=JSON.parse(e.target.result);
                   if(d.reqs&&d.reqs.length){INIT_REQS.length=0;d.reqs.forEach(function(r){INIT_REQS.push(r);});}
                   if(d.sols&&d.sols.length){INIT_SOLS.length=0;d.sols.forEach(function(s){INIT_SOLS.push(s);});}
-                  if(d.funcs&&d.funcs.length){FUNC_LIST.length=0;d.funcs.forEach(function(f){FUNC_LIST.push(f);});FUNC_LIST_NEXT_ID=Math.max.apply(null,FUNC_LIST.map(function(f){return f.id;}))+1;}
+                  if(d.funcs&&d.funcs.length){FUNC_LIST.length=0;d.funcs.forEach(function(f){if(!f.id||isNaN(f.id))return;FUNC_LIST.push(f);});FUNC_LIST_NEXT_ID=FUNC_LIST.length>0?Math.max.apply(null,FUNC_LIST.map(function(f){return f.id||0;}))+1:1;}
                   if(d.cats&&d.cats.length){CATS.length=0;d.cats.forEach(function(c){CATS.push(c);});}
                   if(d.subs){Object.keys(d.subs).forEach(function(k){SUBS[k]=d.subs[k]||[];});}
                   if(d.users&&d.users.length){USERS_LIST.length=0;d.users.forEach(function(u){USERS_LIST.push(u);});USERS_NEXT_ID=Math.max.apply(null,USERS_LIST.map(function(u){return u.id;}))+1;}
