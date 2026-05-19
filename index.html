@@ -1768,6 +1768,7 @@ function Solicitacoes(){
   function setExtraFld(i,k,v){var _t={};_t[k]=v;setExtras(function(p){return p.map(function(ex,j){return j===i?Object.assign({},ex,_t):ex;});});}
   function handleExtraCat(i,catId){var cat=CATS.find(function(c){return c.id===parseInt(catId);});var subs=SUBS[parseInt(catId)]||[];setExtras(function(p){return p.map(function(ex,j){return j===i?Object.assign({},ex,{catId:parseInt(catId),cn:cat?cat.nome:'',fp:cat?cat.fp:'',subId:null,sn:'',taxa:0,subcats:subs,subInfo:null}):ex;});});}
   function handleExtraSub(i,subId){setExtras(function(p){return p.map(function(ex,j){if(j!==i)return ex;var s=ex.subcats.find(function(x){return x.id===parseInt(subId);});if(s&&s.m&&!s.ml)s=Object.assign({},s,{ml:s.m});return Object.assign({},ex,{subId:s?s.id:null,sn:s?s.nome:'',taxa:s?s.taxa:0,subInfo:s||null});});});}
+  function handleFoto(e){var file=e.target.files[0];if(!file)return;e.target.value='';var reader=new FileReader();reader.onload=function(ev){var img=new Image();img.onload=function(){var canvas=document.createElement('canvas');var MAX=800;var w=img.width,h=img.height;if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);setField('foto',canvas.toDataURL('image/jpeg',0.75));};img.src=ev.target.result;};reader.readAsDataURL(file);}
   function makeProtocol(){var y=new Date().getFullYear();var max=all.reduce(function(m,r){var n=parseInt(r.prot.split('-')[2]||0);return n>m?n:m;},0);return 'SMTT-'+y+'-'+String(max+1).padStart(6,'0');}
   function save(){if(!form.nom||!form.rua||!form.num||!form.bairro||!form.catId||!form.dt){notify('Preencha os campos obrigat\xf3rios!');return;}var taxa=(form.fp==='Isento')?0:(subInfo?subInfo.taxa*(subInfo.h?horas:subInfo.ml?metros:1):form.taxa||0);if(form.id){INIT_REQS.forEach(function(r,i){if(r.id===form.id)INIT_REQS[i]=Object.assign({},form,{taxa:taxa});});setAll(function(prev){return prev.map(function(r){return r.id===form.id?Object.assign({},form,{taxa:taxa}):r;});});if(form.solId){var si2=INIT_SOLS.findIndex(function(x){return x.id===form.solId;});if(si2>=0){var upd2={};if(form.tel&&!INIT_SOLS[si2].telefone)upd2.telefone=form.tel;if(form.email&&!INIT_SOLS[si2].email)upd2.email=form.email;if(form.ref&&!INIT_SOLS[si2].ref)upd2.ref=form.ref;if(Object.keys(upd2).length)INIT_SOLS[si2]=Object.assign({},INIT_SOLS[si2],upd2);}}SGSS_SESSION.acoes.unshift({tipo:'Edição',prot:form.prot||'',dt:new Date().toLocaleTimeString('pt-BR')});
     saveSession();
@@ -1794,7 +1795,7 @@ function Solicitacoes(){
   function del(id,prot){showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir solicita\u00e7\u00e3o?',sub:prot,corpo:'O registro permanecer\u00e1 no Hist\u00f3rico.',lblOk:'Excluir',cor:'red',onOk:function(){var ix=INIT_REQS.findIndex(function(r){return r.id===id;});if(ix>=0)INIT_REQS.splice(ix,1);setAll(function(prev){return prev.filter(function(r){return r.id!==id;});});SGSS_SESSION.acoes.unshift({tipo:'Exclusão',prot:'',dt:new Date().toLocaleTimeString('pt-BR')});
     saveSession();notify('Solicita\xe7\xe3o exclu\xedda!');sgssSave();
     }});}
-  var EMPTY={nom:'',dt:today(),solId:null,bairro:'',rua:'',num:'',ref:'',tel:'',email:'',catId:'',cn:'',fp:'',subId:null,sn:'',taxa:0,urg:'N\xe3o'};
+  var EMPTY={nom:'',dt:today(),solId:null,bairro:'',rua:'',num:'',ref:'',tel:'',email:'',catId:'',cn:'',fp:'',subId:null,sn:'',taxa:0,urg:'N\xe3o',foto:null,descricao:''};
   function saveEditSol(){INIT_REQS.forEach(function(x,i){if(x.id===editId)INIT_REQS[i]=Object.assign({},editD);});setAll(function(prev){return prev.map(function(x){return x.id===editId?Object.assign({},editD):x;});});var _prot=INIT_REQS.find(function(x){return x.id===editId;});
     SGSS_SESSION.acoes.unshift({tipo:'Editar Solicitação',prot:_prot?_prot.prot:'',dt:new Date().toLocaleTimeString('pt-BR')});
     saveSession();
@@ -1804,6 +1805,20 @@ function Solicitacoes(){
     ce('div',{className:'page-header'},ce('h2',{className:'page-title'},form.id?'\u270f\ufe0f Editar Solicita\xe7\xe3o':'\u2795 Nova Solicita\xe7\xe3o'),ce('button',{className:'btn btn-s',onClick:function(){setForm(null);setSubcats([]);setSubInfo(null);setLocked(false);setSugs([]);}},'\u2190 Voltar')),
     ce('div',{className:'card'},
       ce('div',{className:'sec-title'},'\ud83d\udccb Dados do Servi\xe7o'),
+      ce('div',{style:{float:'right',width:155,marginLeft:12,marginBottom:8}},
+        ce('label',{style:{fontSize:11,fontWeight:600,color:'#64748b',display:'block',marginBottom:4}},'\ud83d\udcf7 Foto (opcional)'),
+        form.foto?
+          ce('div',{style:{position:'relative',display:'inline-block'}},
+            ce('img',{src:form.foto,style:{width:155,height:130,objectFit:'cover',borderRadius:8,border:'1px solid #e2e8f0',display:'block'}}),
+            ce('button',{style:{position:'absolute',top:3,right:3,background:'rgba(220,38,38,.85)',color:'#fff',border:'none',borderRadius:'50%',width:20,height:20,cursor:'pointer',fontSize:13,lineHeight:'20px',textAlign:'center',padding:0,fontWeight:700},onClick:function(){setField('foto',null);}},'×')
+          ):
+          ce('label',{htmlFor:'foto-inp-sol',style:{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',width:155,height:80,border:'2px dashed #cbd5e1',borderRadius:8,cursor:'pointer',color:'#94a3b8',fontSize:12,gap:4,background:'#f8fafc'}},
+            '\ud83d\udcf7','Adicionar foto',
+            ce('input',{type:'file',id:'foto-inp-sol',accept:'image/*',style:{display:'none'},onChange:handleFoto})
+          ),
+        ce('label',{style:{fontSize:11,fontWeight:600,color:'#64748b',display:'block',marginTop:6,marginBottom:2}},'Descri\u00e7\u00e3o'),
+        ce('textarea',{value:form.descricao||'',onChange:function(e){setField('descricao',e.target.value);},placeholder:'Descreva o problema...',style:{width:'100%',padding:'5px 6px',border:'1px solid #e2e8f0',borderRadius:6,fontSize:11,resize:'none',height:64,fontFamily:'inherit'}})
+      ),
       ce('div',{className:'form-grid'},
         ce('div',{className:'fg'},ce('label',null,'Data ',ce('span',{className:'req'},'*')),ce('input',{type:'date',value:form.dt||'',onChange:function(e){setField('dt',e.target.value);}})),
         ce('div',{className:'fg'},ce('label',null,'Urg\xeancia'),ce('select',{value:form.urg||'N\xe3o',onChange:function(e){setField('urg',e.target.value);}},ce('option',null,'N\xe3o'),ce('option',null,'Sim'))),
@@ -1813,6 +1828,7 @@ function Solicitacoes(){
 
         subInfo&&subInfo.ml?ce('div',{className:'fg s2'},ce('label',null,'\ud83d\udccf Metros Lineares ',ce('span',{style:{fontSize:11,color:'#64748b'}},'('+(subInfo.ml===1?'Asf\xe1ltico':'Pedras Irregulares')+')')),ce('div',{className:'hora-calc'},ce('button',{className:'btn-hora',style:{fontSize:18,fontWeight:700,width:32,height:32},onClick:function(){setMetros(function(v){return Math.max(1,v-1);});}},'\u2212'),ce('span',{style:{display:'inline-block',minWidth:48,textAlign:'center',fontSize:18,fontWeight:700,color:'#1e3a5f'}},metros+'m'),ce('button',{className:'btn-hora',style:{fontSize:18,fontWeight:700,width:32,height:32},onClick:function(){setMetros(function(v){return v+1;});}},'+')),ce('div',{style:{marginTop:6,fontSize:13,color:'#64748b'}},metros+' m \xd7 '+fmt(subInfo.taxa)+'/m = ',ce('strong',{style:{fontSize:16,color:'#1e3a5f',marginLeft:4}},fmt(subInfo.taxa*metros)))):null,        subInfo?ce('div',{className:'fg'},ce('label',null,'Taxa Total'),ce('input',{className:'taxa-inp',readOnly:true,value:fmt(subInfo.taxa*(subInfo.h?horas:subInfo.ml?metros:1))})):null
       ),
+      ce('div',{style:{clear:'both'}}),
       ce('div',{className:'sec-title'},'\ud83d\udc64 Dados do Solicitante'),
       ce('div',{className:'form-grid'},
         ce('div',{className:'fg s2',style:{position:'relative'}},ce('label',null,'Nome do Solicitante ',ce('span',{className:'req'},'*')),ce('input',{value:form.nom||'',onChange:function(e){handleSolInput(e.target.value);},onBlur:function(){setTimeout(function(){setSugs([]);},150)},placeholder:'Digite o nome para buscar...'}),sugs.length>0?ce('div',{className:'ac-list'},sugs.map(function(s){return ce('div',{key:s.id,className:'ac-item',onClick:function(){selectSol(s);}},ce('strong',null,s.nome),' \u2014 '+s.rua+', '+s.numero+' \u2013 '+s.bairro);})):null,locked?ce('span',{className:'lock-badge'},'\ud83d\udd12 Dados carregados do cadastro'):null),
@@ -1912,6 +1928,25 @@ function Documentos2(p){
   var sd=useState('comp');var doc=sd[0];var setDoc=sd[1];
   var t=useToast();var toast=t[0];var notify=t[1];
   var d=p.item;var isPago=d.fp==='Pago';
+  var sfot=useState(d.foto||null);var eFoto=sfot[0];var setEFoto=sfot[1];
+  var sds=useState(d.descricao||'');var eDesc=sds[0];var setEDesc=sds[1];
+  var sem=useState(false);var editMode=sem[0];var setEditMode=sem[1];
+  function saveFD(){
+    var idx=INIT_REQS.findIndex(function(x){return x.id===d.id;});
+    if(idx>=0)INIT_REQS[idx]=Object.assign({},INIT_REQS[idx],{foto:eFoto,descricao:eDesc});
+    d.foto=eFoto;d.descricao=eDesc;
+    sgssSave();setEditMode(false);notify('\u2705 Guardado!');
+  }
+  function handleFotoD(e){
+    var file=e.target.files[0];if(!file)return;e.target.value='';
+    var reader=new FileReader();
+    reader.onload=function(ev){
+      var img=new Image();
+      img.onload=function(){var canvas=document.createElement('canvas');var MAX=800;var w=img.width,h=img.height;if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);setEFoto(canvas.toDataURL('image/jpeg',0.75));};
+      img.src=ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
   /* Campo à esquerda */
   function FL(fp){return ce('div',{className:'doc-field-left'},ce('span',{className:'doc-label-left'},fp.label+':'),ce('span',{className:'doc-value-left'},fp.value||'\u2013'));}
   /* Campo inline */
@@ -1970,6 +2005,33 @@ function Documentos2(p){
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Servi\xe7o Solicitado'),ce(FI,{label:'Tipo de Servi\xe7o',value:d.cn}),ce(FI,{label:'Subcategoria',value:d.sn}),ce(FI,{label:'Forma de Presta\xe7\xe3o',value:d.fp}),isPago?ce(FI,{label:'Taxa Total',value:fmt(d.taxa)}):null),
       /* Controle de Execução — alinhado à esquerda */
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Controle de Execu\xe7\xe3o'),ce('div',{className:'doc-fields-stack'},ce(FL,{label:'Status',value:d.status}),ce(FL,{label:'Funcion\xe1rio Respons\xe1vel',value:d.func}))),
+      /* Foto e Descrição */
+      !editMode&&(eFoto||eDesc)?ce('div',{className:'doc-sec'},
+        ce('div',{className:'doc-st'},'\ud83d\udcf7 Foto e Descri\u00e7\u00e3o'),
+        eFoto?ce('img',{src:eFoto,style:{maxWidth:'100%',maxHeight:280,borderRadius:8,border:'1px solid #e2e8f0',display:'block',marginBottom:8}}):null,
+        eDesc?ce('div',{style:{fontSize:13,color:'#1e293b',whiteSpace:'pre-wrap',background:'#f8fafc',padding:'8px 10px',borderRadius:6,border:'1px solid #e2e8f0'}},eDesc):null
+      ):null,
+      editMode?ce('div',{className:'doc-sec',style:{background:'#eff6ff',border:'2px solid #93c5fd',borderRadius:8,padding:'10px 12px'}},
+        ce('div',{className:'doc-st',style:{color:'#1d4ed8'}},'\u270f\ufe0f Editar Foto e Descri\u00e7\u00e3o'),
+        ce('div',{style:{marginBottom:8}},
+          eFoto?
+            ce('div',{style:{position:'relative',display:'inline-block'}},
+              ce('img',{src:eFoto,style:{maxHeight:160,maxWidth:'100%',borderRadius:6,border:'1px solid #e2e8f0',display:'block'}}),
+              ce('button',{style:{position:'absolute',top:3,right:3,background:'rgba(220,38,38,.85)',color:'#fff',border:'none',borderRadius:'50%',width:20,height:20,cursor:'pointer',fontSize:13,lineHeight:'20px',textAlign:'center',padding:0},onClick:function(){setEFoto(null);}},'×')
+            ):
+            ce('label',{htmlFor:'foto-inp-doc',style:{display:'inline-flex',alignItems:'center',gap:6,padding:'6px 12px',border:'2px dashed #93c5fd',borderRadius:6,cursor:'pointer',fontSize:12,color:'#1d4ed8',background:'#fff'}},
+              '\ud83d\udcf7 Selecionar foto',
+              ce('input',{type:'file',id:'foto-inp-doc',accept:'image/*',style:{display:'none'},onChange:handleFotoD})
+            )
+        ),
+        ce('label',{style:{fontSize:11,fontWeight:600,color:'#64748b',display:'block',marginBottom:4}},'Descri\u00e7\u00e3o'),
+        ce('textarea',{value:eDesc,onChange:function(e){setEDesc(e.target.value);},placeholder:'Descreva o problema...',style:{width:'100%',padding:'6px 8px',border:'1px solid #93c5fd',borderRadius:6,fontSize:12,resize:'none',height:72,fontFamily:'inherit'}}),
+        ce('div',{style:{display:'flex',gap:8,marginTop:8}},
+          ce('button',{className:'btn btn-p',style:{flex:1},onClick:saveFD},'\ud83d\udcbe Guardar'),
+          ce('button',{className:'btn btn-s',onClick:function(){setEditMode(false);setEFoto(d.foto||null);setEDesc(d.descricao||'');}},'× Cancelar')
+        )
+      ):null,
+      !editMode?ce('button',{style:{marginBottom:10,padding:'5px 12px',border:'1px solid #93c5fd',borderRadius:6,background:'#eff6ff',color:'#1d4ed8',cursor:'pointer',fontSize:12,fontWeight:600},onClick:function(){setEditMode(true);}},eFoto||eDesc?'\u270f\ufe0f Editar Foto/Descri\u00e7\u00e3o':'\ud83d\udcf7 Adicionar Foto/Descri\u00e7\u00e3o'):null,
       ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Funcion\xe1rio')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Chefe de Divis\xe3o')))
     ):null,
     doc==='sefaz'&&isPago?ce('div',{className:'doc-paper'},
