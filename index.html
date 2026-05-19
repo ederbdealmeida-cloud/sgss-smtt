@@ -2,19 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1e3a5f">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SGSS SMTT">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>SGSS – Secretaria Municipal de Transporte e Trânsito</title>
+<title>SMTT v4 – Prévia Completa</title>
 <style>
 :root{
   --c-primary:#2563eb;--c-primary-d:#1d4ed8;--c-primary-l:#eff6ff;
@@ -387,11 +378,11 @@ body{margin:0;padding:0;background:#fff}
 .topbar-left{display:flex;flex-direction:column;justify-content:center;min-width:120px}
 .topbar-sgss{font-size:26px;font-weight:900;color:#fde68a;letter-spacing:2px;line-height:1}
 .topbar-sub{font-size:9px;color:rgba(255,255,255,.5)}
-.topbar-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-.topbar-brasao{height:40px;width:auto;filter:drop-shadow(0 1px 4px rgba(0,0,0,.5))}
+.topbar-center{flex:1;display:flex;align-items:center;justify-content:center;gap:10px}
+.topbar-brasao{height:54px;width:auto;filter:drop-shadow(0 1px 4px rgba(0,0,0,.5))}
 .topbar-org{display:flex;flex-direction:column}
 .topbar-pref{font-size:14px;font-weight:700;color:#fde68a;line-height:1.2}
-.topbar-smtt{font-size:10px;color:rgba(255,255,255,.8);text-align:center;line-height:1.2}
+.topbar-smtt{font-size:11px;color:rgba(255,255,255,.6)}
 .topbar-right{display:flex;align-items:center;gap:14px}
 .topbar-ham{background:none;border:none;color:#fff;font-size:28px;cursor:pointer;padding:6px 10px;border-radius:6px;line-height:1;transition:background .15s}
 .topbar-ham:hover{background:rgba(255,255,255,.12)}
@@ -801,7 +792,6 @@ var FUNC_LIST=[
   {id:4,nome:'Ana Beatriz Lima',cargo:'T\u00e9cnica de Pavimenta\u00e7\u00e3o',matricula:'004',telefone:'(55) 99844-4444',ativo:1},
   {id:5,nome:'Roberto Carvalho',cargo:'Aux. Servi\u00e7os Gerais',matricula:'005',telefone:'',ativo:0}
 ];
-var FUNC_LIST_NEXT_ID=FUNC_LIST.length>0?Math.max.apply(null,FUNC_LIST.map(function(f){return f.id;}))+1:1;
 
 /* SLA por categoria (dias) */
 var SLA_DIAS={1:5,2:7,3:7,4:10,5:3};
@@ -1174,8 +1164,7 @@ function PainelFuncionario(p){
               +'<p style="font-size:11px;color:#64748b;margin-bottom:12px">'+(func.cargo||'')+'</p>'
               +cardsHtml+tblHtml
               +'<button class="btn-pr" onclick="window.print()">\ud83d\udda8\ufe0f Imprimir / Salvar PDF</button>'
-              +'<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js",{scope:"/sgss-smtt/"}).then(function(r){console.log("SW OK",r.scope);}).catch(function(e){console.log("SW err",e);});});}</script>
-</body></html>');
+              +'</body></html>');
             w.document.close();
           }},'\ud83d\udda8\ufe0f Imprimir / PDF')
         )
@@ -3016,7 +3005,6 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
     setForm(null);
     if(_fdata.id){
       setFuncs(function(prev){return prev.map(function(f){return f.id===_fdata.id?Object.assign({},_fdata):f;});});
-      var _ix=FUNC_LIST.findIndex(function(x){return x.id===_fdata.id;});if(_ix>=0)FUNC_LIST[_ix]=Object.assign({},_fdata);
       SGSS_SESSION.acoes.unshift({tipo:'Editar Funcionário',prot:form.nome||'',dt:new Date().toLocaleTimeString('pt-BR')});
     saveSession();notify('Funcion\u00e1rio atualizado!');sgssSave();
     }else{
@@ -3036,7 +3024,6 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
       if(ix>=0)FUNC_LIST[ix]=nf;
       return nf;
     });});
-    sgssSave();
   }
   function saveEdit(){setFuncs(function(prev){return prev.map(function(f){return f.id===editId?Object.assign({},editD):f;});});var ix=FUNC_LIST.findIndex(function(x){return x.id===editId;});if(ix>=0)FUNC_LIST[ix]=Object.assign({},editD);setEditId(null);setEditD({});SGSS_SESSION.acoes.unshift({tipo:'Editar Funcionário (inline)',prot:editD.nome||'',dt:new Date().toLocaleTimeString('pt-BR')});
     saveSession();notify('\u2705 Funcion\u00e1rio atualizado!');sgssSave();}
@@ -3966,7 +3953,10 @@ function App(){
       ),
       ce('div',{className:'topbar-center'},
         ce('img',{src:_BRASAO,className:'topbar-brasao',alt:''}),
-        ce('span',{className:'topbar-smtt'},'Secretaria Municipal de Transp. e Trânsito')
+        ce('div',{className:'topbar-org'},
+          ce('span',{className:'topbar-pref'},'PREFEITURA MUNICIPAL DE CACEQUI'),
+          ce('span',{className:'topbar-smtt'},'Secretaria Municipal de Transporte e Trânsito')
+        )
       ),
       ce('div',{className:'topbar-right'},
         ce('button',{className:'topbar-ham',
