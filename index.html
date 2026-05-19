@@ -772,6 +772,8 @@ function showConfirm(opts){
 
 function fmt(v){return v!=null?Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):'R$ 0,00';}
 
+function fmtStatusLabel(r){if(r.status==='Concluído'&&r.dtConclusao)return 'Concluído em '+fmtD(r.dtConclusao);return r.status||'';}
+
 function fmtTaxa(r){if(r.fp==='Isento'&&typeof ce==='function')return ce('span',{style:{color:'#16a34a',fontWeight:600,fontSize:11,letterSpacing:0.3}},'\u26d4 Isento');if(r.fp==='Isento')return '\u26d4 Isento';return fmt(r.taxa);}
 function fmtD(d){if(!d)return'';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
 function maskPhone(v){var d=v.replace(/\D/g,'').slice(0,11);if(d.length<=10)return d.replace(/(\d{2})(\d{4})(\d{0,4})/,function(_,a,b,c){return c?'('+a+') '+b+'-'+c:b?'('+a+') '+b:a?'('+a:'';});return d.replace(/(\d{2})(\d{5})(\d{0,4})/,function(_,a,b,c){return c?'('+a+') '+b+'-'+c:'('+a+') '+b;});}
@@ -2065,12 +2067,16 @@ function Controle(){
   var ssort=useState(null);var sortBy=ssort[0];var setSortBy=ssort[1];
   var sed=useState({});var ed=sed[0];var setEd=sed[1];
   var senc=useState(null);var encItem=senc[0];var setEncItem=senc[1];
+  var sffunc=useState('');var ffunc=sffunc[0];var setFfunc=sffunc[1];
+  var sftipo=useState('');var ftipo=sftipo[0];var setFtipo=sftipo[1];
+  var sfde=useState('');var fde=sfde[0];var setFde=sfde[1];
+  var sfate=useState('');var fate=sfate[0];var setFate=sfate[1];
   var sids=useState([]);var selIds=sids[0];var setSelIds=sids[1];
   var spmode=useState('all');var printMode=spmode[0];var setPrintMode=spmode[1];
   var spfrom=useState('1');var printFrom=spfrom[0];var setPrintFrom=spfrom[1];
   var spto=useState('5');var printTo=spto[0];var setPrintTo=spto[1];
   var t=useToast();var toast=t[0];var notify=t[1];
-  var filtered=all.filter(function(r){if(r.enc===1)return false;if(fst&&r.status!==fst)return false;if(furg&&r.urg!==furg)return false;if(srch){var q=srch.toLowerCase();if(r.nom.toLowerCase().indexOf(q)<0&&r.prot.toLowerCase().indexOf(q)<0&&r.bairro.toLowerCase().indexOf(q)<0)return false;}return true;});
+  var filtered=all.filter(function(r){if(r.enc===1)return false;if(fst&&r.status!==fst)return false;if(furg&&r.urg!==furg)return false;if(ffunc&&(r.func||'')!==ffunc)return false;if(ftipo&&String(r.catId)!==String(ftipo))return false;if(fde&&r.dt<fde)return false;if(fate&&r.dt>fate)return false;if(srch){var q=srch.toLowerCase();if(r.nom.toLowerCase().indexOf(q)<0&&r.prot.toLowerCase().indexOf(q)<0&&r.bairro.toLowerCase().indexOf(q)<0)return false;}return true;});
   var sorted=!sortBy?filtered.slice():filtered.slice().sort(function(a,b){
     if(sortBy==='alfabetico')return a.nom.localeCompare(b.nom,'pt-BR');
     var ua=(a.urg==='Sim'&&a.status!=='Conclu\u00eddo')?0:1;
@@ -2081,10 +2087,11 @@ function Controle(){
   var items=paginate(sorted,pg);
   var selItems=sorted.filter(function(i){return selIds.includes(i.id);});
   function toggleSel(id){setSelIds(function(p){return p.includes(id)?p.filter(function(x){return x!==id;}):p.concat([id]);});}
-  function startEdit(r){var n=Object.assign({},ed);n[r.id]={status:r.status,func:r.func||''};setEd(n);}
+  function startEdit(r){var n=Object.assign({},ed);n[r.id]={status:r.status,func:r.func||'',dtConclusao:r.dtConclusao||''};setEd(n);}
   function cancelEdit(id){var n=Object.assign({},ed);delete n[id];setEd(n);}
   function saveStatus(id){
-    var e=ed[id];
+    var e=Object.assign({},ed[id]);
+    if(e.status==='Concluído'&&!e.dtConclusao)e.dtConclusao=today();
     setAll(function(prev){return prev.map(function(r){return r.id===id?Object.assign({},r,e):r;});});
     INIT_REQS.forEach(function(r,i){if(r.id===id)INIT_REQS[i]=Object.assign({},INIT_REQS[i],e);});
     cancelEdit(id);notify('\u2705 Atualizado!');sgssSave();
@@ -2146,6 +2153,13 @@ function Controle(){
                   +(r.urg==='Sim'?'<span style="font-size:9px;font-weight:700;color:#991b1b">\u26a0\ufe0f Urgente</span>':'')
                   +fmtT()
                 +'</div>'
+                +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:6px 11px;border-top:1px solid #e2e8f0;background:#f8fafc">'
+                  +'<div style="display:flex;align-items:center;gap:10px;font-size:9.5px">'
+                    +'<label style="display:flex;align-items:center;gap:3px;white-space:nowrap"><input type="radio" name="st-'+r.id+'" '+(r.status!=='Concluído'?'checked':'')+' style="margin:0"> Não Concluído</label>'
+                    +'<label style="display:flex;align-items:center;gap:3px;white-space:nowrap"><input type="radio" name="st-'+r.id+'" '+(r.status==='Concluído'?'checked':'')+' style="margin:0"> Concluído</label>'
+                    +'<input type="text" placeholder="Data conclusão" value="'+(r.dtConclusao?fmtD(r.dtConclusao):'')+'" style="border:1px solid #e2e8f0;border-radius:4px;padding:2px 5px;font-size:9px;flex:1;min-width:0">'
+                  +'</div>'
+                +'</div>'
               +'</div>'
             +'</div>';
           };
@@ -2183,6 +2197,15 @@ function Controle(){
             ]}),
         ce(Sel,{val:furg,set:function(v){setFurg(v);setPg(1);},ph:'Todas',
             opts:[{v:'',l:'Todas'},{v:'Sim',l:'Urgente'},{v:'Não',l:'Normal'}]}),
+        ce(Sel,{val:ffunc,set:function(v){setFfunc(v);setPg(1);},ph:'Todos funcionários',opts:[{v:'',l:'Todos funcionários'}].concat(FUNC_LIST.filter(function(f){return f.ativo;}).map(function(f){return{v:f.nome,l:f.nome};}))}),
+        ce(Sel,{val:ftipo,set:function(v){setFtipo(v);setPg(1);},ph:'Todos os serviços',opts:[{v:'',l:'Todos os serviços'}].concat(CATS.map(function(c){return{v:String(c.id),l:c.nome};}))}),
+        ce('div',{style:{display:'flex',gap:4,alignItems:'center',flexShrink:0}},
+          ce('span',{style:{fontSize:11,color:'#64748b',fontWeight:600}},'De'),
+          ce('input',{type:'date',value:fde,onChange:function(e){setFde(e.target.value);setPg(1);},style:{padding:'4px 6px',border:'1px solid #e2e8f0',borderRadius:6,fontSize:11}}),
+          ce('span',{style:{fontSize:11,color:'#64748b',fontWeight:600}},'a'),
+          ce('input',{type:'date',value:fate,onChange:function(e){setFate(e.target.value);setPg(1);},style:{padding:'4px 6px',border:'1px solid #e2e8f0',borderRadius:6,fontSize:11}}),
+          (fde||fate)?ce('button',{style:{padding:'3px 7px',border:'1px solid #e2e8f0',borderRadius:5,background:'#f8fafc',cursor:'pointer',fontSize:11,color:'#dc2626'},onClick:function(){setFde('');setFate('');}},'×'):null
+        ),
         ce('div',{style:{display:'flex',gap:4,borderLeft:'1.5px solid #e2e8f0',paddingLeft:8,flexShrink:0}},
           ce('button',{className:'btn '+(sortBy==='prioridade'?'btn-p':'btn-s'),style:{padding:'5px 9px',fontSize:11},onClick:function(){setSortBy('prioridade');setPg(1);}},'\ud83d\udea8 Prioridade'),
           ce('button',{className:'btn '+(sortBy==='alfabetico'?'btn-p':'btn-s'),style:{padding:'5px 9px',fontSize:11},onClick:function(){setSortBy('alfabetico');setPg(1);}},'\ud83d\udd24 Alfab\u00e9tico')
@@ -2204,36 +2227,28 @@ function Controle(){
             ce('td',null,ce('strong',null,r.prot)),ce('td',null,fmtD(r.dt)),ce('td',null,r.nom),ce('td',null,(r.rua||'—')+(r.num?' '+r.num:'')),ce('td',null,r.bairro),
             ce('td',{title:r.cn+' | '+r.sn},r.cn.slice(0,18)+'\u2026'),ce('td',null,fmtTaxa(r)),
             ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
-            ce('td',null,e?ce('select',{value:e.status,onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{status:ev.target.value});setEd(n);}},
-              ce('option',{value:'N\u00e3o Conclu\u00eddo'},'N\u00e3o Conclu\u00eddo'),
-              ce('option',{value:'Conclu\u00eddo'},'Conclu\u00eddo')):ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status)),
+            ce('td',null,e?ce(React.Fragment,null,
+              ce('select',{value:e.status,onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{status:ev.target.value});setEd(n);},style:{marginBottom:2}},
+                ce('option',{value:'Não Concluído'},'Não Concluído'),
+                ce('option',{value:'Concluído'},'Concluído')
+              ),
+              e.status==='Concluído'?ce('input',{type:'date',value:e.dtConclusao||'',
+                title:'Data de conclusão',
+                onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{dtConclusao:ev.target.value});setEd(n);},
+                style:{display:'block',padding:'2px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11,width:'100%'}}):null
+            ):ce('span',{className:'badge '+(r.status==='Concluído'?'b-gr':'b-or')},fmtStatusLabel(r))),
             ce('td',null,e?ce('select',{value:e.func||'',onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{func:ev.target.value});setEd(n);}},
               ce('option',{value:''},'\u2014 Nenhum'),
               FUNC_LIST.filter(function(f){return f.ativo;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);})):ce('span',null,r.func||'\u2013')),
             ce('td',null,
               ce('button',{className:'btn-icon',title:'Visualizar',onClick:function(){
-              var fmtT=function(){
-                if(r.fp==='Isento')return '<span style="color:#7c3aed;font-weight:700">Isento</span>';
-                if(!r.taxa||parseFloat(r.taxa)===0)return '<span style="color:#0891b2;font-weight:700">Gratuito</span>';
-                return '<b>R$\u00a0'+parseFloat(r.taxa).toFixed(2).replace('.',',')+'</b>';
-              };
               var _pw=780,_ph=680,_pl=Math.round((screen.width-_pw)/2),_pt=Math.round((screen.height-_ph)/2);
               var w=window.open('','_blank','width='+_pw+',height='+_ph+',left='+_pl+',top='+_pt+',scrollbars=yes');
               if(!w){notify('Permita pop-ups!');return;}
-              w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS+'.btn-pr{display:block;margin:12px auto 0;padding:8px 20px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}@media print{.btn-pr{display:none}}</style></head><body>'
+              w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS+'body{background:#f8fafc;padding:16px}.btn-pr{display:block;margin:14px auto;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}@media print{body{background:#fff;padding:0}.btn-pr{display:none}}</style></head><body>'
                 +'<div class="doc-paper">'
-                +buildHeader('&#128204; Solicitação \u2014 '+r.prot,fmtD(r.dt))
-                +'<table style="width:100%;border-collapse:collapse;font-size:11px">'
-                  +'<tr><td style="color:#64748b;font-weight:600;width:90px;padding:4px 8px 4px 0">Protocolo</td><td style="padding:4px 0"><b>'+r.prot+'</b></td></tr>'
-                  +'<tr><td style="color:#64748b;font-weight:600;padding:4px 8px 4px 0">Data</td><td style="padding:4px 0">'+fmtD(r.dt)+'</td></tr>'
-                  +'<tr><td style="color:#64748b;font-weight:600;padding:4px 8px 4px 0">Solicitante</td><td style="padding:4px 0">'+r.nom+'</td></tr>'
-                  +'<tr><td style="color:#64748b;font-weight:600;padding:4px 8px 4px 0">Endereço</td><td style="padding:4px 0">'+(r.rua||'\u2014')+(r.num?' n\u00ba '+r.num:'')+'</td></tr>'
-                  +'<tr><td style="color:#64748b;font-weight:600;padding:4px 8px 4px 0">Bairro</td><td style="padding:4px 0">'+r.bairro+'</td></tr>'
-                  +'<tr><td style="color:#64748b;font-weight:600;padding:4px 8px 4px 0">Serviço</td><td style="padding:4px 0">'+r.cn+'</td></tr>'
-                  +(r.func?'<tr><td style="color:#64748b;font-weight:600;padding:4px 8px 4px 0">Funcionário</td><td style="padding:4px 0">'+r.func+'</td></tr>':'')
-                  +'<tr><td style="color:#64748b;font-weight:600;padding:4px 8px 4px 0">Status</td><td style="padding:4px 0">'+r.status+'</td></tr>'
-                  +'<tr><td style="color:#64748b;font-weight:600;padding:4px 8px 4px 0">Taxa</td><td style="padding:4px 0">'+fmtT()+'</td></tr>'
-                +'</table>'
+                +buildHeader('&#128204; Controle — '+r.prot,fmtD(r.dt))
+                +mkCard(r)
                 +'<button class="btn-pr" onclick="window.print()">&#128424;&#65039; Imprimir</button>'
                 +'</div></body></html>');
               w.document.close();
