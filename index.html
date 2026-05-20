@@ -116,7 +116,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,Arial,sans-serif;font-siz
 .tbl tbody tr:nth-child(odd) td{background:#fff}
 .tbl tr:hover td{background:#eff6ff!important;transition:background .12s}
 .row-urg td{background:#fff7ed!important}
-.row-highlight td{background:#fef3c7!important;border-top:1.5px solid #f59e0b;border-bottom:1.5px solid #f59e0b}.row-urg:hover td{background:#fed7aa!important}
+.row-highlight td{background:#fef3c7!important}.row-urg:hover td{background:#fed7aa!important}
 
 /* ── BADGES ── */
 .badge{display:inline-flex;align-items:center;padding:3px 12px;border-radius:9999px;font-size:11px;font-weight:800;letter-spacing:.3px;white-space:nowrap}
@@ -2271,7 +2271,7 @@ function Controle(){
         )),
         ce('tbody',null,items.map(function(r){
           var e=ed[r.id];
-          return ce('tr',{id:'req-row-'+r.id,key:r.id,style:null,className:(highlightId===r.id?'row-highlight ':'')+(r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':''),
+          return ce('tr',{id:'req-row-'+r.id,key:r.id,style:highlightId===r.id?{outline:'2.5px solid #f59e0b',outlineOffset:'-1px'}:null,className:(highlightId===r.id?'row-highlight ':'')+(r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':'')},
             ce('td',null,ce('input',{type:'checkbox',checked:selIds.includes(r.id),onChange:function(){toggleSel(r.id);}})),
             ce('td',null,ce('strong',null,r.prot)),ce('td',null,fmtD(r.dt)),ce('td',null,r.nom),ce('td',null,(r.rua||'—')+(r.num?' '+r.num:'')),ce('td',null,r.bairro),
             ce('td',{title:r.cn+' | '+r.sn},r.cn.slice(0,18)+'\u2026'),ce('td',null,fmtTaxa(r)),
