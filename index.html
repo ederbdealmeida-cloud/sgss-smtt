@@ -909,9 +909,6 @@ function Login(p){
   var se=useState('');var err=se[0];var setErr=se[1];
   var sshow=useState(false);var showPw=sshow[0];var setShowPw=sshow[1];
   var srem=useState(false);var rem=srem[0];var setRem=srem[1];
-  var sfgt=useState(false);var showForgot=sfgt[0];var setShowForgot=sfgt[1];
-  var sfgu=useState('');var forgotUser=sfgu[0];var setForgotUser=sfgu[1];
-  var sfgr=useState(null);var forgotResult=sfgr[0];var setForgotResult=sfgr[1];
   function go(){
     var found=USERS_LIST.find(function(x){return x.user===u&&x.pw===pw;});
     if(found)p.onLogin({nome:found.nome,role:found.role,id:found.id,user:found.user});
@@ -1027,6 +1024,9 @@ function Login(p){
   var se=useState('');var err=se[0];var setErr=se[1];
   var sshow=useState(false);var showPw=sshow[0];var setShowPw=sshow[1];
   var srem=useState(false);var rem=srem[0];var setRem=srem[1];
+  var sfgt=useState(false);var showForgot=sfgt[0];var setShowForgot=sfgt[1];
+  var sfgu=useState('');var forgotUser=sfgu[0];var setForgotUser=sfgu[1];
+  var sfgr=useState(null);var forgotResult=sfgr[0];var setForgotResult=sfgr[1];
   function go(){
     var found=USERS_LIST.find(function(x){return x.user===u&&x.pw===pw;});
     if(found)p.onLogin({nome:found.nome,role:found.role,id:found.id,user:found.user});
