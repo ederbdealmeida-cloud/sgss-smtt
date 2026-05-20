@@ -116,6 +116,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,Arial,sans-serif;font-siz
 .tbl tbody tr:nth-child(odd) td{background:#fff}
 .tbl tr:hover td{background:#eff6ff!important;transition:background .12s}
 .row-urg td{background:#fff7ed!important}
+.row-highlight td{background:#fef3c7!important;border-top:2px solid #f59e0b!important;border-bottom:2px solid #f59e0b!important}
 .row-urg:hover td{background:#fed7aa!important}
 
 /* ── BADGES ── */
@@ -2259,7 +2260,7 @@ function Controle(p){
         )),
         ce('tbody',null,items.map(function(r){
           var e=ed[r.id];
-          return ce('tr',{id:'req-row-'+String(r.id),key:r.id,className:r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':'',style:_hlId&&r.id===_hlId?{background:'#fef3c7',boxShadow:'inset 0 0 0 2px #f59e0b'}:null},
+          return ce('tr',{id:'req-row-'+String(r.id),key:r.id,className:(_hlId&&r.id===_hlId?'row-highlight ':'')+(r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':'')},
             ce('td',null,ce('input',{type:'checkbox',checked:selIds.includes(r.id),onChange:function(){toggleSel(r.id);}})),
             ce('td',null,ce('strong',null,r.prot)),ce('td',null,fmtD(r.dt)),ce('td',null,r.nom),ce('td',null,(r.rua||'—')+(r.num?' '+r.num:'')),ce('td',null,r.bairro),
             ce('td',{title:r.cn+' | '+r.sn},r.cn.slice(0,18)+'\u2026'),ce('td',null,fmtTaxa(r)),
