@@ -2101,19 +2101,26 @@ function Controle(){
     if(!window._targetReqId)return;
     var tid=window._targetReqId;
     window._targetReqId=null;
-    // Find which page the item is on
-    var _fi=INIT_REQS.filter(function(r){return r.enc!==1;});
-    var _idx=_fi.findIndex(function(r){return r.id===tid;});
-    if(_idx>=0){
-      var _pg=Math.ceil((_idx+1)/PG_SIZE);
-      setPg(_pg);
-      setHighlightId(tid);
-      setTimeout(function(){
-        var el=document.getElementById('req-row-'+tid);
-        if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
-      },300);
-      setTimeout(function(){setHighlightId(null);},3000);
-    }
+    // Reset filters, go page 1, highlight
+    setFst('');setFurg('');setFfunc('');setFtipo('');setFde('');setFate('');setSrch('');
+    setPg(1);
+    setHighlightId(tid);
+    // After render: scroll to row
+    setTimeout(function(){
+      var el=document.getElementById('req-row-'+tid);
+      if(el){el.scrollIntoView({behavior:'smooth',block:'center'});}
+      else{
+        // Item may be on another page — find it and navigate
+        var _all=INIT_REQS.filter(function(r){return r.enc!==1;});
+        var _idx=_all.findIndex(function(r){return r.id===tid;});
+        if(_idx>=0){setPg(Math.ceil((_idx+1)/PER));}
+        setTimeout(function(){
+          var el2=document.getElementById('req-row-'+tid);
+          if(el2)el2.scrollIntoView({behavior:'smooth',block:'center'});
+        },400);
+      }
+    },350);
+    setTimeout(function(){setHighlightId(null);},4000);
   },[]);
   var filtered=all.filter(function(r){if(r.enc===1)return false;if(fst&&r.status!==fst)return false;if(furg&&r.urg!==furg)return false;if(ffunc&&(r.func||'')!==ffunc)return false;if(ftipo&&String(r.catId)!==String(ftipo))return false;if(fde&&r.dt<fde)return false;if(fate&&r.dt>fate)return false;if(srch){var q=srch.toLowerCase();if(r.nom.toLowerCase().indexOf(q)<0&&r.prot.toLowerCase().indexOf(q)<0&&r.bairro.toLowerCase().indexOf(q)<0)return false;}return true;});
   var sorted=!sortBy?filtered.slice():filtered.slice().sort(function(a,b){
