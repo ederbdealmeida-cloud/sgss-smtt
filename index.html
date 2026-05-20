@@ -2271,7 +2271,7 @@ function Controle(){
         )),
         ce('tbody',null,items.map(function(r){
           var e=ed[r.id];
-          return ce('tr',{id:'req-row-'+r.id,key:r.id,style:null,className:(highlightId===r.id?'row-highlight ':'')+(r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':''},
+          return ce('tr',{id:'req-row-'+r.id,key:r.id,style:null,className:(highlightId===r.id?'row-highlight ':'')+(r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':''),
             ce('td',null,ce('input',{type:'checkbox',checked:selIds.includes(r.id),onChange:function(){toggleSel(r.id);}})),
             ce('td',null,ce('strong',null,r.prot)),ce('td',null,fmtD(r.dt)),ce('td',null,r.nom),ce('td',null,(r.rua||'—')+(r.num?' '+r.num:'')),ce('td',null,r.bairro),
             ce('td',{title:r.cn+' | '+r.sn},r.cn.slice(0,18)+'\u2026'),ce('td',null,fmtTaxa(r)),
