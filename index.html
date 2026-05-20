@@ -116,7 +116,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,Arial,sans-serif;font-siz
 .tbl tbody tr:nth-child(odd) td{background:#fff}
 .tbl tr:hover td{background:#eff6ff!important;transition:background .12s}
 .row-urg td{background:#fff7ed!important}
-.row-highlight td{background:#fef3c7!important}.row-urg:hover td{background:#fed7aa!important}
+.row-urg:hover td{background:#fed7aa!important}
 
 /* ── BADGES ── */
 .badge{display:inline-flex;align-items:center;padding:3px 12px;border-radius:9999px;font-size:11px;font-weight:800;letter-spacing:.3px;white-space:nowrap}
@@ -2084,7 +2084,6 @@ function Controle(){
   var sfurg=useState('');var furg=sfurg[0];var setFurg=sfurg[1];
   var ssrch=useState('');var srch=ssrch[0];var setSrch=ssrch[1];
   var scl=useState(false);var cloading=scl[0];var setCloading=scl[1];
-  var shigh=useState(null);var highlightId=shigh[0];var setHighlightId=shigh[1];
   var spg=useState(1);var pg=spg[0];var setPg=spg[1];
   var ssort=useState(null);var sortBy=ssort[0];var setSortBy=ssort[1];
   var sed=useState({});var ed=sed[0];var setEd=sed[1];
@@ -2099,28 +2098,17 @@ function Controle(){
   var spto=useState('5');var printTo=spto[0];var setPrintTo=spto[1];
   var t=useToast();var toast=t[0];var notify=t[1];
   React.useEffect(function(){
-    if(!window._targetReqId)return;
-    var tid=window._targetReqId;
-    window._targetReqId=null;
-    // Reset filters, go page 1, highlight
+    if(!window._hlReqId)return;
+    var _tid=String(window._hlReqId);
     setFst('');setFurg('');setFfunc('');setFtipo('');setFde('');setFate('');setSrch('');
-    setPg(1);
-    setHighlightId(tid);
-    // After render: scroll to row
+    var _all=INIT_REQS.filter(function(r){return r.enc!==1;});
+    var _idx=_all.findIndex(function(r){return String(r.id)===_tid;});
+    var _pg=_idx>=0?Math.ceil((_idx+1)/PER):1;
+    setPg(_pg);
     setTimeout(function(){
-      var el=document.getElementById('req-row-'+tid);
-      if(el){el.scrollIntoView({behavior:'smooth',block:'center'});}
-      else{
-        // Item may be on another page — find it and navigate
-        var _all=INIT_REQS.filter(function(r){return r.enc!==1;});
-        var _idx=_all.findIndex(function(r){return r.id===tid;});
-        if(_idx>=0){setPg(Math.ceil((_idx+1)/PER));}
-        setTimeout(function(){
-          var el2=document.getElementById('req-row-'+tid);
-          if(el2)el2.scrollIntoView({behavior:'smooth',block:'center'});
-        },400);
-      }
-    },350);
+      var el=document.getElementById('req-row-'+_tid);
+      if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+    },400);
   },[]);
   var filtered=all.filter(function(r){if(r.enc===1)return false;if(fst&&r.status!==fst)return false;if(furg&&r.urg!==furg)return false;if(ffunc&&(r.func||'')!==ffunc)return false;if(ftipo&&String(r.catId)!==String(ftipo))return false;if(fde&&r.dt<fde)return false;if(fate&&r.dt>fate)return false;if(srch){var q=srch.toLowerCase();if(r.nom.toLowerCase().indexOf(q)<0&&r.prot.toLowerCase().indexOf(q)<0&&r.bairro.toLowerCase().indexOf(q)<0)return false;}return true;});
   var sorted=!sortBy?filtered.slice():filtered.slice().sort(function(a,b){
@@ -2271,7 +2259,7 @@ function Controle(){
         )),
         ce('tbody',null,items.map(function(r){
           var e=ed[r.id];
-          return ce('tr',{id:'req-row-'+r.id,key:r.id,style:highlightId===r.id?{outline:'2.5px solid #f59e0b',outlineOffset:'-1px'}:null,className:(highlightId===r.id?'row-highlight ':'')+(r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':'')},
+          return ce('tr',{id:'req-row-'+String(r.id),key:r.id,className:r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':'',style:window._hlReqId&&String(window._hlReqId)===String(r.id)?{background:'#fef3c7'}:null},
             ce('td',null,ce('input',{type:'checkbox',checked:selIds.includes(r.id),onChange:function(){toggleSel(r.id);}})),
             ce('td',null,ce('strong',null,r.prot)),ce('td',null,fmtD(r.dt)),ce('td',null,r.nom),ce('td',null,(r.rua||'—')+(r.num?' '+r.num:'')),ce('td',null,r.bairro),
             ce('td',{title:r.cn+' | '+r.sn},r.cn.slice(0,18)+'\u2026'),ce('td',null,fmtTaxa(r)),
@@ -4139,7 +4127,7 @@ function App(){
               ?ce('div',{className:'tb-dd-empty'},'\u2705 Tudo em dia!')
               :getNotifications().map(function(n,i){
                 return ce('div',{key:i,className:'tb-dd-item tb-dd-'+n.type,
-                  onClick:function(){window._targetReqId=n.id;setBellOpen(false);setPageClose('controle');}},
+                  onClick:function(){window._hlReqId=n.id;window._hlPage=1;setBellOpen(false);setPageClose('controle');}},
                   ce('span',{className:'tb-dd-icon'},n.icon),
                   ce('span',{className:'tb-dd-msg'},n.msg));
               })
