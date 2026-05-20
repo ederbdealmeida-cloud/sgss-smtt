@@ -687,15 +687,15 @@ function sgssSave(){
     }).then(function(r){
       if(r.ok){
         var _fi=document.getElementById('fb-status');
-      if(_fi){_fi.style.display='inline';_fi.textContent='\u2705 Firebase '+new Date().toLocaleTimeString('pt-BR');}
+      if(_fi){_fi.style.background='#22c55e';_fi.title='Firebase OK '+new Date().toLocaleTimeString('pt-BR');}
       } else {
         r.text().then(function(t){console.error('FB PATCH err:',t);
-          var _fi2=document.getElementById('fb-status');if(_fi2){_fi2.style.display='inline';_fi2.textContent='\u26a0\ufe0f FB erro '+r.status;}
+          var _fi2=document.getElementById('fb-status');if(_fi2){_fi2.style.background='#ef4444';_fi2.title='Firebase erro '+r.status;}
         });
       }
     }).catch(function(e){
       console.error('FB PATCH:',e);
-      var _fi3=document.getElementById('fb-status');if(_fi3){_fi3.style.display='inline';_fi3.textContent='\u26a0\ufe0f '+e.message;}
+      var _fi3=document.getElementById('fb-status');if(_fi3){_fi3.style.background='#ef4444';_fi3.title='Firebase: '+e.message;}
     });
     /* Backup local */
     try{var _s=JSON.stringify(_d);var _t=document.getElementById('sgss-data');if(_t)_t.textContent=_s;localStorage.setItem(SGSS_STORAGE_KEY,_s);localStorage.setItem('sgss_ts',String(_d.ts));}catch(e){}
@@ -2870,38 +2870,10 @@ function Configuracoes(){
 
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
-    ce('div',{className:'card',style:{marginBottom:12,background:'#f0fdf4',border:'1.5px solid #86efac'}},
-      ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}},
-        ce('div',null,
-          ce('strong',{style:{fontSize:13,color:'#166534'}},'\ud83d\udcbe Persist\u00eancia Local (modo teste)'),
-          ce('div',{style:{fontSize:11.5,color:'#166534',marginTop:2}},'Auto-salva a cada 10s. Para persistir entre sess\u00f5es, clique em \u201cSalvar Arquivo HTML\u201d e use o arquivo gerado.')
-        ),
-        ce('div',{style:{display:'flex',gap:8}},
-          ce('button',{className:'btn btn-p',style:{background:'#16a34a'},onClick:function(){
-            sgssSave();notify('\ud83d\udcbe Dados salvos!');
-          }},'\ud83d\udcbe Salvar agora'),
-          ce('button',{className:'btn btn-p',style:{background:'#1e3a5f'},onClick:function(){
-            /* Salvar dados no script tag */
-            var _dados=JSON.stringify({reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,
-              cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,notas:NOTAS_LIST,ts:Date.now()});
-            /* Escapar <\/script> para nao quebrar o HTML */
-            var _escaped=_dados.replace(/<\/scr'+'ipt>/gi,'<\\'+'/script>');
-            var _placeholder='<script id="sgss-data" type="application/json"><\/scr'+'ipt>';
-            var _filled='<script id="sgss-data" type="application/json">'+_escaped+'<\/scr'+'ipt>';
-            /* Usar template capturado antes do React (limpo e est\u00e1vel) */
-            var _tpl=window._HTML_TEMPLATE||('<!DOCTYPE html>\n'+document.documentElement.outerHTML);
-            var _html=_tpl.indexOf(_placeholder)>=0
-              ?_tpl.replace(_placeholder,_filled)
-              :_tpl.replace(/<script id="sgss-data"[^>]*>[^<]*<\/scr'+'ipt>/,_filled);
-            var _b=new Blob([_html],{type:'text/html;charset=utf-8'});
-            var _a=document.createElement('a');_a.href=URL.createObjectURL(_b);
-            _a.download='smtt-dados-'+new Date().toISOString().slice(0,10)+'.html';
-            _a.click();setTimeout(function(){URL.revokeObjectURL(_a.href);},2000);
-            /* Salvar tambem no localStorage como fallback */
-            try{localStorage.setItem(SGSS_STORAGE_KEY,_dados);}catch(e){}
-            notify('\ud83d\udcbe Arquivo salvo! Abra o arquivo baixado nas pr\u00f3ximas sess\u00f5es.');
-          }},'\ud83d\udcbe Salvar Arquivo HTML'),
-          ce('button',{className:'btn btn-s',onClick:function(){
+    ce('div',{className:'card',style:{marginBottom:12}},
+      ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}},
+        ce('span',{style:{fontSize:13,fontWeight:600,color:'#1e3a5f',flex:1}},'\u2699\ufe0f Dados'),
+        ce('button',{className:'btn btn-s',onClick:function(){
             sgssSave();saveSession();
             var _lsRaw=localStorage.getItem('SGSS_LAST_SESSION');
             var _lsData=_lsRaw?JSON.parse(_lsRaw):null;
@@ -2914,7 +2886,7 @@ function Configuracoes(){
             a.click();setTimeout(function(){URL.revokeObjectURL(u);},1000);
             notify('\ud83d\udce5 Dados exportados!');
           }},'\ud83d\udce5 Exportar JSON'),
-          ce('button',{className:'btn btn-s',onClick:function(){
+        ce('button',{className:'btn btn-s',onClick:function(){
             var inp=document.createElement('input');inp.type='file';inp.accept='.json';
             inp.onchange=function(ev){
               var file=ev.target.files[0];if(!file)return;
@@ -2931,23 +2903,18 @@ function Configuracoes(){
                   if(d.agenda&&d.agenda.length){AGENDA_LIST.length=0;d.agenda.forEach(function(a){AGENDA_LIST.push(a);});AGENDA_NEXT_ID=Math.max.apply(null,AGENDA_LIST.map(function(a){return a.id||0;}))+1;}
                   if(d.notas&&d.notas.length){NOTAS_LIST.length=0;d.notas.forEach(function(n){NOTAS_LIST.push(n);});NOTAS_NEXT_ID=Math.max.apply(null,NOTAS_LIST.map(function(n){return n.id||0;}))+1;}
                   sgssSave();
-                  if(d.lastSession){
-                    localStorage.setItem('SGSS_LAST_SESSION',JSON.stringify(d.lastSession));
-                    if(window._setPrevSession)window._setPrevSession(d.lastSession);
-                  }
                   if(window._forceAppReload)window._forceAppReload();
-                  notify('\u2705 Dados importados com sucesso! Os m\u00f3dulos foram atualizados.');
+                  notify('\u2705 Dados importados com sucesso!');
                 }catch(err){notify('\u26a0\ufe0f Erro ao importar: '+err.message);}
               };
               rd.readAsText(file);
             };
             inp.click();
           }},'\ud83d\udce4 Importar JSON'),
-          ce('button',{className:'btn btn-s',style:{color:'#dc2626',border:'1px solid #fca5a5'},onClick:sgssClearConfirm},'\ud83d\uddd1\ufe0f Limpar dados')
-        )
+        ce('button',{className:'btn btn-s',style:{color:'#dc2626',border:'1px solid #fca5a5'},onClick:sgssClearConfirm},'\ud83d\uddd1\ufe0f Limpar dados')
       )
     ),
-    ce('h2',{className:'page-title'},'\u2699\ufe0f Configura\xe7\xf5es'),
+ce('h2',{className:'page-title'},'\u2699\ufe0f Configura\xe7\xf5es'),
     ce('div',{className:'tabs'},
       TABS.map(function(t){
         return ce('button',{key:t.id,className:'tab-btn '+(tab===t.id?'active':''),onClick:function(){setTab(t.id);}},t.l);
@@ -4090,7 +4057,7 @@ function App(){
       if(!e.target.closest('.tb-dropdown-wrap')){setBellOpen(false);setUserOpen(false);}
     }},
     ce('header',{className:'topbar'},
-      ce('span',{id:'fb-status',style:{position:'absolute',top:4,left:'50%',transform:'translateX(-50%)',fontSize:10,color:'rgba(255,255,255,.7)',background:'rgba(0,0,0,.3)',padding:'2px 8px',borderRadius:10,display:'none'}},''),
+      ce('span',{id:'fb-status',title:'Estado Firebase',style:{width:8,height:8,borderRadius:'50%',background:'#94a3b8',display:'inline-block',marginRight:4,flexShrink:0,transition:'background .4s'}}),
       ce('div',{className:'topbar-left'},
         ce('span',{className:'topbar-sgss'},'SGSS'),
       ),
