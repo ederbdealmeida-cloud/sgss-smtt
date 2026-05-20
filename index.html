@@ -1025,7 +1025,11 @@ function Login(p){
   var sshow=useState(false);var showPw=sshow[0];var setShowPw=sshow[1];
   var srem=useState(false);var rem=srem[0];var setRem=srem[1];
   var sfgt=useState(false);var showForgot=sfgt[0];var setShowForgot=sfgt[1];
+  var sfgm=useState('pw');var forgotMode=sfgm[0];var setForgotMode=sfgm[1];
   var sfgu=useState('');var forgotUser=sfgu[0];var setForgotUser=sfgu[1];
+  var sfgn=useState('');var forgotNome=sfgn[0];var setForgotNome=sfgn[1];
+  var sfgp=useState('');var forgotNewPw=sfgp[0];var setForgotNewPw=sfgp[1];
+  var sfgp2=useState('');var forgotNewPw2=sfgp2[0];var setForgotNewPw2=sfgp2[1];
   var sfgr=useState(null);var forgotResult=sfgr[0];var setForgotResult=sfgr[1];
   function go(){
     var found=USERS_LIST.find(function(x){return x.user===u&&x.pw===pw;});
@@ -1130,36 +1134,107 @@ function Login(p){
           cursor:'pointer',fontFamily:'inherit',fontWeight:600,
           display:'flex',alignItems:'center',gap:6
         }},'\ud83d\udd11 Esqueceu sua senha?'),
-        showForgot?ce('div',{style:{position:'fixed',inset:0,background:'rgba(0,0,0,.55)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}},
-          ce('div',{style:{background:'#fff',borderRadius:16,padding:'32px 28px',width:360,maxWidth:'92vw',boxShadow:'0 8px 40px rgba(0,0,0,.25)'}},
-            ce('div',{style:{fontWeight:800,fontSize:17,color:'#1e3a5f',marginBottom:6}},'\ud83d\udd11 Recuperar Acesso'),
-            ce('div',{style:{fontSize:12.5,color:'#64748b',marginBottom:18,lineHeight:1.5}},
-              'Informe o seu usu\u00e1rio. Se encontrado, mostre esta tela ao administrador para redefinir a senha.'),
-            ce('input',{value:forgotUser,onChange:function(e){setForgotUser(e.target.value);setForgotResult(null);},
-              placeholder:'Nome de usu\u00e1rio...',
-              style:{width:'100%',padding:'11px 14px',border:'1.5px solid #d1d5db',borderRadius:8,fontSize:14,
-                fontFamily:'inherit',outline:'none',boxSizing:'border-box',marginBottom:12}}),
-            forgotResult?ce('div',{style:{borderRadius:10,padding:'12px 14px',marginBottom:12,fontSize:13,lineHeight:1.6,
-              background:forgotResult.ok?'#f0fdf4':'#fef2f2',
-              border:'1px solid '+(forgotResult.ok?'#86efac':'#fca5a5'),
-              color:forgotResult.ok?'#166534':'#991b1b'}},
-              forgotResult.ok
-                ?ce('div',null,ce('div',{style:{fontWeight:700,marginBottom:6}},'\u2705 Usu\u00e1rio encontrado'),
-                    ce('div',null,'Nome: ',ce('strong',null,forgotResult.nome)),
-                    ce('div',{style:{marginTop:10,padding:'8px 10px',background:'#dcfce7',borderRadius:6,fontSize:12}},
-                      '\ud83d\udce2 Mostre esta tela ao administrador para redefinir a senha em ',
-                      ce('strong',null,'Configura\u00e7\u00f5es \u2192 Usu\u00e1rios'),'.'))
-                :ce('div',null,'\u26a0\ufe0f Usu\u00e1rio n\u00e3o encontrado.')
-            ):null,
-            ce('div',{style:{display:'flex',gap:8,marginTop:4}},
-              ce('button',{onClick:function(){
-                  var found=USERS_LIST.find(function(x){return x.user===forgotUser.trim();});
-                  setForgotResult(found?{ok:true,nome:found.nome}:{ok:false});
-                },style:{flex:1,padding:'11px',background:'#2563eb',color:'#fff',border:'none',borderRadius:8,
-                  fontWeight:700,fontSize:14,cursor:'pointer',fontFamily:'inherit'}},'Verificar'),
-              ce('button',{onClick:function(){setShowForgot(false);setForgotUser('');setForgotResult(null);},
-                style:{flex:1,padding:'11px',background:'#f1f5f9',color:'#64748b',border:'none',borderRadius:8,
-                  fontWeight:700,fontSize:14,cursor:'pointer',fontFamily:'inherit'}},'Fechar')
+        showForgot?ce('div',{style:{position:'fixed',inset:0,background:'rgba(0,0,0,.6)',
+          display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}},
+          ce('div',{style:{background:'#fff',borderRadius:16,padding:'28px 26px',
+            width:380,maxWidth:'92vw',boxShadow:'0 8px 40px rgba(0,0,0,.3)'}},
+            /* Cabecalho */
+            ce('div',{style:{display:'flex',gap:0,marginBottom:18,borderBottom:'2px solid #f1f5f9',paddingBottom:12}},
+              ce('button',{onClick:function(){setForgotMode('pw');setForgotResult(null);setForgotUser('');setForgotNome('');setForgotNewPw('');setForgotNewPw2('');},
+                style:{flex:1,padding:'7px',borderRadius:'8px 0 0 8px',fontWeight:700,fontSize:13,cursor:'pointer',fontFamily:'inherit',
+                  border:'1.5px solid #2563eb',
+                  background:forgotMode==='pw'?'#2563eb':'#fff',
+                  color:forgotMode==='pw'?'#fff':'#2563eb'}},
+                '\ud83d\udd12 Esqueceu a senha'),
+              ce('button',{onClick:function(){setForgotMode('user');setForgotResult(null);setForgotUser('');setForgotNome('');setForgotNewPw('');setForgotNewPw2('');},
+                style:{flex:1,padding:'7px',borderRadius:'0 8px 8px 0',fontWeight:700,fontSize:13,cursor:'pointer',fontFamily:'inherit',
+                  border:'1.5px solid #2563eb',borderLeft:'none',
+                  background:forgotMode==='user'?'#2563eb':'#fff',
+                  color:forgotMode==='user'?'#fff':'#2563eb'}},
+                '\ud83d\udc64 Esqueceu o usu\u00e1rio')
+            ),
+            /* Modo: Esqueceu a Senha */
+            forgotMode==='pw'?ce('div',null,
+              ce('div',{style:{fontSize:12.5,color:'#64748b',marginBottom:14,lineHeight:1.5}},
+                'Informe o seu usu\u00e1rio e confirme o seu nome completo para redefinir a senha.'),
+              ce('input',{value:forgotUser,onChange:function(e){setForgotUser(e.target.value);setForgotResult(null);},
+                placeholder:'Usu\u00e1rio (login)...',
+                style:{width:'100%',padding:'9px 12px',border:'1.5px solid #d1d5db',borderRadius:7,
+                  fontSize:13,fontFamily:'inherit',outline:'none',boxSizing:'border-box',marginBottom:8}}),
+              ce('input',{value:forgotNome,onChange:function(e){setForgotNome(e.target.value);setForgotResult(null);},
+                placeholder:'Nome completo (confirma\u00e7\u00e3o)...',
+                style:{width:'100%',padding:'9px 12px',border:'1.5px solid #d1d5db',borderRadius:7,
+                  fontSize:13,fontFamily:'inherit',outline:'none',boxSizing:'border-box',marginBottom:8}}),
+              /* Campos nova senha - so aparecem apos confirmacao */
+              forgotResult&&forgotResult.ok?ce('div',null,
+                ce('input',{value:forgotNewPw,onChange:function(e){setForgotNewPw(e.target.value);},
+                  type:'password',placeholder:'Nova senha...',
+                  style:{width:'100%',padding:'9px 12px',border:'1.5px solid #93c5fd',borderRadius:7,
+                    fontSize:13,fontFamily:'inherit',outline:'none',boxSizing:'border-box',marginBottom:8}}),
+                ce('input',{value:forgotNewPw2,onChange:function(e){setForgotNewPw2(e.target.value);},
+                  type:'password',placeholder:'Confirmar nova senha...',
+                  style:{width:'100%',padding:'9px 12px',border:'1.5px solid #93c5fd',borderRadius:7,
+                    fontSize:13,fontFamily:'inherit',outline:'none',boxSizing:'border-box',marginBottom:8}})
+              ):null,
+              /* Mensagem resultado */
+              forgotResult?ce('div',{style:{padding:'9px 12px',borderRadius:7,marginBottom:10,
+                fontSize:12.5,background:forgotResult.ok?'#f0fdf4':'#fef2f2',
+                border:'1px solid '+(forgotResult.ok?'#86efac':'#fca5a5'),
+                color:forgotResult.ok?'#166534':'#991b1b'}},forgotResult.msg):null,
+              ce('div',{style:{display:'flex',gap:8,marginTop:4}},
+                /* Botao principal */
+                forgotResult&&forgotResult.ok
+                  ?ce('button',{onClick:function(){
+                      if(!forgotNewPw.trim()){setForgotResult({ok:false,msg:'\u26a0\ufe0f Informe a nova senha.'});return;}
+                      if(forgotNewPw!==forgotNewPw2){setForgotResult({ok:false,msg:'\u26a0\ufe0f As senhas n\u00e3o coincidem.'});return;}
+                      if(forgotNewPw.length<4){setForgotResult({ok:false,msg:'\u26a0\ufe0f Senha deve ter pelo menos 4 caracteres.'});return;}
+                      var idx=USERS_LIST.findIndex(function(x){return x.user===forgotUser.trim();});
+                      if(idx>=0){USERS_LIST[idx].pw=forgotNewPw;sgssSave();}
+                      setForgotResult({ok:true,msg:'\u2705 Senha redefinida com sucesso! J\u00e1 pode entrar.'});
+                      setForgotNewPw('');setForgotNewPw2('');
+                    },style:{flex:1,padding:'9px',background:'#16a34a',color:'#fff',
+                      border:'none',borderRadius:7,fontWeight:700,fontSize:13,
+                      cursor:'pointer',fontFamily:'inherit'}},'\u2705 Salvar nova senha')
+                  :ce('button',{onClick:function(){
+                      var _u=forgotUser.trim();var _n=forgotNome.trim().toLowerCase();
+                      var found=USERS_LIST.find(function(x){return x.user===_u&&x.nome.toLowerCase()===_n;});
+                      if(found)setForgotResult({ok:true,msg:'\u2705 Identidade confirmada. Defina a sua nova senha abaixo.'});
+                      else setForgotResult({ok:false,msg:'\u26a0\ufe0f Usu\u00e1rio ou nome incorretos.'});
+                    },style:{flex:1,padding:'9px',background:'#1e3a5f',color:'#fff',
+                      border:'none',borderRadius:7,fontWeight:700,fontSize:13,
+                      cursor:'pointer',fontFamily:'inherit'}},'Verificar'),
+                ce('button',{onClick:function(){setShowForgot(false);setForgotUser('');setForgotNome('');setForgotNewPw('');setForgotNewPw2('');setForgotResult(null);setForgotMode('pw');},
+                  style:{padding:'9px 14px',background:'#f1f5f9',color:'#64748b',
+                    border:'none',borderRadius:7,fontWeight:700,fontSize:13,
+                    cursor:'pointer',fontFamily:'inherit'}},'Fechar')
+              )
+            )
+            /* Modo: Esqueceu o Usuario */
+            :ce('div',null,
+              ce('div',{style:{fontSize:12.5,color:'#64748b',marginBottom:14,lineHeight:1.5}},
+                'Informe o seu nome completo para recuperar o nome de usu\u00e1rio.'),
+              ce('input',{value:forgotNome,onChange:function(e){setForgotNome(e.target.value);setForgotResult(null);},
+                placeholder:'Nome completo...',
+                style:{width:'100%',padding:'9px 12px',border:'1.5px solid #d1d5db',borderRadius:7,
+                  fontSize:13,fontFamily:'inherit',outline:'none',boxSizing:'border-box',marginBottom:8}}),
+              forgotResult?ce('div',{style:{padding:'9px 12px',borderRadius:7,marginBottom:10,
+                fontSize:12.5,background:forgotResult.ok?'#f0fdf4':'#fef2f2',
+                border:'1px solid '+(forgotResult.ok?'#86efac':'#fca5a5'),
+                color:forgotResult.ok?'#166534':'#991b1b'}},forgotResult.msg):null,
+              ce('div',{style:{display:'flex',gap:8,marginTop:4}},
+                ce('button',{onClick:function(){
+                    var _n=forgotNome.trim().toLowerCase();
+                    var found=USERS_LIST.find(function(x){return x.nome.toLowerCase()===_n;});
+                    if(found)setForgotResult({ok:true,msg:'\u2705 O seu usu\u00e1rio \u00e9: '+found.user});
+                    else setForgotResult({ok:false,msg:'\u26a0\ufe0f Nome n\u00e3o encontrado.'});
+                  },style:{flex:1,padding:'9px',background:'#1e3a5f',color:'#fff',
+                    border:'none',borderRadius:7,fontWeight:700,fontSize:13,
+                    cursor:'pointer',fontFamily:'inherit'}},'Pesquisar'),
+                ce('button',{onClick:function(){setShowForgot(false);setForgotUser('');setForgotNome('');setForgotNewPw('');setForgotNewPw2('');setForgotResult(null);setForgotMode('pw');},
+                  style:{padding:'9px 14px',background:'#f1f5f9',color:'#64748b',
+                    border:'none',borderRadius:7,fontWeight:700,fontSize:13,
+                    cursor:'pointer',fontFamily:'inherit'}},'Fechar')
+              )
             )
           )
         ):null
