@@ -2078,7 +2078,7 @@ function Documentos2(p){
   );
 }
 
-function Controle(){
+function Controle(p){
   var sall=useState(INIT_REQS.map(function(x){return Object.assign({},x);}));var all=sall[0];var setAll=sall[1];
   var sfst=useState('');var fst=sfst[0];var setFst=sfst[1];
   var sfurg=useState('');var furg=sfurg[0];var setFurg=sfurg[1];
@@ -2097,19 +2097,19 @@ function Controle(){
   var spfrom=useState('1');var printFrom=spfrom[0];var setPrintFrom=spfrom[1];
   var spto=useState('5');var printTo=spto[0];var setPrintTo=spto[1];
   var t=useToast();var toast=t[0];var notify=t[1];
+  var _hlId=p&&p.hlId?p.hlId:null;
   React.useEffect(function(){
-    if(!window._hlReqId)return;
-    var _tid=String(window._hlReqId);
+    if(!_hlId)return;
     setFst('');setFurg('');setFfunc('');setFtipo('');setFde('');setFate('');setSrch('');
     var _all=INIT_REQS.filter(function(r){return r.enc!==1;});
-    var _idx=_all.findIndex(function(r){return String(r.id)===_tid;});
+    var _idx=_all.findIndex(function(r){return r.id===_hlId;});
     var _pg=_idx>=0?Math.ceil((_idx+1)/PER):1;
     setPg(_pg);
     setTimeout(function(){
-      var el=document.getElementById('req-row-'+_tid);
+      var el=document.getElementById('req-row-'+_hlId);
       if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
     },400);
-  },[]);
+  },[_hlId]);
   var filtered=all.filter(function(r){if(r.enc===1)return false;if(fst&&r.status!==fst)return false;if(furg&&r.urg!==furg)return false;if(ffunc&&(r.func||'')!==ffunc)return false;if(ftipo&&String(r.catId)!==String(ftipo))return false;if(fde&&r.dt<fde)return false;if(fate&&r.dt>fate)return false;if(srch){var q=srch.toLowerCase();if(r.nom.toLowerCase().indexOf(q)<0&&r.prot.toLowerCase().indexOf(q)<0&&r.bairro.toLowerCase().indexOf(q)<0)return false;}return true;});
   var sorted=!sortBy?filtered.slice():filtered.slice().sort(function(a,b){
     if(sortBy==='alfabetico')return a.nom.localeCompare(b.nom,'pt-BR');
@@ -2259,7 +2259,7 @@ function Controle(){
         )),
         ce('tbody',null,items.map(function(r){
           var e=ed[r.id];
-          return ce('tr',{id:'req-row-'+String(r.id),key:r.id,className:r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':'',style:window._hlReqId&&String(window._hlReqId)===String(r.id)?{background:'#fef3c7'}:null},
+          return ce('tr',{id:'req-row-'+String(r.id),key:r.id,className:r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':'',style:_hlId&&r.id===_hlId?{background:'#fef3c7',boxShadow:'inset 0 0 0 2px #f59e0b'}:null},
             ce('td',null,ce('input',{type:'checkbox',checked:selIds.includes(r.id),onChange:function(){toggleSel(r.id);}})),
             ce('td',null,ce('strong',null,r.prot)),ce('td',null,fmtD(r.dt)),ce('td',null,r.nom),ce('td',null,(r.rua||'—')+(r.num?' '+r.num:'')),ce('td',null,r.bairro),
             ce('td',{title:r.cn+' | '+r.sn},r.cn.slice(0,18)+'\u2026'),ce('td',null,fmtTaxa(r)),
@@ -4024,6 +4024,7 @@ function Anotacoes(){
 
 function App(){
   var su=useState(null);var user=su[0];var setUser=su[1];
+  var shlid=useState(null);var hlId=shlid[0];var setHlId=shlid[1];
   var sver=useState(0);var appVer=sver[0];var setAppVer=sver[1];
   React.useEffect(function(){
     window._forceAppReload=function(){setAppVer(function(v){return v+1;});};
@@ -4127,7 +4128,7 @@ function App(){
               ?ce('div',{className:'tb-dd-empty'},'\u2705 Tudo em dia!')
               :getNotifications().map(function(n,i){
                 return ce('div',{key:i,className:'tb-dd-item tb-dd-'+n.type,
-                  onClick:function(){window._hlReqId=n.id;window._hlPage=1;setBellOpen(false);setPageClose('controle');}},
+                  onClick:function(){setHlId(n.id);setBellOpen(false);setPageClose('controle');}},
                   ce('span',{className:'tb-dd-icon'},n.icon),
                   ce('span',{className:'tb-dd-msg'},n.msg));
               })
@@ -4199,7 +4200,7 @@ function App(){
           '\u26a0\ufe0f Nenhum dado salvo encontrado para este arquivo. '
           +'Se voc\u00ea usou uma vers\u00e3o anterior, v\u00e1 em Configura\u00e7\u00f5es \u2192 Importar JSON.'
         ):null,
-        ce(Comp,null)
+        ce(Comp,{hlId:hlId,setHlId:setHlId})
       )
     )
   );
