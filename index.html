@@ -2056,7 +2056,24 @@ function Documentos2(p){
         )
       ):null,
       !editMode?ce('button',{style:{marginBottom:10,padding:'5px 12px',border:'1px solid #93c5fd',borderRadius:6,background:'#eff6ff',color:'#1d4ed8',cursor:'pointer',fontSize:12,fontWeight:600},onClick:function(){setEditMode(true);}},eFoto||eDesc?'\u270f\ufe0f Editar Foto/Descri\u00e7\u00e3o':'\ud83d\udcf7 Adicionar Foto/Descri\u00e7\u00e3o'):null,
-      ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Funcion\xe1rio')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Chefe de Divis\xe3o')))
+      (function(){
+        var _notas=NOTAS_LIST.filter(function(n){return n.reqId===d.id;}).sort(function(a,b){return (b.id||0)-(a.id||0);});
+        if(!_notas.length)return null;
+        return ce('div',{className:'doc-sec'},
+          ce('div',{className:'doc-st'},'\ud83d\udcdd Anota\u00e7\u00f5es ('+_notas.length+')'),
+          _notas.map(function(n,i){
+            return ce('div',{key:n.id,style:{background:'#f8fafc',border:'1px solid #e2e8f0',borderLeft:'3px solid #2563eb',borderRadius:'0 6px 6px 0',padding:'8px 10px',marginBottom:6}},
+              ce('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:3}},
+                ce('span',{style:{fontWeight:700,fontSize:12,color:'#1e3a5f'}},n.titulo||'(sem t\u00edtulo)'),
+                ce('span',{style:{fontSize:10,color:'#94a3b8'}},n.dtCad+(n.dtEd?' \u2022 ed. '+n.dtEd:''))
+              ),
+              ce('div',{style:{fontSize:11.5,color:'#374151',whiteSpace:'pre-wrap',lineHeight:1.6}},n.texto||''),
+              n.tags?ce('div',{style:{fontSize:10,color:'#7c3aed',marginTop:3}},'\ud83c\udff7\ufe0f '+n.tags):null
+            );
+          })
+        );
+      })(),
+ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Funcion\xe1rio')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Chefe de Divis\xe3o')))
     ):null,
     doc==='sefaz'&&isPago?ce('div',{className:'doc-paper'},
       ce('div',{className:'doc-head'},ce('div',{style:{
@@ -3951,6 +3968,12 @@ function Anotacoes(){
               ce('td',{className:'no-print'},
                 ce('button',{className:'btn-icon',title:'Visualizar',onClick:function(){visualizar(n);}},'\ud83d\udc41\ufe0f'),
                 ce('button',{className:'btn-icon',title:'Editar',onClick:function(){iniciarEdit(n);}},'\u270f\ufe0f'),
+                ce('button',{className:'btn-icon',title:'Nova anota\u00e7\u00e3o para este protocolo',style:{color:'#2563eb',fontWeight:700,fontSize:15},
+                  onClick:function(){
+                    var _r=INIT_REQS.find(function(r){return r.id===n.reqId;});
+                    setForm({reqId:n.reqId,prot:n.prot||'',nom:n.nom||'',bairro:n.bairro||'',cn:n.cn||'',dt_req:n.dt_req||'',titulo:'',texto:'',tags:''});
+                    setSolVinc(_r||null);setEditId(null);setPsugs([]);window.scrollTo(0,0);
+                  }},'+'),
                 ce('button',{className:'btn-icon',title:'Excluir',style:{color:'#dc2626'},onClick:function(){
                   showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir anota\u00e7\u00e3o?',sub:n.titulo,
                     corpo:'A anota\u00e7\u00e3o ser\u00e1 removida permanentemente.',
