@@ -1095,9 +1095,28 @@ function Login(p){
     fbSignIn(u.trim(),pw).then(function(res){
       setLoading(false);
       if(res.error){setErr(res.error);return;}
-      var profile=USERS_LIST.find(function(x){return x.email===u.trim()||x.uid===res.uid;});
-      if(!profile){setErr('Conta não encontrada no sistema. Contacte o administrador.');return;}
-      if(!profile.uid){profile.uid=res.uid;sgssSave();}
+      var _email=u.trim();
+      var profile=USERS_LIST.find(function(x){return x.email===_email||x.uid===res.uid;});
+      /* Migracao: Firebase autenticou mas perfil nao tem email ainda */
+      if(!profile){
+        var _admins=USERS_LIST.filter(function(x){return !x.uid&&!x.email;});
+        if(_admins.length===1){
+          /* So um utilizador sem uid - associa automaticamente */
+          profile=_admins[0];
+          profile.email=_email;
+          profile.uid=res.uid;
+          sgssSave();
+        } else if(_admins.length>1){
+          setErr('Vários utilizadores sem e-mail. Contacte o administrador.');
+          setLoading(false);return;
+        } else {
+          setErr('Conta não encontrada no sistema. Contacte o administrador.');
+          setLoading(false);return;
+        }
+      }
+      if(!profile.uid){profile.uid=res.uid;}
+      if(!profile.email){profile.email=_email;}
+      sgssSave();
       window._fbUser={uid:res.uid,email:res.email,idToken:res.idToken};
       p.onLogin({nome:profile.nome,role:profile.role,id:profile.id,user:profile.user,email:profile.email,uid:res.uid});
     });
