@@ -684,7 +684,7 @@ function sgssSave(){
     var _d={reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,notas:NOTAS_LIST,ts:Date.now()};
     /* Firestore REST API - sem SDK */
     var _url='https://firestore.googleapis.com/v1/projects/smtt-cacequi/databases/(default)/documents/smtt/dados?key=AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs';
-    fetch(_url,{method:'PATCH',headers:{'Content-Type':'application/json'},
+    fetch(_url,{method:'PATCH',headers:{'Content-Type':'application/json; charset=utf-8'},
       body:JSON.stringify({fields:{dados:{stringValue:JSON.stringify(_d)}}})
     }).then(function(r){
       if(r.ok){
@@ -717,7 +717,14 @@ setInterval(function(){
   var _url='https://firestore.googleapis.com/v1/projects/smtt-cacequi/databases/(default)/documents/smtt/dados?key=AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs';
   fetch(_url).then(function(r){return r.ok?r.json():null;}).then(function(doc){
     if(!doc||!doc.fields||!doc.fields.dados)return;
-    var d=JSON.parse(doc.fields.dados.stringValue);
+    var _raw=doc.fields.dados.stringValue;
+          /* Garante UTF-8 correcto na leitura */
+          try{
+            if(_raw.indexOf('\\u00c3')>=0||_raw.indexOf('Ã')>=0){
+              _raw=decodeURIComponent(escape(_raw));
+            }
+          }catch(e){}
+          var d=JSON.parse(_raw);
     var localTs=parseInt(localStorage.getItem('sgss_ts')||'0');
     if(d.ts&&d.ts>localTs){
       localStorage.setItem('sgss_ts',String(d.ts));
@@ -856,7 +863,7 @@ window._fbUser=null; /* {uid,email,idToken} */
 async function fbSignIn(email,pw){
   try{
     var r=await fetch(FB_AUTH+':signInWithPassword?key='+FB_KEY,{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json; charset=utf-8'},
       body:JSON.stringify({email:email,password:pw,returnSecureToken:true})});
     var d=await r.json();
     if(d.error)return{error:fbAuthError(d.error.message)};
@@ -866,7 +873,7 @@ async function fbSignIn(email,pw){
 async function fbSignUp(email,pw){
   try{
     var r=await fetch(FB_AUTH+':signUp?key='+FB_KEY,{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json; charset=utf-8'},
       body:JSON.stringify({email:email,password:pw,returnSecureToken:true})});
     var d=await r.json();
     if(d.error)return{error:fbAuthError(d.error.message)};
@@ -876,7 +883,7 @@ async function fbSignUp(email,pw){
 async function fbSendReset(email){
   try{
     var r=await fetch(FB_AUTH+':sendOobCode?key='+FB_KEY,{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json; charset=utf-8'},
       body:JSON.stringify({requestType:'PASSWORD_RESET',email:email})});
     var d=await r.json();
     if(d.error)return{error:fbAuthError(d.error.message)};
@@ -886,7 +893,7 @@ async function fbSendReset(email){
 async function fbDeleteUser(idToken){
   try{
     var r=await fetch(FB_AUTH+':delete?key='+FB_KEY,{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json; charset=utf-8'},
       body:JSON.stringify({idToken:idToken})});
     var d=await r.json();
     if(d.error)return{error:fbAuthError(d.error.message)};
@@ -3226,7 +3233,7 @@ ce('h2',{className:'page-title'},'\u2699\ufe0f Configura\xe7\xf5es'),
             var _du={reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,notas:NOTAS_LIST,ts:Date.now()};
             var _su=JSON.stringify(_du);
             try{localStorage.setItem(SGSS_STORAGE_KEY,_su);}catch(e){}
-            fetch('https://firestore.googleapis.com/v1/projects/smtt-cacequi/databases/(default)/documents/smtt/dados?key=AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs',{method:'PATCH',headers:{'Content-Type':'application/json'},
+            fetch('https://firestore.googleapis.com/v1/projects/smtt-cacequi/databases/(default)/documents/smtt/dados?key=AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs',{method:'PATCH',headers:{'Content-Type':'application/json; charset=utf-8'},
               body:JSON.stringify({fields:{dados:{stringValue:_su}}})
             }).then(function(r){if(!r.ok)r.text().then(function(t){console.error('pw save:',t);});}).catch(function(e){console.error('pw save:',e);});
           }notify('✅ Senha alterada!');setNpw({p:'',c:''});}},'\ud83d\udd10 Alterar Senha')
