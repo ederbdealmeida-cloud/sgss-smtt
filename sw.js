@@ -1,4 +1,4 @@
-const CACHE = 'sgss-v5';
+const CACHE = 'sgss-v6';
 const FILES = ['/sgss-smtt/', '/sgss-smtt/index.html', '/sgss-smtt/manifest.json', '/sgss-smtt/icon-192.png', '/sgss-smtt/icon-512.png'];
 
 self.addEventListener('install', e => {
