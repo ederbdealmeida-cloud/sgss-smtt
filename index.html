@@ -4373,6 +4373,6 @@ if(window._sgssLoaded){_mountApp();} else {
   window._sgssOnLoaded=_mountApp;
 }
 </script>
-<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=6",{scope:"/sgss-smtt/"}).then(function(r){console.log("SW OK",r.scope);}).catch(function(e){console.log("SW err",e);});});}</script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=7",{scope:"/sgss-smtt/"}).then(function(r){console.log("SW OK",r.scope);/* Forca activacao imediata do novo SW */if(r.waiting){r.waiting.postMessage("SKIP_WAITING");}r.addEventListener("updatefound",function(){var nw=r.installing;nw.addEventListener("statechange",function(){if(nw.state==="installed"&&navigator.serviceWorker.controller){nw.postMessage("SKIP_WAITING");setTimeout(function(){window.location.reload();},500);}});});}).catch(function(e){console.log("SW err",e);});});}</script>
 </body>
 </html>

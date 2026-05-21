@@ -1,10 +1,9 @@
-const CACHE = 'sgss-v6';
+const CACHE = 'sgss-v7';
 const FILES = ['/sgss-smtt/', '/sgss-smtt/index.html', '/sgss-smtt/manifest.json', '/sgss-smtt/icon-192.png', '/sgss-smtt/icon-512.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())
-  );
+  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
 });
 
 self.addEventListener('activate', e => {
@@ -15,8 +14,12 @@ self.addEventListener('activate', e => {
   );
 });
 
+self.addEventListener('message', e => {
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
+});
+
 self.addEventListener('fetch', e => {
-  if (e.request.url.includes('googleapis.com') || e.request.url.includes('firestore')) return;
+  if (e.request.url.includes('googleapis.com') || e.request.url.includes('firestore') || e.request.url.includes('identitytoolkit')) return;
   e.respondWith(
     fetch(e.request)
       .then(resp => {
