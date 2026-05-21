@@ -2282,9 +2282,10 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
         borderRadius:8,border:'1px solid #e2e8f0',fontSize:13,lineHeight:1.8,color:'#374151'}},
         'Encaminhamos o presente memorando para conhecimento e devidas provid\u00eancias,'
         +' referente \u00e0 solicita\u00e7\u00e3o de servi\u00e7o de '
-        +ce('strong',null,(d.cn||d.sn||'servi\u00e7o'))
-        +', protocolada sob o n\u00famero ',ce('strong',null,d.prot),
-        ', no endere\u00e7o '+(d.rua?d.rua+(d.num?', n\u00ba '+d.num:'')+(d.bairro?', '+d.bairro:''):'n\u00e3o informado')
+        +(d.cn||d.sn||'servi\u00e7o')
+        +', protocolada sob o n\u00famero '
+        +d.prot
+        +', no endere\u00e7o '+(d.rua?d.rua+(d.num?', n\u00ba '+d.num:'')+(d.bairro?', '+d.bairro:''):'n\u00e3o informado')
         +(d.ref?' (Ref: '+d.ref+')':'')+'.'
       ),
       ce('div',{className:'doc-foot'},
