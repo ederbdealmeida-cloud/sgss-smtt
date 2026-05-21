@@ -1097,18 +1097,18 @@ function Login(p){
       if(res.error){setErr(res.error);return;}
       var _email=u.trim();
       var profile=USERS_LIST.find(function(x){return x.email===_email||x.uid===res.uid;});
-      /* Migracao: Firebase autenticou mas perfil nao tem email ainda */
+      /* Migracao: Firebase autenticou mas perfil nao tem email/uid ainda */
       if(!profile){
-        var _admins=USERS_LIST.filter(function(x){return !x.uid&&!x.email;});
-        if(_admins.length===1){
-          /* So um utilizador sem uid - associa automaticamente */
-          profile=_admins[0];
+        /* Tenta encontrar por role admin sem uid (primeiro login apos migracao) */
+        var _candidate=USERS_LIST.find(function(x){return x.role==='admin'&&(!x.uid||x.uid==='')&&(!x.email||x.email==='');});
+        if(!_candidate){
+          /* Tenta qualquer utilizador sem uid */
+          _candidate=USERS_LIST.find(function(x){return (!x.uid||x.uid==='')&&(!x.email||x.email==='');});
+        }
+        if(_candidate){
+          profile=_candidate;
           profile.email=_email;
           profile.uid=res.uid;
-          sgssSave();
-        } else if(_admins.length>1){
-          setErr('Vários utilizadores sem e-mail. Contacte o administrador.');
-          setLoading(false);return;
         } else {
           setErr('Conta não encontrada no sistema. Contacte o administrador.');
           setLoading(false);return;
