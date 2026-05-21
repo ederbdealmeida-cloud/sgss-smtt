@@ -2239,71 +2239,58 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Dados do Solicitante'),ce('div',{className:'doc-fields-stack'},ce(FL,{label:'Nome',value:d.nom}),ce(FL,{label:'Rua',value:d.rua}),ce(FL,{label:'N\xfamero',value:d.num}),ce(FL,{label:'Bairro',value:d.bairro}),ce(FL,{label:'Ponto de Refer\xeancia',value:d.ref}),ce(FL,{label:'Telefone',value:d.tel}))),
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Servi\xe7o e Taxa'),ce(FI,{label:'Tipo de Servi\xe7o',value:d.cn}),ce(FI,{label:'Subcategoria',value:d.sn}),ce('div',{className:'doc-taxa'},ce('span',null,'VALOR A RECOLHER'),ce('strong',null,fmt(d.taxa)))),
       ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura e Carimbo SMTT')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Recebido por (SEFAZ)'))),
-    /* ── MEMORANDO ── folha extra compacta */
+    /* ── MEMORANDO ── folha extra compacta vertical */
     ce('div',{style:{pageBreakBefore:'always',breakBefore:'page',
-        borderTop:'3px dashed #cbd5e1',paddingTop:32,marginTop:40,
-        maxWidth:520,margin:'40px auto 0'}},
-      /* Card compacto */
-      ce('div',{style:{background:'#fff',border:'1.5px solid #cbd5e1',borderRadius:10,
-        boxShadow:'0 1px 4px rgba(0,0,0,.1)',overflow:'hidden'}},
-        /* Cabecalho mini */
-        ce('div',{style:{display:'flex',alignItems:'center',gap:10,padding:'10px 14px',
+        borderTop:'3px dashed #cbd5e1',paddingTop:24,marginTop:40,
+        maxWidth:320,margin:'40px auto 0'}},
+      ce('div',{style:{background:'#fff',border:'1.5px solid #cbd5e1',borderRadius:8,
+        boxShadow:'0 1px 4px rgba(0,0,0,.1)',overflow:'hidden',fontSize:11}},
+        /* Cabecalho */
+        ce('div',{style:{display:'flex',alignItems:'center',gap:8,padding:'7px 10px',
           background:'#1e3a5f',borderBottom:'2px solid #2563eb'}},
-          ce('img',{src:_BRASAO,style:{width:32,height:32,objectFit:'contain',background:'#fff',borderRadius:5,padding:2}}),
-          ce('div',null,
-            ce('div',{style:{color:'#fff',fontWeight:800,fontSize:12,lineHeight:1.2}},'Pref. Municipal de Cacequi – RS / SMTT'),
-            ce('div',{style:{color:'#93c5fd',fontWeight:700,fontSize:11}},'Memorando Interno')
-          ),
-          /* Numero editavel */
-          ce('div',{style:{marginLeft:'auto',display:'flex',alignItems:'center',gap:6}},
-            ce('span',{style:{color:'#93c5fd',fontSize:11,fontWeight:600}},'Nº'),
-            ce('input',{className:'no-print',value:memoNum,
-              onChange:function(e){setMemoNum(e.target.value);},
-              placeholder:'001/2025',
-              style:{width:90,padding:'3px 7px',border:'1px solid #93c5fd',borderRadius:5,
-                fontSize:12,fontWeight:700,color:'#1e3a5f',fontFamily:'inherit',outline:'none',background:'#fff'}}),
-            ce('span',{className:'print-only',style:{
-              display:'inline-block',minWidth:100,padding:'2px 8px',
-              background:'#fff',border:'1px solid #93c5fd',borderRadius:4,
-              color:'#1e3a5f',fontWeight:700,fontSize:12}},memoNum||'')
+          ce('img',{src:_BRASAO,style:{width:22,height:22,objectFit:'contain',
+            background:'#fff',borderRadius:3,padding:1,flexShrink:0}}),
+          ce('div',{style:{flex:1,lineHeight:1.3}},
+            ce('div',{style:{color:'#fff',fontWeight:800,fontSize:9}},'Pref. Mun. de Cacequi – RS / SMTT'),
+            ce('div',{style:{color:'#93c5fd',fontWeight:700,fontSize:9}},'Memorando Interno')
           )
         ),
-        /* Campos em tabela compacta */
-        ce('table',{style:{width:'100%',borderCollapse:'collapse',fontSize:12}},
-          ce('tbody',null,
-            ce('tr',{style:{borderBottom:'1px solid #f1f5f9'}},
-              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#64748b',width:100,whiteSpace:'nowrap'}},'Origem'),
-              ce('td',{style:{padding:'6px 12px',color:'#1e293b'}},'SMTT – Sec. Mun. de Transporte e Trânsito')
-            ),
-            ce('tr',{style:{borderBottom:'1px solid #f1f5f9',background:'#f8fafc'}},
-              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#64748b',whiteSpace:'nowrap'}},'Destino'),
-              ce('td',{style:{padding:'6px 12px',color:'#1e293b'}},'SEFAZ – Secretaria Municipal da Fazenda')
-            ),
-            ce('tr',{style:{borderBottom:'1px solid #f1f5f9'}},
-              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#64748b',whiteSpace:'nowrap'}},'Assunto'),
-              ce('td',{style:{padding:'6px 12px',color:'#1e293b'}},'Taxa – '+(d.cn||d.sn||'Serviço'))
-            ),
-            ce('tr',{style:{borderBottom:'1px solid #f1f5f9',background:'#f8fafc'}},
-              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#64748b',whiteSpace:'nowrap'}},'Endereço'),
-              ce('td',{style:{padding:'6px 12px',color:'#1e293b'}},(d.rua||'Não informado')+(d.num?' nº '+d.num:'')+(d.ref?' — Ref: '+d.ref:''))
-            ),
-            ce('tr',{style:{borderBottom:'1px solid #f1f5f9'}},
-              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#64748b',whiteSpace:'nowrap'}},'Data'),
-              ce('td',{style:{padding:'6px 12px',color:'#1e293b'}},fmtD(today()))
-            ),
-            ce('tr',{style:{background:'#f0fdf4'}},
-              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#166534',whiteSpace:'nowrap'}},'Valor'),
-              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#166534'}},
-                d.taxa?(d.taxa.toString().indexOf('R$')>=0?d.taxa:'R$ '+parseFloat(d.taxa).toFixed(2).replace('.',',')):'Não informado')
-            )
-          )
+        /* N° */
+        ce('div',{style:{display:'flex',alignItems:'center',gap:6,padding:'5px 10px',
+          borderBottom:'1px solid #e2e8f0',background:'#f8fafc'}},
+          ce('span',{style:{fontWeight:700,color:'#1e3a5f',fontSize:10,whiteSpace:'nowrap'}},'Memorando Nº'),
+          ce('input',{className:'no-print',value:memoNum,
+            onChange:function(e){setMemoNum(e.target.value);},
+            placeholder:'001/2025',
+            style:{flex:1,padding:'2px 6px',border:'1px solid #93c5fd',borderRadius:4,
+              fontSize:10,fontWeight:700,color:'#1e3a5f',fontFamily:'inherit',outline:'none'}}),
+          ce('span',{className:'print-only',style:{
+            display:'inline-block',minWidth:60,padding:'1px 5px',
+            background:'#fff',border:'1px solid #64748b',borderRadius:3,
+            color:'#1e3a5f',fontWeight:700,fontSize:10}},memoNum||'')
+        ),
+        /* Campos verticais */
+        ce('div',{style:{padding:'6px 10px'}},
+          [['Origem','SMTT – Sec. Mun. de Transporte e Trânsito'],
+           ['Destino','SEFAZ – Sec. Mun. da Fazenda'],
+           ['Assunto','Taxa – '+(d.cn||d.sn||'Serviço')],
+           ['Endereço',(d.rua||'Não informado')+(d.num?' nº '+d.num:'')+(d.ref?' — '+d.ref:'')],
+           ['Data',fmtD(today())],
+           ['Valor',d.taxa?(d.taxa.toString().indexOf('R$')>=0?d.taxa:'R$ '+parseFloat(d.taxa).toFixed(2).replace('.',',')):'Não informado']
+          ].map(function(row,i){
+            return ce('div',{key:i,style:{display:'flex',gap:6,padding:'3px 0',
+              borderBottom:'1px solid #f1f5f9'}},
+              ce('span',{style:{fontWeight:700,color:'#64748b',width:62,flexShrink:0,fontSize:10}},row[0]),
+              ce('span',{style:{color:'#1e293b',fontSize:10,lineHeight:1.4}},row[1])
+            );
+          })
         ),
         /* Assinaturas */
-        ce('div',{style:{display:'flex',gap:16,padding:'14px 16px',borderTop:'1px solid #e2e8f0'}},
+        ce('div',{style:{display:'flex',gap:10,padding:'8px 10px',borderTop:'1px solid #e2e8f0'}},
           ce('div',{style:{flex:1,textAlign:'center'}},
-            ce('div',{style:{borderTop:'1px solid #64748b',marginBottom:4,paddingTop:4,fontSize:11,color:'#64748b'}},'Responsável SMTT')),
+            ce('div',{style:{borderTop:'1px solid #64748b',paddingTop:3,fontSize:9,color:'#64748b'}},'Responsável SMTT')),
           ce('div',{style:{flex:1,textAlign:'center'}},
-            ce('div',{style:{borderTop:'1px solid #64748b',marginBottom:4,paddingTop:4,fontSize:11,color:'#64748b'}},'Ciente (SEFAZ)'))
+            ce('div',{style:{borderTop:'1px solid #64748b',paddingTop:3,fontSize:9,color:'#64748b'}},'Ciente (SEFAZ)'))
         )
       )
     )    ):null
