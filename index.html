@@ -2240,7 +2240,9 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Servi\xe7o e Taxa'),ce(FI,{label:'Tipo de Servi\xe7o',value:d.cn}),ce(FI,{label:'Subcategoria',value:d.sn}),ce('div',{className:'doc-taxa'},ce('span',null,'VALOR A RECOLHER'),ce('strong',null,fmt(d.taxa)))),
       ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura e Carimbo SMTT')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Recebido por (SEFAZ)'))),
     /* ── MEMORANDO ── folha extra compacta */
-    ce('div',{style:{pageBreakBefore:'always',marginTop:32,maxWidth:520,margin:'32px auto 0'}},
+    ce('div',{style:{pageBreakBefore:'always',breakBefore:'page',
+        borderTop:'3px dashed #cbd5e1',paddingTop:32,marginTop:40,
+        maxWidth:520,margin:'40px auto 0'}},
       /* Card compacto */
       ce('div',{style:{background:'#fff',border:'1.5px solid #cbd5e1',borderRadius:10,
         boxShadow:'0 1px 4px rgba(0,0,0,.1)',overflow:'hidden'}},
