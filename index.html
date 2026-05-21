@@ -1097,22 +1097,23 @@ function Login(p){
       if(res.error){setErr(res.error);return;}
       var _email=u.trim();
       var profile=USERS_LIST.find(function(x){return x.email===_email||x.uid===res.uid;});
-      /* Migracao: Firebase autenticou mas perfil nao tem email/uid ainda */
+      /* Migracao: Firebase autenticou mas perfil sem email/uid */
       if(!profile){
-        /* Tenta encontrar por role admin sem uid (primeiro login apos migracao) */
-        var _candidate=USERS_LIST.find(function(x){return x.role==='admin'&&(!x.uid||x.uid==='')&&(!x.email||x.email==='');});
+        /* Firebase verificou identidade - encontra perfil sem uid ou cria admin */
+        var _noUid=USERS_LIST.filter(function(x){return !x.uid||x.uid===''||x.uid===null;});
+        var _candidate=_noUid.find(function(x){return x.role==='admin';});
+        if(!_candidate)_candidate=_noUid[0];
         if(!_candidate){
-          /* Tenta qualquer utilizador sem uid */
-          _candidate=USERS_LIST.find(function(x){return (!x.uid||x.uid==='')&&(!x.email||x.email==='');});
+          /* Nao existe nenhum utilizador - cria perfil de admin */
+          _candidate={id:1,nome:'Administrador',user:_email.split('@')[0],
+            email:_email,uid:'',pw:'',role:'admin',dt:today()};
+          USERS_LIST.splice(0,USERS_LIST.length);
+          USERS_LIST.push(_candidate);
+          USERS_NEXT_ID=2;
         }
-        if(_candidate){
-          profile=_candidate;
-          profile.email=_email;
-          profile.uid=res.uid;
-        } else {
-          setErr('Conta não encontrada no sistema. Contacte o administrador.');
-          setLoading(false);return;
-        }
+        profile=_candidate;
+        profile.email=_email;
+        profile.uid=res.uid;
       }
       if(!profile.uid){profile.uid=res.uid;}
       if(!profile.email){profile.email=_email;}
