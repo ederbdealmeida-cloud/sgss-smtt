@@ -2239,61 +2239,69 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Dados do Solicitante'),ce('div',{className:'doc-fields-stack'},ce(FL,{label:'Nome',value:d.nom}),ce(FL,{label:'Rua',value:d.rua}),ce(FL,{label:'N\xfamero',value:d.num}),ce(FL,{label:'Bairro',value:d.bairro}),ce(FL,{label:'Ponto de Refer\xeancia',value:d.ref}),ce(FL,{label:'Telefone',value:d.tel}))),
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Servi\xe7o e Taxa'),ce(FI,{label:'Tipo de Servi\xe7o',value:d.cn}),ce(FI,{label:'Subcategoria',value:d.sn}),ce('div',{className:'doc-taxa'},ce('span',null,'VALOR A RECOLHER'),ce('strong',null,fmt(d.taxa)))),
       ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura e Carimbo SMTT')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Recebido por (SEFAZ)'))),
-    /* ── MEMORANDO ── folha extra */
-    ce('div',{className:'doc-paper',style:{pageBreakBefore:'always',marginTop:32}},
-      /* Cabecalho */
-      ce('div',{className:'doc-head'},
-        ce('div',{style:{width:58,height:58,background:'#fff',border:'1.5px solid #cbd5e1',
-          borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',
-          padding:5,flexShrink:0,boxShadow:'0 1px 4px rgba(0,0,0,.08)'}},
-          ce('img',{src:_BRASAO,style:{width:'100%',height:'auto'}})),
-        ce('div',{className:'doc-htxt'},
-          ce('h2',null,'Prefeitura Municipal de Cacequi \u2013 RS'),
-          ce('h3',null,'Secretaria Municipal de Transporte e Tr\xe2nsito \u2013 SMTT'),
-          ce('h4',null,'Memorando Interno')
+    /* ── MEMORANDO ── folha extra compacta */
+    ce('div',{style:{pageBreakBefore:'always',marginTop:32,maxWidth:520,margin:'32px auto 0'}},
+      /* Card compacto */
+      ce('div',{style:{background:'#fff',border:'1.5px solid #cbd5e1',borderRadius:10,
+        boxShadow:'0 1px 4px rgba(0,0,0,.1)',overflow:'hidden'}},
+        /* Cabecalho mini */
+        ce('div',{style:{display:'flex',alignItems:'center',gap:10,padding:'10px 14px',
+          background:'#1e3a5f',borderBottom:'2px solid #2563eb'}},
+          ce('img',{src:_BRASAO,style:{width:32,height:32,objectFit:'contain',background:'#fff',borderRadius:5,padding:2}}),
+          ce('div',null,
+            ce('div',{style:{color:'#fff',fontWeight:800,fontSize:12,lineHeight:1.2}},'Pref. Municipal de Cacequi – RS / SMTT'),
+            ce('div',{style:{color:'#93c5fd',fontWeight:700,fontSize:11}},'Memorando Interno')
+          ),
+          /* Numero editavel */
+          ce('div',{style:{marginLeft:'auto',display:'flex',alignItems:'center',gap:6}},
+            ce('span',{style:{color:'#93c5fd',fontSize:11,fontWeight:600}},'Nº'),
+            ce('input',{className:'no-print',value:memoNum,
+              onChange:function(e){setMemoNum(e.target.value);},
+              placeholder:'001/2025',
+              style:{width:90,padding:'3px 7px',border:'1px solid #93c5fd',borderRadius:5,
+                fontSize:12,fontWeight:700,color:'#1e3a5f',fontFamily:'inherit',outline:'none',background:'#fff'}}),
+            ce('span',{className:'print-only',style:{color:'#fff',fontWeight:700,fontSize:12}},memoNum||'______')
+          )
+        ),
+        /* Campos em tabela compacta */
+        ce('table',{style:{width:'100%',borderCollapse:'collapse',fontSize:12}},
+          ce('tbody',null,
+            ce('tr',{style:{borderBottom:'1px solid #f1f5f9'}},
+              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#64748b',width:100,whiteSpace:'nowrap'}},'Origem'),
+              ce('td',{style:{padding:'6px 12px',color:'#1e293b'}},'SMTT – Sec. Mun. de Transporte e Trânsito')
+            ),
+            ce('tr',{style:{borderBottom:'1px solid #f1f5f9',background:'#f8fafc'}},
+              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#64748b',whiteSpace:'nowrap'}},'Destino'),
+              ce('td',{style:{padding:'6px 12px',color:'#1e293b'}},'SEFAZ – Secretaria Municipal da Fazenda')
+            ),
+            ce('tr',{style:{borderBottom:'1px solid #f1f5f9'}},
+              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#64748b',whiteSpace:'nowrap'}},'Assunto'),
+              ce('td',{style:{padding:'6px 12px',color:'#1e293b'}},'Taxa – '+(d.cn||d.sn||'Serviço'))
+            ),
+            ce('tr',{style:{borderBottom:'1px solid #f1f5f9',background:'#f8fafc'}},
+              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#64748b',whiteSpace:'nowrap'}},'Endereço'),
+              ce('td',{style:{padding:'6px 12px',color:'#1e293b'}},(d.rua||'Não informado')+(d.num?' nº '+d.num:'')+(d.ref?' — Ref: '+d.ref:''))
+            ),
+            ce('tr',{style:{borderBottom:'1px solid #f1f5f9'}},
+              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#64748b',whiteSpace:'nowrap'}},'Data'),
+              ce('td',{style:{padding:'6px 12px',color:'#1e293b'}},fmtD(today()))
+            ),
+            ce('tr',{style:{background:'#f0fdf4'}},
+              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#166534',whiteSpace:'nowrap'}},'Valor'),
+              ce('td',{style:{padding:'6px 12px',fontWeight:700,color:'#166534'}},
+                d.taxa?(d.taxa.toString().indexOf('R$')>=0?d.taxa:'R$ '+parseFloat(d.taxa).toFixed(2).replace('.',',')):'Não informado')
+            )
+          )
+        ),
+        /* Assinaturas */
+        ce('div',{style:{display:'flex',gap:16,padding:'14px 16px',borderTop:'1px solid #e2e8f0'}},
+          ce('div',{style:{flex:1,textAlign:'center'}},
+            ce('div',{style:{borderTop:'1px solid #64748b',marginBottom:4,paddingTop:4,fontSize:11,color:'#64748b'}},'Responsável SMTT')),
+          ce('div',{style:{flex:1,textAlign:'center'}},
+            ce('div',{style:{borderTop:'1px solid #64748b',marginBottom:4,paddingTop:4,fontSize:11,color:'#64748b'}},'Ciente (SEFAZ)'))
         )
-      ),
-      /* Numero do memorando - campo editavel */
-      ce('div',{style:{display:'flex',alignItems:'center',gap:10,margin:'12px 0 8px',padding:'10px 14px',
-        background:'#f8fafc',borderRadius:8,border:'1px solid #e2e8f0'}},
-        ce('span',{style:{fontWeight:700,color:'#1e3a5f',fontSize:14,whiteSpace:'nowrap'}},'Memorando n\u00ba'),
-        ce('input',{className:'no-print',value:memoNum,
-          onChange:function(e){setMemoNum(e.target.value);},
-          placeholder:'Ex: 001/2025...',
-          style:{flex:1,padding:'6px 10px',border:'1.5px solid #93c5fd',borderRadius:6,
-            fontSize:14,fontWeight:700,color:'#1e3a5f',fontFamily:'inherit',outline:'none'}}),
-        ce('span',{className:'print-only',style:{fontWeight:700,fontSize:14,color:'#1e3a5f'}},memoNum||'______')
-      ),
-      /* Campos do memorando */
-      ce('div',{className:'doc-sec'},
-        ce('div',{className:'doc-fields-stack'},
-          ce(FL,{label:'Origem',value:'SMTT \u2013 Secretaria Municipal de Transporte e Tr\xe2nsito'}),
-          ce(FL,{label:'Destino',value:'SEFAZ \u2013 Secretaria Municipal da Fazenda'}),
-          ce(FL,{label:'Assunto',value:'Encaminhamento de Taxa \u2013 '+(d.cn||d.sn||'Servi\u00e7o')}),
-          ce(FL,{label:'Endere\u00e7o',value:(d.rua||(d.ref?'Ref: '+d.ref:'N\u00e3o informado'))}),
-          ce(FL,{label:'N\u00famero',value:d.num||'N\u00e3o informado'}),
-          d.ref?ce(FL,{label:'Ponto de Refer\xeancia',value:d.ref}):null,
-          ce(FL,{label:'Data',value:fmtD(today())}),
-          ce(FL,{label:'Valor',value:d.taxa?(d.taxa.toString().indexOf('R$')>=0?d.taxa:'R$ '+parseFloat(d.taxa).toFixed(2).replace('.',',')):'N\u00e3o informado'})
-        )
-      ),
-      /* Texto do memorando */
-      ce('div',{style:{margin:'12px 0',padding:'12px 14px',background:'#f8fafc',
-        borderRadius:8,border:'1px solid #e2e8f0',fontSize:13,lineHeight:1.8,color:'#374151'}},
-        'Encaminhamos o presente memorando para conhecimento e devidas provid\u00eancias,'
-        +' referente \u00e0 solicita\u00e7\u00e3o de servi\u00e7o de '
-        +(d.cn||d.sn||'servi\u00e7o')
-        +', protocolada sob o n\u00famero '
-        +d.prot
-        +', no endere\u00e7o '+(d.rua?d.rua+(d.num?', n\u00ba '+d.num:'')+(d.bairro?', '+d.bairro:''):'n\u00e3o informado')
-        +(d.ref?' (Ref: '+d.ref+')':'')+'.'
-      ),
-      ce('div',{className:'doc-foot'},
-        ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Responsável SMTT')),
-        ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Ciente (SEFAZ)'))
       )
-    )
-    ):null
+    )    ):null
   );
 }
 
