@@ -4373,6 +4373,6 @@ if(window._sgssLoaded){_mountApp();} else {
   window._sgssOnLoaded=_mountApp;
 }
 </script>
-<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js",{scope:"/sgss-smtt/"}).then(function(r){console.log("SW OK",r.scope);}).catch(function(e){console.log("SW err",e);});});}</script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=6",{scope:"/sgss-smtt/"}).then(function(r){console.log("SW OK",r.scope);}).catch(function(e){console.log("SW err",e);});});}</script>
 </body>
 </html>
