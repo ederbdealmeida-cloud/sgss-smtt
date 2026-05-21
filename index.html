@@ -4313,23 +4313,7 @@ function App(){
         ce('button',{className:'topbar-ham',
           onClick:function(){setCollapsed(function(v){return !v;});setMobOpen(function(v){return !v;});}},
           '≡'),
-        ce('button',{className:'topbar-ham',title:'Sincronizar',style:{fontSize:18},
-          onClick:function(){
-            var _u='https://firestore.googleapis.com/v1/projects/smtt-cacequi/databases/(default)/documents/smtt/dados?key=AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs';
-            fetch(_u).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(function(doc){
-              if(!doc||!doc.fields||!doc.fields.dados){alert('Nenhum dado no Firebase.');return;}
-              var d=JSON.parse(doc.fields.dados.stringValue);
-              if(d.reqs)INIT_REQS.splice.apply(INIT_REQS,[0,INIT_REQS.length].concat(d.reqs));
-              if(d.sols)INIT_SOLS.splice.apply(INIT_SOLS,[0,INIT_SOLS.length].concat(d.sols));
-              if(d.funcs)FUNC_LIST.splice.apply(FUNC_LIST,[0,FUNC_LIST.length].concat(d.funcs));
-              if(d.agenda)AGENDA_LIST.splice.apply(AGENDA_LIST,[0,AGENDA_LIST.length].concat(d.agenda));
-              if(d.notas)NOTAS_LIST.splice.apply(NOTAS_LIST,[0,NOTAS_LIST.length].concat(d.notas));
-              if(window._forceAppReload)window._forceAppReload();
-              try{localStorage.setItem(SGSS_STORAGE_KEY,JSON.stringify(d));}catch(e){}
-              window.location.reload();
-            }).catch(function(e){alert('Erro: '+e);});
-          }},'\ud83d\udd04'),
-        ce('div',{className:'tb-dropdown-wrap'},
+                ce('div',{className:'tb-dropdown-wrap'},
           ce('div',{className:'topbar-bell',onClick:function(){setBellOpen(function(v){return !v;});setUserOpen(false);}},
             '🔔',
             getNotifications().length>0?ce('span',{className:'topbar-badge'},getNotifications().length):null
