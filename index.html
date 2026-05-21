@@ -2260,7 +2260,10 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
               placeholder:'001/2025',
               style:{width:90,padding:'3px 7px',border:'1px solid #93c5fd',borderRadius:5,
                 fontSize:12,fontWeight:700,color:'#1e3a5f',fontFamily:'inherit',outline:'none',background:'#fff'}}),
-            ce('span',{className:'print-only',style:{color:'#fff',fontWeight:700,fontSize:12}},memoNum||'______')
+            ce('span',{className:'print-only',style:{
+              display:'inline-block',minWidth:100,padding:'2px 8px',
+              background:'#fff',border:'1px solid #93c5fd',borderRadius:4,
+              color:'#1e3a5f',fontWeight:700,fontSize:12}},memoNum||'')
           )
         ),
         /* Campos em tabela compacta */
