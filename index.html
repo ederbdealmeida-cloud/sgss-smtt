@@ -2324,7 +2324,8 @@ function Controle(p){
                   +'<tr><td style="color:#64748b;font-weight:600;width:70px;padding:1px 6px 1px 0">Solicitante</td><td>'+r.nom+'</td></tr>'
                   +'<tr><td style="color:#64748b;font-weight:600;padding:1px 6px 1px 0">Endereço</td><td>'+(r.rua||'\u2014')+(r.num?' n\u00ba '+r.num:'')+'</td></tr>'
                   +'<tr><td style="color:#64748b;font-weight:600;padding:1px 6px 1px 0">Bairro</td><td>'+r.bairro+'</td></tr>'
-                  +'<tr><td style="color:#64748b;font-weight:600;padding:1px 6px 1px 0">Serviço</td><td>'+r.cn+'</td></tr>'
+                  +(r.ref?'<tr><td style="color:#64748b;font-weight:600;padding:1px 6px 1px 0">Refer\u00eancia</td><td>'+r.ref+'</td></tr>':'')
+                  +'<tr><td style="color:#64748b;font-weight:600;padding:1px 6px 1px 0">Servi\u00e7o</td><td>'+r.cn+'</td></tr>'
                   +(r.func?'<tr><td style="color:#64748b;font-weight:600;padding:1px 6px 1px 0">Funcionário</td><td>'+r.func+'</td></tr>':'')
                 +'</table>'
                 +'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:6px;border-top:1px dashed #e2e8f0">'
@@ -2870,6 +2871,7 @@ function Relatorios(){
                       +'<tr><td style="color:#64748b;font-weight:600;padding:5px 8px 5px 0">Data</td><td>'+fmtD(r.dt)+'</td></tr>'
                       +'<tr><td style="color:#64748b;font-weight:600;padding:5px 8px 5px 0">Solicitante</td><td>'+r.nom+'</td></tr>'
                       +'<tr><td style="color:#64748b;font-weight:600;padding:5px 8px 5px 0">Bairro</td><td>'+r.bairro+'</td></tr>'
+                      +(r.ref?'<tr><td style="color:#64748b;font-weight:600;padding:5px 8px 5px 0">Refer\u00eancia</td><td>'+r.ref+'</td></tr>':'')
                       +'<tr><td style="color:#64748b;font-weight:600;padding:5px 8px 5px 0">Servi\u00e7o</td><td>'+r.cn+'</td></tr>'
                       +(r.func?'<tr><td style="color:#64748b;font-weight:600;padding:5px 8px 5px 0">Funcion\u00e1rio</td><td>'+r.func+'</td></tr>':'')
                       +'<tr><td style="color:#64748b;font-weight:600;padding:5px 8px 5px 0">Urg\u00eancia</td><td>'+(r.urg==='Sim'?'\ud83d\udea8 Urgente':'Normal')+'</td></tr>'
