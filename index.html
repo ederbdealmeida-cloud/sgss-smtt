@@ -3480,7 +3480,7 @@ ce('h2',{className:'page-title'},'\u2699\ufe0f Configura\xe7\xf5es'),
 }
 
 /* ── APP ── */
-var MENU=[{id:'dashboard',l:'Dashboard',i:'🏠',g:'PRINCIPAL'},{id:'solicitacoes',l:'Solicitações',i:'📋',g:'OPERACIONAL'},{id:'controle',l:'Controle',i:'📌',g:'OPERACIONAL'},{id:'historico',l:'Histórico',i:'🗂',g:'OPERACIONAL'},{id:'comunicados',l:'Comunicados',i:'📣',g:'OPERACIONAL'},{id:'comunicacao',l:'Comunicação',i:'💬',g:'OPERACIONAL'},{id:'solicitantes',l:'Solicitantes',i:'👥',g:'CADASTROS'},{id:'servicos',l:'Tipos de Serv.',i:'🔧',g:'CADASTROS'},{id:'funcionarios',l:'Funcionários',i:'👤',g:'CADASTROS'},{id:'relatorios',l:'Relatórios',i:'📊',g:'GESTÃO'},{id:'agenda',l:'Agenda',i:'📅',g:'GESTÃO'},{id:'anotacoes',l:'Anotações',i:'📝',g:'GESTÃO'},{id:'configuracoes',l:'Configurações',i:'⚙️',g:'SISTEMA'}];
+var MENU=[{id:'dashboard',l:'Dashboard',i:'🏠',g:'PRINCIPAL'},{id:'solicitacoes',l:'Solicitações',i:'📋',g:'OPERACIONAL'},{id:'controle',l:'Controle',i:'📌',g:'OPERACIONAL'},{id:'historico',l:'Histórico',i:'🗂',g:'OPERACIONAL'},{id:'comunicados',l:'Mural',i:'📌',g:'OPERACIONAL'},{id:'comunicacao',l:'Comunicação',i:'💬',g:'OPERACIONAL'},{id:'solicitantes',l:'Solicitantes',i:'👥',g:'CADASTROS'},{id:'servicos',l:'Tipos de Serv.',i:'🔧',g:'CADASTROS'},{id:'funcionarios',l:'Funcionários',i:'👤',g:'CADASTROS'},{id:'relatorios',l:'Relatórios',i:'📊',g:'GESTÃO'},{id:'agenda',l:'Agenda',i:'📅',g:'GESTÃO'},{id:'anotacoes',l:'Anotações',i:'📝',g:'GESTÃO'},{id:'configuracoes',l:'Configurações',i:'⚙️',g:'SISTEMA'}];
 var MENU_GROUPS=['PRINCIPAL','OPERACIONAL','CADASTROS','GESTÃO','SISTEMA'];
 
 var DELETED_REQS=[];
@@ -3726,7 +3726,7 @@ function Comunicados(){
     }
     sgssSave();setShowForm(false);setEditing(null);setForm(fi);
   }
-  function del_(c){showConfirm({ico:'📣',titulo:'Excluir comunicado?',sub:c.titulo,lblOk:'Excluir',cor:'red',
+  function del_(c){showConfirm({ico:'📌',titulo:'Excluir comunicado?',sub:c.titulo,lblOk:'Excluir',cor:'red',
     onOk:function(){var i=COMUNICADOS_LIST.findIndex(function(x){return x.id===c.id;});if(i>=0)COMUNICADOS_LIST.splice(i,1);sgssSave();notify('\u2705 Removido.');}});}
   function edit_(c){setEditing(c);setForm({titulo:c.titulo,msg:c.msg,prioridade:c.prioridade,dtVal:c.dtVal||''});setShowForm(true);}
   var BG={urgente:'#fef2f2',normal:'#eff6ff',info:'#f0fdf4'};
@@ -3734,7 +3734,7 @@ function Comunicados(){
   var IC={urgente:'🔴',normal:'🔵',info:'🟢'};
   return ce('div',{className:'page-content'},
     ce('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}},
-      ce('h2',{className:'page-title'},'📣 Comunicados Internos'),
+      ce('h2',{className:'page-title'},'📌 Mural de Comunicados'),
       isAdmin?ce('button',{className:'btn btn-p',onClick:function(){setEditing(null);setForm(fi);setShowForm(true);}},'+ Novo Comunicado'):null
     ),
     showForm?ce('div',{className:'card',style:{marginBottom:16,padding:'16px 18px'}},
@@ -3759,7 +3759,7 @@ function Comunicados(){
     ):null,
     ativos.length===0&&!showForm
       ?ce('div',{style:{textAlign:'center',padding:'40px',color:'#94a3b8'}},
-          ce('div',{style:{fontSize:36,marginBottom:8}},'📣'),
+          ce('div',{style:{fontSize:36,marginBottom:8}},'📌'),
           ce('div',null,'Nenhum comunicado activo.'))
       :ce('div',null,ativos.map(function(c){
           return ce('div',{key:c.id,style:{background:BG[c.prioridade]||BG.normal,
