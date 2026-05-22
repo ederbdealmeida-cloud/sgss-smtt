@@ -640,6 +640,7 @@ function saveSession(){
 }
 function sgssSave(){
   try{
+    window.dispatchEvent(new CustomEvent('sgss-data-changed'));
     localStorage.setItem(SGSS_STORAGE_KEY,JSON.stringify({
       reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,
       cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,comunicados:COMUNICADOS_LIST,auditoria:AUDIT_LOG,ts:Date.now()
@@ -1518,6 +1519,12 @@ function Sel(p){
 }
 
 function Dashboard(){
+  var stk=useState(0);var tick=stk[0];var setTick=stk[1];
+  React.useEffect(function(){
+    function onSave(){setTick(function(t){return t+1;});}
+    window.addEventListener('sgss-data-changed',onSave);
+    return function(){window.removeEventListener('sgss-data-changed',onSave);};
+  },[]);
   var sfsel=useState('');var funcSel=sfsel[0];var setFuncSel=sfsel[1];
   /* Solicitações por categoria (live) */
   var _catMap={};INIT_REQS.forEach(function(r){if(r.enc===1)return;var k=r.cn||r.sn||'Outros';_catMap[k]=(_catMap[k]||0)+1;});
