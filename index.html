@@ -5445,6 +5445,17 @@ if(_cv!==APP_VER){
   localStorage.setItem("SGSS_APP_VER",APP_VER);
   if(_cv){window.location.reload(true);}
 }
+/* Mobile layout via JS - sem media queries */
+(function(){
+  function applyMobile(){
+    var w=window.innerWidth||document.documentElement.clientWidth||screen.width;
+    if(w<=960){document.body.classList.add('is-mobile');}
+    else{document.body.classList.remove('is-mobile');}
+  }
+  applyMobile();
+  window.addEventListener('resize',applyMobile);
+  setTimeout(applyMobile,800);
+})();
 </script>
 </body>
 </html>
