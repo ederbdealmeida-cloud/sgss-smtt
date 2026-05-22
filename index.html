@@ -3725,6 +3725,8 @@ function Auditoria(){
   var sd=useState('');var fDe=sd[0];var setFDe=sd[1];
   var sa=useState('');var fAte=sa[0];var setFAte=sa[1];
   var spg=useState(1);var pg=spg[0];var setPg=spg[1];
+  var sld=useState(false);var loading=sld[0];var setLoading=sld[1];
+  function applyFilter(fn){setLoading(true);setTimeout(function(){fn();setPg(1);setLoading(false);},350);}
   var t=useToast();var notify=t[1];
   var modulos=['Solicitações','Utilizadores','Mural','Configurações','Sistema'];
   var logs=AUDIT_LOG.filter(function(a){
@@ -3740,7 +3742,7 @@ function Auditoria(){
     'Eliminou':'#dc2626','Publicou':'#7c3aed','Concluiu':'#059669'
   };
   return ce('div',{className:'page-content'},
-    ce('h2',{className:'page-title'},'🔍 Auditoria'),
+    ce('h2',{className:'page-title',style:{marginBottom:20,marginTop:8}},'🔍 Auditoria'),
     ce('div',{style:{overflowX:'auto',marginTop:8,marginLeft:4,border:'1px solid #e2e8f0',borderRadius:10,background:'#fff',padding:'16px'}},
     ce('div',{style:{minWidth:720}},
       /* Filtros com labels */
@@ -3748,16 +3750,16 @@ function Auditoria(){
         ce('div',{className:'fg'},
           ce('label',null,'Utilizador'),
           ce('input',{className:'inp',placeholder:'Nome...',value:fUser,
-            onChange:function(e){setFUser(e.target.value);setPg(1);}})),
+            onChange:function(e){var _v=e.target.value;applyFilter(function(){setFUser(_v);});}})),
         ce('div',{className:'fg'},
           ce('label',null,'Módulo'),
-          ce('select',{className:'inp',value:fMod,onChange:function(e){setFMod(e.target.value);setPg(1);}},
+          ce('select',{className:'inp',value:fMod,onChange:function(e){var _v=e.target.value;applyFilter(function(){setFMod(_v);});}},
             ce('option',{value:''},'Todos'),
             modulos.map(function(m){return ce('option',{key:m,value:m},m);}))),
         ce('div',{className:'fg'},
           ce('label',null,'Período: De'),
           ce('input',{className:'inp',type:'date',value:fDe,
-            onChange:function(e){setFDe(e.target.value);setPg(1);}})),
+            onChange:function(e){var _v=e.target.value;applyFilter(function(){setFDe(_v);})}}))
         ce('div',{className:'fg'},
           ce('label',null,'Até'),
           ce('input',{className:'inp',type:'date',value:fAte,
@@ -3772,7 +3774,10 @@ function Auditoria(){
             onOk:function(){AUDIT_LOG.length=0;AUDIT_NEXT_ID=1;sgssSave();notify('\u2705 Auditoria limpa.');}});
           }},'Limpar tudo'):null
       ),
-      /* Tabela */
+      /* Spinner + Tabela */
+      loading?ce('div',{style:{display:'flex',justifyContent:'center',padding:'32px'}},
+        ce('div',{style:{width:32,height:32,border:'4px solid #e2e8f0',
+          borderTopColor:'#2563eb',borderRadius:'50%',animation:'spin .8s linear infinite'}})):
       logs.length===0
         ?ce('div',{style:{textAlign:'center',padding:'32px',color:'#94a3b8'}},
             ce('div',{style:{fontSize:32,marginBottom:6}},'🔍'),
