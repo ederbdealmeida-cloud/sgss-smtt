@@ -1763,18 +1763,19 @@ function Dashboard(){
     /* ══ BAIRROS + SOLICITANTES ══ */
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">'
     +sec('🗺️','Por Bairro',C.green,
-      tbl('<tr>'+th('#')+th('Bairro')+th('Total','center')+th('Concl.','center')+th('%','center')+th('Barra')+'</tr>',
+      tbl('<tr>'+th('#')+th('Bairro')+th('Total','center')+th('Concl.','center')+th('Barra')+th('%','center')+'</tr>',
         bairArr.map(function(b,i){
           var pctB=total>0?Math.round(b.t/total*100):0;
-          return ztr(td(i+1,'center','',C.muted)+td(b.n)+td(b.t,'center','800')+td(b.c,'center','700',C.green)+td(pctB+'%','center','',C.muted)+'<td style="padding:6px 10px">'+bar(b.t,maxB,C.green)+'</td>');
+          return ztr(td(i+1,'center','',C.muted)+td(b.n)+td(b.t,'center','800')+td(b.c,'center','700',C.green)+'<td style="padding:6px 10px">'+bar(b.t,maxB,C.green)+'</td>'+td(pctB+'%','center','',C.muted));
         }).join(''))
     )
     +sec('👥','Ranking de Solicitantes',C.orange,
-      tbl('<tr>'+th('#')+th('Solicitante')+th('Solicitações','center')+th('%','center')+'</tr>',
+      tbl('<tr>'+th('#')+th('Solicitante')+th('Solicitações','center')+th('Barra')+th('%','center')+'</tr>',
         solArr.map(function(s,i){
           var medals=['🥇','🥈','🥉'];
           var pctS=total>0?Math.round(s.v/total*100):0;
-          return ztr(td((i<3?medals[i]:i+1),'center')+td(s.n)+td(s.v,'center','800')+td(pctS+'%','center','',C.muted));
+          var maxSol=solArr.length>0?solArr[0].v:1;
+          return ztr(td((i<3?medals[i]:i+1),'center')+td(s.n)+td(s.v,'center','800')+'<td style="padding:6px 10px">'+bar(s.v,maxSol,C.orange)+'</td>'+td(pctS+'%','center','',C.muted));
         }).join(''))
     )
     +'</div>'
