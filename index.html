@@ -1,10 +1,10 @@
 ce('button',{className:'btn-icon',title:'Enviar reset de senha',
                   style:{color:'#2563eb'},
                   onClick:function(){
-                    if(!u.email){notify('\u26a0\ufe0f Sem e-mail registado.');return;}
+                    if(!u.email){notify('⚠️ Utilizador sem e-mail.');return;}
                     fbSendReset(u.email).then(function(r){
-                      if(r.ok)notify('\u2705 Email de reset enviado para '+u.email);
-                      else notify('\u26a0\ufe0f '+r.error);
+                      if(r.ok)notify('✅ Email enviado para '+u.email);
+                      else notify('⚠️ '+r.error);
                     });
-                  }},'\ud83d\udd11'),
+                  }},'🔑'),
                 
