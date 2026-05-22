@@ -569,7 +569,6 @@ td[title]:hover::after{content:attr(title);position:fixed;background:#1e293b;
 "use strict";
 var AGENDA_LIST=[];
 var AGENDA_NEXT_ID=1;
-var COMUNICADOS_LIST=[];var COM_NEXT_ID=1;
 var NOTAS_LIST=[];
 var NOTAS_NEXT_ID=1;
 var useState=React.useState,useEffect=React.useEffect,ce=React.createElement;
@@ -588,11 +587,6 @@ function sgssLoad(){
     if(d.agenda&&d.agenda.length){
       AGENDA_LIST.length=0;
       d.agenda.forEach(function(a){AGENDA_LIST.push(a);});
-    if(d.comunicados&&d.comunicados.length){
-      COMUNICADOS_LIST.length=0;
-      d.comunicados.forEach(function(c){COMUNICADOS_LIST.push(c);});
-      COM_NEXT_ID=Math.max.apply(null,COMUNICADOS_LIST.map(function(c){return c.id;}))+1;
-    }
       AGENDA_NEXT_ID=Math.max.apply(null,AGENDA_LIST.map(function(a){return a.id;}))+1;
     }
     if(d.funcs&&d.funcs.length){
@@ -630,7 +624,7 @@ function sgssSave(){
   try{
     localStorage.setItem(SGSS_STORAGE_KEY,JSON.stringify({
       reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,
-      cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,comunicados:COMUNICADOS_LIST,ts:Date.now()
+      cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,ts:Date.now()
     }));
     if(window._sgssLastSave)window._sgssLastSave.textContent='\ud83d\udcbe Salvo '+new Date().toLocaleTimeString('pt-BR');
   }catch(e){console.error('sgssSave erro:',e);}
@@ -1213,9 +1207,7 @@ function Login(p){
       if(!profile.email){profile.email=_email;}
       sgssSave();
       window._fbUser={uid:res.uid,email:res.email,idToken:res.idToken};
-      var _lu={nome:profile.nome,role:profile.role,id:profile.id,user:profile.user,email:profile.email,uid:res.uid};
-      window._sgssUser=_lu;
-      p.onLogin(_lu);
+      p.onLogin({nome:profile.nome,role:profile.role,id:profile.id,user:profile.user,email:profile.email,uid:res.uid});
     });
   }
   function onKey(e){if(e.key==='Enter')go();}
@@ -3485,7 +3477,7 @@ ce('h2',{className:'page-title'},'\u2699\ufe0f Configura\xe7\xf5es'),
 }
 
 /* ── APP ── */
-var MENU=[{id:'dashboard',l:'Dashboard',i:'🏠',g:'PRINCIPAL'},{id:'solicitacoes',l:'Solicitações',i:'📋',g:'OPERACIONAL'},{id:'controle',l:'Controle',i:'📌',g:'OPERACIONAL'},{id:'historico',l:'Histórico',i:'🗂',g:'OPERACIONAL'},{id:'comunicados',l:'Comunicados',i:'📣',g:'OPERACIONAL'},{id:'comunicacao',l:'Comunicação',i:'💬',g:'OPERACIONAL'},{id:'solicitantes',l:'Solicitantes',i:'👥',g:'CADASTROS'},{id:'servicos',l:'Tipos de Serv.',i:'🔧',g:'CADASTROS'},{id:'funcionarios',l:'Funcionários',i:'👤',g:'CADASTROS'},{id:'relatorios',l:'Relatórios',i:'📊',g:'GESTÃO'},{id:'agenda',l:'Agenda',i:'📅',g:'GESTÃO'},{id:'anotacoes',l:'Anotações',i:'📝',g:'GESTÃO'},{id:'configuracoes',l:'Configurações',i:'⚙️',g:'SISTEMA'}];
+var MENU=[{id:'dashboard',l:'Dashboard',i:'🏠',g:'PRINCIPAL'},{id:'solicitacoes',l:'Solicitações',i:'📋',g:'OPERACIONAL'},{id:'controle',l:'Controle',i:'📌',g:'OPERACIONAL'},{id:'historico',l:'Histórico',i:'🗂',g:'OPERACIONAL'},{id:'comunicacao',l:'Comunicação',i:'💬',g:'OPERACIONAL'},{id:'solicitantes',l:'Solicitantes',i:'👥',g:'CADASTROS'},{id:'servicos',l:'Tipos de Serv.',i:'🔧',g:'CADASTROS'},{id:'funcionarios',l:'Funcionários',i:'👤',g:'CADASTROS'},{id:'relatorios',l:'Relatórios',i:'📊',g:'GESTÃO'},{id:'agenda',l:'Agenda',i:'📅',g:'GESTÃO'},{id:'anotacoes',l:'Anotações',i:'📝',g:'GESTÃO'},{id:'configuracoes',l:'Configurações',i:'⚙️',g:'SISTEMA'}];
 var MENU_GROUPS=['PRINCIPAL','OPERACIONAL','CADASTROS','GESTÃO','SISTEMA'];
 
 var DELETED_REQS=[];
@@ -3703,172 +3695,6 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
       ce(Pag,{total:filtered.length,pg:pg,set:function(v){setPg(v);},label:'funcion\u00e1rio(s)'})
     )
   );
-}
-
-
-function Comunicados(){
-  var user=window._sgssUser||{role:'operador',nome:'',uid:''};
-  var t=useToast();var notify=t[1];
-  var sf=useState(false);var showForm=sf[0];var setShowForm=sf[1];
-  var se=useState(null);var editing=se[0];var setEditing=se[1];
-  var form_init={titulo:'',msg:'',prioridade:'normal',dtValidade:''};
-  var sform=useState(form_init);var form=sform[0];var setForm=sform[1];
-
-  var isAdmin=user.role==='admin';
-  var agora=today();
-
-  /* Comunicados validos (nao expirados) */
-  var validos=COMUNICADOS_LIST.filter(function(c){
-    return !c.dtValidade||c.dtValidade>=agora;
-  }).sort(function(a,b){
-    var ord={urgente:0,normal:1,info:2};
-    return (ord[a.prioridade]||1)-(ord[b.prioridade]||1)||b.id-a.id;
-  });
-
-  /* Expirados */
-  var expirados=COMUNICADOS_LIST.filter(function(c){
-    return c.dtValidade&&c.dtValidade<agora;
-  }).sort(function(a,b){return b.id-a.id;});
-
-  function salvar(){
-    if(!form.titulo.trim()||!form.msg.trim()){notify('\u26a0\ufe0f Preencha t\u00edtulo e mensagem.');return;}
-    if(editing){
-      COMUNICADOS_LIST.forEach(function(c,i){
-        if(c.id===editing.id)COMUNICADOS_LIST[i]=Object.assign({},c,{
-          titulo:form.titulo,msg:form.msg,prioridade:form.prioridade,dtValidade:form.dtValidade
-        });
-      });
-      notify('\u2705 Comunicado actualizado!');
-    } else {
-      COMUNICADOS_LIST.unshift({
-        id:COM_NEXT_ID++,titulo:form.titulo,msg:form.msg,
-        prioridade:form.prioridade,dtValidade:form.dtValidade,
-        dt:agora,autor:user.nome||'Admin'
-      });
-      notify('\u2705 Comunicado publicado!');
-    }
-    sgssSave();
-    setShowForm(false);setEditing(null);setForm(form_init);
-  }
-
-  function excluir(c){
-    showConfirm({ico:'📣',titulo:'Excluir comunicado?',sub:c.titulo,
-      lblOk:'Excluir',cor:'red',onOk:function(){
-        var idx=COMUNICADOS_LIST.findIndex(function(x){return x.id===c.id;});
-        if(idx>=0)COMUNICADOS_LIST.splice(idx,1);
-        sgssSave();notify('\u2705 Comunicado removido.');
-      }});
-  }
-
-  function editar(c){
-    setEditing(c);
-    setForm({titulo:c.titulo,msg:c.msg,prioridade:c.prioridade,dtValidade:c.dtValidade||''});
-    setShowForm(true);
-  }
-
-  var corPrio={urgente:'#fef2f2',normal:'#eff6ff',info:'#f0fdf4'};
-  var bordPrio={urgente:'#fca5a5',normal:'#93c5fd',info:'#86efac'};
-  var icoPrio={urgente:'🔴',normal:'🔵',info:'🟢'};
-  var lblPrio={urgente:'Urgente',normal:'Normal',info:'Informativo'};
-
-  function renderCard(c){
-    return ce('div',{key:c.id,style:{background:corPrio[c.prioridade]||corPrio.normal,
-      border:'1.5px solid '+(bordPrio[c.prioridade]||bordPrio.normal),
-      borderRadius:10,padding:'14px 16px',marginBottom:12}},
-      ce('div',{style:{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:8,marginBottom:6}},
-        ce('div',{style:{display:'flex',alignItems:'center',gap:8}},
-          ce('span',{style:{fontSize:18}},icoPrio[c.prioridade]||icoPrio.normal),
-          ce('div',null,
-            ce('div',{style:{fontWeight:700,fontSize:14,color:'#1e293b'}},c.titulo),
-            ce('div',{style:{fontSize:11,color:'#64748b',marginTop:1}},
-              'Por '+c.autor+' \u2022 '+fmtD(c.dt)
-              +(c.dtValidade?' \u2022 Val\u00e1do at\u00e9 '+fmtD(c.dtValidade):''))
-          )
-        ),
-        isAdmin?ce('div',{style:{display:'flex',gap:6,flexShrink:0}},
-          ce('button',{className:'btn-icon',onClick:function(){editar(c);}},'\u270f\ufe0f'),
-          ce('button',{className:'btn-icon',style:{color:'#dc2626'},onClick:function(){excluir(c);}},'🗑\ufe0f')
-        ):null
-      ),
-      ce('p',{style:{fontSize:13,color:'#374151',margin:0,lineHeight:1.6}},c.msg)
-    );
-  }
-
-  return ce('div',{className:'page-content'},
-    ce('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}},
-      ce('h2',{className:'page-title'},'📣 Comunicados Internos'),
-      isAdmin?ce('button',{className:'btn btn-p',onClick:function(){setEditing(null);setForm(form_init);setShowForm(true);}},
-        '+ Novo Comunicado'):null
-    ),
-
-    /* Formulario */
-    showForm?ce('div',{className:'card',style:{marginBottom:20,padding:'18px 20px'}},
-      ce('h3',{style:{fontSize:14,fontWeight:700,color:'#1e3a5f',marginBottom:14}},
-        editing?'Editar Comunicado':'Novo Comunicado'),
-      ce('div',{className:'fg',style:{marginBottom:10}},
-        ce('label',null,'T\u00edtulo'),
-        ce('input',{className:'inp',value:form.titulo,
-          onChange:function(e){setForm(function(f){return Object.assign({},f,{titulo:e.target.value});});},
-          placeholder:'T\u00edtulo do comunicado...'})
-      ),
-      ce('div',{className:'fg',style:{marginBottom:10}},
-        ce('label',null,'Mensagem'),
-        ce('textarea',{className:'inp',rows:3,value:form.msg,
-          onChange:function(e){setForm(function(f){return Object.assign({},f,{msg:e.target.value});});},
-          placeholder:'Escreva o comunicado...',style:{resize:'vertical'}})
-      ),
-      ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:14}},
-        ce('div',{className:'fg'},
-          ce('label',null,'Prioridade'),
-          ce('select',{className:'inp',value:form.prioridade,
-            onChange:function(e){setForm(function(f){return Object.assign({},f,{prioridade:e.target.value});});}},
-            ce('option',{value:'normal'},'Normal'),
-            ce('option',{value:'urgente'},'Urgente'),
-            ce('option',{value:'info'},'Informativo')
-          )
-        ),
-        ce('div',{className:'fg'},
-          ce('label',null,'V\u00e1lido at\u00e9 (opcional)'),
-          ce('input',{className:'inp',type:'date',value:form.dtValidade,
-            onChange:function(e){setForm(function(f){return Object.assign({},f,{dtValidade:e.target.value}));}})
-          )
-        )
-      ),
-      ce('div',{style:{display:'flex',gap:8}},
-        ce('button',{className:'btn btn-p',onClick:salvar},editing?'Guardar':'Publicar'),
-        ce('button',{className:'btn',onClick:function(){setShowForm(false);setEditing(null);setForm(form_init);}},
-          'Cancelar')
-      )
-    ):null,
-
-    /* Lista activos */
-    validos.length===0&&!showForm
-      ?ce('div',{style:{textAlign:'center',padding:'40px 20px',color:'#94a3b8'}},
-          ce('div',{style:{fontSize:40,marginBottom:8}},'📣'),
-          ce('div',{style:{fontSize:14}},'Nenhum comunicado activo.'),
-          isAdmin?ce('div',{style:{fontSize:12,marginTop:4}},'Clique em "+ Novo Comunicado" para publicar.'):null
-        )
-      :ce('div',null,validos.map(renderCard)),
-
-    /* Expirados */
-    isAdmin&&expirados.length>0?ce('div',null,
-      ce('div',{style:{fontSize:12,color:'#94a3b8',fontWeight:600,margin:'16px 0 8px',
-        borderTop:'1px solid #f1f5f9',paddingTop:12}},'Comunicados expirados ('+expirados.length+')'),
-      expirados.map(function(c){
-        return ce('div',{key:c.id,style:{background:'#f8fafc',border:'1px solid #e2e8f0',
-          borderRadius:8,padding:'10px 14px',marginBottom:8,opacity:.7}},
-          ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center'}},
-            ce('div',null,
-              ce('span',{style:{fontSize:12,fontWeight:700,color:'#64748b'}},c.titulo),
-              ce('span',{style:{fontSize:11,color:'#94a3b8',marginLeft:8}},'Expirou '+fmtD(c.dtValidade))
-            ),
-            ce('button',{className:'btn-icon',style:{color:'#dc2626'},onClick:function(){excluir(c);}},'🗑\ufe0f')
-          )
-        );
-      })
-    ):null
-  );
-}
 }
 
 function Comunicacao(){
@@ -4687,7 +4513,7 @@ function App(){
     setUser(u);
   }});
   var Comp={dashboard:Dashboard,solicitacoes:Solicitacoes,controle:Controle,
-    historico:Historico,comunicados:Comunicados,comunicacao:Comunicacao,solicitantes:Solicitantes,
+    historico:Historico,comunicacao:Comunicacao,solicitantes:Solicitantes,
     servicos:TiposServico,funcionarios:Funcionarios,relatorios:Relatorios,
     agenda:Agenda,anotacoes:Anotacoes,configuracoes:Configuracoes}[page]||Dashboard;
   return ce('div',{className:'app-shell',
