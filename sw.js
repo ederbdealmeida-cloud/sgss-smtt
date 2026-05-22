@@ -1,4 +1,5 @@
-const CACHE = 'sgss-smtt-v5';
+/* SGSS Service Worker v6 */
+const CACHE = 'sgss-v6';
 const ASSETS = [
   '/sgss-smtt/',
   '/sgss-smtt/index.html',
@@ -9,38 +10,44 @@ const ASSETS = [
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE)
+      .then(c => c.addAll(ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', e => {
-  if(e.request.url.includes('firestore') ||
-     e.request.url.includes('googleapis') ||
-     e.request.url.includes('maps.google') ||
-     e.request.url.includes('openstreetmap') ||
-     e.request.url.includes('unpkg.com') ||
-     e.request.url.includes('anthropic')){
+  const url = e.request.url;
+  /* Sempre da rede: Firebase, APIs externas */
+  if(url.includes('firestore') || url.includes('googleapis') ||
+     url.includes('maps.google') || url.includes('anthropic') ||
+     url.includes('unpkg.com') || url.includes('cdnjs') ||
+     url.includes('fonts.google')){
     return;
   }
-  /* Network first para o index.html - garante versao mais recente */
-  if(e.request.url.includes('index.html') || e.request.url.endsWith('/sgss-smtt/')){
+  /* index.html: network-first para ter sempre versao mais recente */
+  if(url.endsWith('/sgss-smtt/') || url.includes('index.html')){
     e.respondWith(
-      fetch(e.request).then(r => {
-        var clone = r.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
-        return r;
-      }).catch(() => caches.match(e.request))
+      fetch(e.request)
+        .then(r => {
+          caches.open(CACHE).then(c => c.put(e.request, r.clone()));
+          return r;
+        })
+        .catch(() => caches.match(e.request))
     );
     return;
   }
+  /* Outros assets: cache-first */
   e.respondWith(
     caches.match(e.request).then(r => r || fetch(e.request))
   );
