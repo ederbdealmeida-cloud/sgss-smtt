@@ -314,7 +314,6 @@ body.dark-mode .topbar{background:linear-gradient(90deg,#020617,#0f172a)!importa
 body.dark-mode .card{background:#1e293b!important;border-color:#334155!important}
 body.dark-mode .inp,body.dark-mode select{background:#253352!important;color:#e2e8f0!important;border-color:#475569!important}
 body.dark-mode .page-title{color:#e2e8f0!important}
-@keyframes spin{to{transform:rotate(360deg)}}
 .app-shell{display:block!important;height:auto!important}
 .app-body{display:block!important}
 .doc-paper{background:#fff!important;border-radius:10px;padding:28px;max-width:100%;box-shadow:none;border:1px solid #e2e8f0;page-break-inside:avoid}
@@ -3726,7 +3725,6 @@ function Auditoria(){
   var sd=useState('');var fDe=sd[0];var setFDe=sd[1];
   var sa=useState('');var fAte=sa[0];var setFAte=sa[1];
   var spg=useState(1);var pg=spg[0];var setPg=spg[1];
-  function applyFilter(fn){setLoading(true);setTimeout(function(){fn();setLoading(false);},300);}
   var t=useToast();var notify=t[1];
   var modulos=['Solicitações','Utilizadores','Mural','Configurações','Sistema'];
   var logs=AUDIT_LOG.filter(function(a){
@@ -3741,29 +3739,18 @@ function Auditoria(){
     'Login':'#2563eb','Criou':'#16a34a','Editou':'#d97706',
     'Eliminou':'#dc2626','Publicou':'#7c3aed','Concluiu':'#059669'
   };
-  var sload=useState(false);var loading=sload[0];var setLoading=sload[1];
   return ce('div',{className:'page-content'},
     ce('h2',{className:'page-title'},'🔍 Auditoria'),
-    loading?ce('div',{style:{display:'flex',justifyContent:'center',alignItems:'center',padding:'60px'}},
-      ce('div',{style:{width:40,height:40,border:'4px solid #e2e8f0',borderTopColor:'#2563eb',
-        borderRadius:'50%',animation:'spin .8s linear infinite'}})):null,
-    !loading?ce('div',{style:{overflowX:'auto'}},
-    ce('div',{style:{minWidth:700}},
     ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:10,marginBottom:16}},
       ce('input',{className:'inp',placeholder:'Utilizador...',value:fUser,
-        onChange:function(e){var v=e.target.value;applyFilter(function(){setFUser(v);setPg(1);});}}),
-      ce('select',{className:'inp',value:fMod,onChange:function(e){var v=e.target.value;applyFilter(function(){setFMod(v);setPg(1);});}},
+        onChange:function(e){setFUser(e.target.value);setPg(1);}}),
+      ce('select',{className:'inp',value:fMod,onChange:function(e){setFMod(e.target.value);setPg(1);}},
         ce('option',{value:''},'Todos os módulos'),
         modulos.map(function(m){return ce('option',{key:m,value:m},m);})),
-      ce('div',{className:'fg'},
-        ce('label',{style:{fontSize:11,color:'#64748b',marginBottom:2,display:'block'}},'Período: De'),
-        ce('input',{className:'inp',type:'date',value:fDe,
-          onChange:function(e){var v=e.target.value;applyFilter(function(){setFDe(v);setPg(1);});}}))
-      ce('div',{className:'fg'},
-        ce('label',{style:{fontSize:11,color:'#64748b',marginBottom:2,display:'block'}},'Até'),
-        ce('input',{className:'inp',type:'date',value:fAte,
-          onChange:function(e){setFAte(e.target.value);setPg(1);}})
-      )
+      ce('input',{className:'inp',type:'date',value:fDe,
+        onChange:function(e){setFDe(e.target.value);setPg(1);}}),
+      ce('input',{className:'inp',type:'date',value:fAte,
+        onChange:function(e){setFAte(e.target.value);setPg(1);}})
     ),
     ce('div',{style:{fontSize:12,color:'#64748b',marginBottom:10}},
       logs.length+' registo(s) encontrado(s)'
@@ -3806,8 +3793,6 @@ function Auditoria(){
             )
           )
         )
-    ))
-    ):null
   );
 }
 function Comunicados(){
