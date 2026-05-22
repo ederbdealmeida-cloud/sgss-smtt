@@ -663,60 +663,6 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;displa
   .bottom-nav-item.active{color:#60a5fa!important;}
   .bottom-nav-item .bni{font-size:20px!important;}
 }
-
-/* =============================================
-   MOBILE via JS class body.is-mobile
-   Nao depende de media queries
-   ============================================= */
-body.is-mobile .sidebar{
-  position:fixed!important;top:0!important;left:0!important;
-  width:82vw!important;max-width:300px!important;
-  height:100vh!important;
-  transform:translateX(-100%)!important;
-  transition:transform .25s ease!important;
-  z-index:500!important;overflow-y:auto!important;
-}
-body.is-mobile .sidebar.mob-open{
-  transform:translateX(0)!important;
-  box-shadow:6px 0 30px rgba(0,0,0,.45)!important;
-}
-body.is-mobile .sidebar-overlay{
-  display:none!important;position:fixed!important;
-  inset:0!important;background:rgba(0,0,0,.5)!important;z-index:499!important;
-}
-body.is-mobile .sidebar-overlay.mob-open{display:block!important;}
-body.is-mobile .app-body{display:block!important;}
-body.is-mobile .main{
-  width:100vw!important;margin-left:0!important;
-  min-height:100vh!important;overflow-x:hidden!important;
-}
-body.is-mobile .topbar{height:56px!important;padding:0 10px!important;}
-body.is-mobile .topbar-center{display:none!important;}
-body.is-mobile .topbar-uname{display:none!important;}
-body.is-mobile .ham{display:flex!important;}
-body.is-mobile .page,body.is-mobile .page-content{padding:8px 8px 72px!important;}
-body.is-mobile .page-title{font-size:15px!important;}
-body.is-mobile .stats-grid{grid-template-columns:1fr 1fr!important;gap:8px!important;}
-body.is-mobile .cards-grid{grid-template-columns:1fr 1fr!important;gap:8px!important;}
-body.is-mobile .ch-grid{grid-template-columns:1fr!important;}
-body.is-mobile .form-grid{grid-template-columns:1fr!important;}
-body.is-mobile .fg.s2,body.is-mobile .fg.s3{grid-column:span 1!important;}
-body.is-mobile .tbl-wrap{overflow-x:auto!important;display:block!important;}
-body.is-mobile input,body.is-mobile select,body.is-mobile textarea,body.is-mobile .inp{font-size:16px!important;}
-body.is-mobile .bottom-nav{
-  display:flex!important;position:fixed!important;
-  bottom:0!important;left:0!important;right:0!important;
-  height:56px!important;background:#0f2240!important;
-  z-index:400!important;border-top:1px solid rgba(255,255,255,.15)!important;
-}
-body.is-mobile .bottom-nav-item{
-  flex:1!important;display:flex!important;flex-direction:column!important;
-  align-items:center!important;justify-content:center!important;
-  color:rgba(255,255,255,.55)!important;font-size:9px!important;
-  gap:2px!important;border:none!important;background:none!important;cursor:pointer!important;
-}
-body.is-mobile .bottom-nav-item.active{color:#60a5fa!important;}
-body.is-mobile .bottom-nav-item .bni{font-size:20px!important;}
 </style>
 </head>
 <body>
@@ -1589,25 +1535,7 @@ function PainelFuncionario(p){
               +cardsHtml+tblHtml
               +'<button class="btn-pr" onclick="window.print()">\ud83d\udda8\ufe0f Imprimir / Salvar PDF</button>'
               +'<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" onload="twemoji.parse(document.body,{folder:\x27svg\x27,ext:\x27.svg\x27})"></scri'+'pt>'
-      +'
-<script>
-(function(){
-  function checkMobile(){
-    var w=window.innerWidth||document.documentElement.clientWidth;
-    if(w<=960){
-      document.body.classList.add('is-mobile');
-    } else {
-      document.body.classList.remove('is-mobile');
-    }
-  }
-  checkMobile();
-  window.addEventListener('resize',checkMobile);
-  // Re-check after React mounts
-  setTimeout(checkMobile,500);
-  setTimeout(checkMobile,1500);
-})();
-</script>
-</body></html>');
+      +'</body></html>');
             w.onload=function(){if(w.twemoji){w.twemoji.parse(w.document.body,{folder:'svg',ext:'.svg'});}else{setTimeout(function(){if(w.twemoji)w.twemoji.parse(w.document.body,{folder:'svg',ext:'.svg'});},1000);}};
     w.document.close();
           }},'\ud83d\udda8\ufe0f Imprimir / PDF')
