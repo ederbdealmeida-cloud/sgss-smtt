@@ -3170,8 +3170,8 @@ function Relatorios(){
                 value:relEdit.func||'',onChange:function(e){setRelEdit(function(v){return Object.assign({},v,{func:e.target.value});});}},
                 ce('option',{value:''},'\u2013'),
                 FUNC_LIST.filter(function(f){return f.ativo;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);}))),
-              ce('td',{className:'no-print',style:{borderTop:'2px solid #2563eb',borderBottom:'2px solid #2563eb',borderRight:'2px solid #2563eb',borderRadius:'0 4px 4px 0'}},
-                ce('button',{className:'btn btn-p',style:{padding:'3px 8px',fontSize:11}},
+              ce('td',{className:'no-print'},
+                ce('button',{className:'btn btn-p',style:{padding:'3px 8px',fontSize:11},
                   onClick:function(){
                     INIT_REQS.forEach(function(x,idx){if(x.id===relEdit.id)INIT_REQS[idx]=Object.assign({},relEdit);});
                     setRelEdit(null);notify('\u2705 Registro atualizado!');sgssSave();
