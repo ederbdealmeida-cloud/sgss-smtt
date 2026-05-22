@@ -3869,6 +3869,8 @@ function Comunicados(){
     ):null
   );
 }
+}
+
 function Comunicacao(){
   var sm=useState(null);var modal=sm[0];var setModal=sm[1];
   var smsg=useState('');var msg=smsg[0];var setMsg=smsg[1];
@@ -4685,7 +4687,7 @@ function App(){
     setUser(u);
   }});
   var Comp={dashboard:Dashboard,solicitacoes:Solicitacoes,controle:Controle,
-    historico:Historico,comunicacao:Comunicacao,solicitantes:Solicitantes,
+    historico:Historico,comunicados:Comunicados,comunicacao:Comunicacao,solicitantes:Solicitantes,
     servicos:TiposServico,funcionarios:Funcionarios,relatorios:Relatorios,
     agenda:Agenda,anotacoes:Anotacoes,configuracoes:Configuracoes}[page]||Dashboard;
   return ce('div',{className:'app-shell',
