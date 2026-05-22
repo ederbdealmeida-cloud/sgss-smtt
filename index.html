@@ -1931,14 +1931,21 @@ function imprimirDash(titulo,corpo,landscape){
         )
       )
     ),
-ce('div',{className:'stats-grid'},/* Banner Mural */
-  var _murals=COMUNICADOS_LIST.filter(function(c){return !c.dtVal||c.dtVal>=today();});
-  var _bc=_murals.filter(function(c){return c.prioridade==='urgente';})[0]||_murals[0]||null;
-  var _BG={'urgente':'#fef2f2','normal':'#eff6ff','info':'#f0fdf4'};
-  var _BD={'urgente':'#fca5a5','normal':'#93c5fd','info':'#86efac'};
-  var _BI={'urgente':'\ud83d\udd34','normal':'\ud83d\udd35','info':'\ud83d\udfe2'};
-
-CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));})),
+(function(){
+  var _ms=COMUNICADOS_LIST.filter(function(c){return !c.dtVal||c.dtVal>=today();});
+  var _bc=_ms.filter(function(c){return c.prioridade==='urgente';})[0]||_ms[0]||null;
+  if(!_bc)return null;
+  var BG={'urgente':'#fef2f2','normal':'#eff6ff','info':'#f0fdf4'};
+  var BD={'urgente':'#fca5a5','normal':'#93c5fd','info':'#86efac'};
+  return ce('div',{style:{background:BG[_bc.prioridade],border:'1.5px solid '+BD[_bc.prioridade],
+    borderRadius:8,padding:'10px 14px',marginBottom:8,display:'flex',alignItems:'center',gap:10}},
+    ce('span',{style:{fontSize:18}},_bc.prioridade==='urgente'?'\ud83d\udd34':_bc.prioridade==='info'?'\ud83d\udfe2':'\ud83d\udd35'),
+    ce('div',{style:{flex:1}},
+      ce('div',{style:{fontWeight:700,fontSize:13}},_bc.titulo),
+      ce('div',{style:{fontSize:12,color:'#64748b'}},_bc.msg.slice(0,100)+(_bc.msg.length>100?'...':''))),
+    _ms.length>1?ce('span',{style:{fontSize:11,color:'#64748b',whiteSpace:'nowrap'}},'+'+(_ms.length-1)+' no Mural'):null);
+})(),
+ce('div',{className:'stats-grid'},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));})),
     ce('div',{className:'ch-grid'},
       ce('div',{className:'ch-card'},
         ce('h3',null,'Solicita\xe7\xf5es por Categoria'),
