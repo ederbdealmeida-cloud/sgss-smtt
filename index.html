@@ -675,13 +675,28 @@ function fixText(s){
     .replace(/constru\?\?o/gi,'construção')
     .replace(/autoriza\?\?o/gi,'autorização')
     .replace(/utiliza\?\?o/gi,'utilização')
-    /* Ã seguido de char = dupla codificação UTF-8 */
+    /* Mojibake: bytes UTF-8 lidos como Latin-1 */
+    /* vogais minúsculas */
     .replace(/Ã£/g,'ã').replace(/Ã©/g,'é')
     .replace(/Ã­/g,'í').replace(/Ã³/g,'ó')
     .replace(/Ãº/g,'ú').replace(/Ã§/g,'ç')
     .replace(/Ãµ/g,'õ').replace(/Ã¢/g,'â')
-    .replace(/Ãª/g,'ê').replace(/Ã´/g,'ô');
+    .replace(/Ãª/g,'ê').replace(/Ã´/g,'ô')
+    .replace(/Ã /g,'à').replace(/Ã¡/g,'á')
+    .replace(/Ã¨/g,'è').replace(/Ã¬/g,'ì')
+    .replace(/Ã¹/g,'ù').replace(/Ã»/g,'û')
+    /* vogais maiúsculas */
+    .replace(/Ã/g,'Ã').replace(/Ã/g,'É')
+    .replace(/Ã/g,'Í').replace(/Ã/g,'Ó')
+    .replace(/Ã/g,'Ú').replace(/Ã/g,'Ç')
+    .replace(/Ã/g,'Õ').replace(/Ã/g,'Â')
+    .replace(/Ã/g,'Ê').replace(/Ã/g,'Ô')
+    .replace(/Ã/g,'Á').replace(/Ã/g,'À')
+    /* Remove replacement chars residuais no fim */
+    .replace(/�+/g,'');
 }
+/* Aplica fixText recursivamente em todo o objecto de dados */
+
 function fixData(obj){
   if(typeof obj==='string')return fixText(obj);
   if(Array.isArray(obj))return obj.map(fixData);
@@ -4489,6 +4504,6 @@ if(window._sgssLoaded){_mountApp();} else {
   window._sgssOnLoaded=_mountApp;
 }
 </script>
-<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=8",{scope:"/sgss-smtt/"}).then(function(r){console.log("SW OK",r.scope);/* Forca activacao imediata do novo SW */if(r.waiting){r.waiting.postMessage("SKIP_WAITING");}r.addEventListener("updatefound",function(){var nw=r.installing;nw.addEventListener("statechange",function(){if(nw.state==="installed"&&navigator.serviceWorker.controller){nw.postMessage("SKIP_WAITING");setTimeout(function(){window.location.reload();},500);}});});}).catch(function(e){console.log("SW err",e);});});}</script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=9",{scope:"/sgss-smtt/"}).then(function(r){console.log("SW OK",r.scope);/* Forca activacao imediata do novo SW */if(r.waiting){r.waiting.postMessage("SKIP_WAITING");}r.addEventListener("updatefound",function(){var nw=r.installing;nw.addEventListener("statechange",function(){if(nw.state==="installed"&&navigator.serviceWorker.controller){nw.postMessage("SKIP_WAITING");setTimeout(function(){window.location.reload();},500);}});});}).catch(function(e){console.log("SW err",e);});});}</script>
 </body>
 </html>
