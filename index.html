@@ -4504,6 +4504,24 @@ if(window._sgssLoaded){_mountApp();} else {
   window._sgssOnLoaded=_mountApp;
 }
 </script>
-<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=9",{scope:"/sgss-smtt/"}).then(function(r){console.log("SW OK",r.scope);/* Forca activacao imediata do novo SW */if(r.waiting){r.waiting.postMessage("SKIP_WAITING");}r.addEventListener("updatefound",function(){var nw=r.installing;nw.addEventListener("statechange",function(){if(nw.state==="installed"&&navigator.serviceWorker.controller){nw.postMessage("SKIP_WAITING");setTimeout(function(){window.location.reload();},500);}});});}).catch(function(e){console.log("SW err",e);});});}</script>
+<script>
+/* Limpa todos os service workers e caches antigos */
+var APP_VER="2026.05.21.v10";
+if("serviceWorker"in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(r){r.unregister();});
+  });
+}
+if("caches"in window){
+  caches.keys().then(function(keys){
+    keys.forEach(function(k){caches.delete(k);});
+  });
+}
+var _cv=localStorage.getItem("SGSS_APP_VER");
+if(_cv!==APP_VER){
+  localStorage.setItem("SGSS_APP_VER",APP_VER);
+  if(_cv){window.location.reload(true);}
+}
+</script>
 </body>
 </html>
