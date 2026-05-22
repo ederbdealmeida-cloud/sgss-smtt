@@ -3412,8 +3412,8 @@ ce('h2',{className:'page-title'},'\u2699\ufe0f Configura\xe7\xf5es'),
               ce('td',null,ce('small',null,u.dt)),
               ce('td',null,
                 ce('button',{className:'btn-icon',onClick:function(){setUserForm({id:u.id,nome:u.nome,user:u.user,pw:'',cpw:'',role:u.role});}},'\u270f\ufe0f'),
-                ce('button',{ce('button',{className:'btn-icon',title:'Enviar reset de senha',style:{color:'#2563eb'},onClick:function(){if(!u.email){notify('⚠️ Utilizador sem e-mail.');return;}fbSendReset(u.email).then(function(r){if(r.ok)notify('✅ Email enviado para '+u.email);else notify('⚠️ '+r.error);});}},'🔑'),
-                className:'btn-icon',style:{color:'#dc2626'},onClick:function(){if(u.id===1){notify('⚠️ Não é possível excluir o administrador.');return;}showConfirm({ico:'\ud83d\udc64',titulo:'Excluir usu\u00e1rio?',sub:'"'+u.user+'"',corpo:'O usu\u00e1rio n\u00e3o poder\u00e1 mais acessar o sistema.',lblOk:'Excluir',cor:'red',onOk:function(){var idx=USERS_LIST.findIndex(function(x){return x.id===u.id;});if(idx>=0)USERS_LIST.splice(idx,1);sgssSave();
+                ce('button',{className:'btn-icon',title:'Enviar reset de senha',style:{color:'#2563eb'},onClick:function(){if(!u.email){notify('⚠️ Utilizador sem e-mail.');return;}fbSendReset(u.email).then(function(r){if(r.ok)notify('✅ Email de reset enviado para '+u.email);else notify('⚠️ '+r.error);});}},'🔑'),
+                ce('button',{className:'btn-icon',style:{color:'#dc2626'},onClick:function(){if(u.id===1){notify('⚠️ Não é possível excluir o administrador.');return;}showConfirm({ico:'\ud83d\udc64',titulo:'Excluir usu\u00e1rio?',sub:'"'+u.user+'"',corpo:'O usu\u00e1rio n\u00e3o poder\u00e1 mais acessar o sistema.',lblOk:'Excluir',cor:'red',onOk:function(){var idx=USERS_LIST.findIndex(function(x){return x.id===u.id;});if(idx>=0)USERS_LIST.splice(idx,1);sgssSave();
     }});notify('Usuário excluído.');}},'\ud83d\uddd1\ufe0f')
               )
             );
