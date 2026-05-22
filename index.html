@@ -3752,7 +3752,7 @@ function MapaSolicitacoes(){
   /* URL do embed - mostra Cacequi no Google Maps */
   var embedUrl='https://maps.google.com/maps?q=-29.8836,-54.8278&z=15&output=embed&hl=pt-BR';
   return ce('div',{className:'page-content'},
-    ce('h2',{className:'page-title',style:{marginBottom:14,marginTop:8}},'\ud83d\uddfa\ufe0f Mapa de Solicita\u00e7\u00f5es'),
+    ce('h2',{className:'page-title',style:{marginBottom:14,marginTop:12}},'\ud83d\uddfa\ufe0f Mapa de Solicita\u00e7\u00f5es'),
     /* Filtros */
     ce('div',{style:{display:'flex',gap:8,marginBottom:12,flexWrap:'wrap'}},
       ce('select',{className:'inp',style:{width:'auto'},value:fSt,onChange:function(e){setFSt(e.target.value);}},
@@ -3768,7 +3768,7 @@ function MapaSolicitacoes(){
         bairros.map(function(b){return ce('option',{key:b,value:b},b);}))
     ),
     /* Layout duas colunas */
-    ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 340px',gap:12,height:520}},
+    ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 340px',gap:12,height:520,marginLeft:4}},
       /* Google Maps Embed */
       ce('div',{style:{borderRadius:10,overflow:'hidden',border:'1px solid #e2e8f0'}},
         ce('iframe',{
