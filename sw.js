@@ -1,5 +1,5 @@
 /* SGSS Service Worker v6 */
-const CACHE = 'sgss-v6';
+const CACHE = 'sgss-v7';
 const ASSETS = [
   '/sgss-smtt/',
   '/sgss-smtt/index.html',
