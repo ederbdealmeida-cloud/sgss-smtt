@@ -5214,6 +5214,7 @@ function App(){
   var sprev=useState({reqs:[],acoes:[],user:null});
   var prevSession=sprev[0];var setPrevSession=sprev[1];
   var smob=useState(false);var mobOpen=smob[0];var setMobOpen=smob[1];
+  var smore=useState(false);var showMore=smore[0];var setShowMore=smore[1];
   var sbell=useState(false);var bellOpen=sbell[0];var setBellOpen=sbell[1];
   var sudd=useState(false);var userOpen=sudd[0];var setUserOpen=sudd[1];
   function setPageClose(id){sgssSave();setPage(id);setMobOpen(false);setBellOpen(false);setUserOpen(false);}
@@ -5350,11 +5351,56 @@ function App(){
         )
       ),
       ce('div',{className:'sidebar-overlay'+(mobOpen?' mob-open':''),onClick:function(){setMobOpen(false);setUserOpen(false);}}),
-      ce('nav',{className:'bottom-nav',style:{display:'none'}},
-        [{id:'dashboard',l:'Home',i:'\ud83c\udfe0'},{id:'solicitacoes',l:'Solicit.',i:'\ud83d\udcdd'},
-         {id:'controle',l:'Controle',i:'\ud83d\udccc'},{id:'relatorios',l:'Relat.',i:'\ud83d\udcca'},{id:'agenda',l:'Agenda',i:'\ud83d\udcc5'}]
-        .map(function(m){return ce('button',{key:m.id,className:'bottom-nav-item'+(page===m.id?' active':''),
-          onClick:function(){setPageClose(m.id);}},ce('span',{className:'bni'},m.i),m.l);})),
+      ce('nav',{className:'bottom-nav'},
+        /* 5 main items + Mais */
+        [{id:'dashboard',l:'Home',i:'\ud83c\udfe0'},
+         {id:'solicitacoes',l:'Pedidos',i:'\ud83d\udcdd'},
+         {id:'controle',l:'Controle',i:'\ud83d\udccc'},
+         {id:'relatorios',l:'Relat.',i:'\ud83d\udcca'}]
+        .map(function(m){return ce('button',{key:m.id,
+          className:'bottom-nav-item'+(page===m.id?' active':''),
+          onClick:function(){setPageClose(m.id);setShowMore(false);}},
+          ce('span',{className:'bni'},m.i),m.l);}),
+        ce('button',{className:'bottom-nav-item'+(showMore?' active':''),
+          onClick:function(){setShowMore(function(v){return !v;});}},
+          ce('span',{className:'bni'},'\u22ef'),showMore?'Fechar':'Mais')),
+      /* Bottom Sheet - Mais modules */
+      showMore?ce('div',{style:{position:'fixed',bottom:56,left:0,right:0,
+        background:'#fff',borderRadius:'16px 16px 0 0',
+        boxShadow:'0 -4px 24px rgba(0,0,0,.18)',zIndex:490,
+        maxHeight:'70vh',overflowY:'auto',padding:'8px 0 16px'}},
+        ce('div',{style:{width:36,height:4,background:'#e2e8f0',borderRadius:2,
+          margin:'8px auto 12px',cursor:'pointer'},
+          onClick:function(){setShowMore(false);}}),
+        ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:4,padding:'0 8px'}},
+          [{id:'historico',l:'Hist\u00f3rico',i:'\ud83d\uddc2'},
+           {id:'solicitantes',l:'Solicitantes',i:'\ud83d\udc65'},
+           {id:'servicos',l:'Servi\u00e7os',i:'\ud83d\udd27'},
+           {id:'funcionarios',l:'Funcio.',i:'\ud83d\udc64'},
+           {id:'mural',l:'Mural',i:'\ud83d\udcf0'},
+           {id:'agenda',l:'Agenda',i:'\ud83d\udcc5'},
+           {id:'anotacoes',l:'Notas',i:'\ud83d\udcdd'},
+           {id:'auditoria',l:'Auditoria',i:'\ud83d\udd0d'},
+           {id:'rel_custom',l:'Rel.Pers.',i:'\ud83d\udccb'},
+           {id:'mapa',l:'Mapa',i:'\ud83d\uddfa'},
+           {id:'comunicacao',l:'Comunic.',i:'\ud83d\udcac'},
+           {id:'configuracoes',l:'Config.',i:'\u2699\ufe0f'}]
+          .map(function(m){
+            return ce('button',{key:m.id,
+              style:{display:'flex',flexDirection:'column',alignItems:'center',
+                justifyContent:'center',padding:'10px 4px',borderRadius:10,
+                background:page===m.id?'#eff6ff':'#f8fafc',
+                border:'1px solid '+(page===m.id?'#93c5fd':'#e2e8f0'),
+                cursor:'pointer',gap:4},
+              onClick:function(){setPageClose(m.id);setShowMore(false);}},
+              ce('span',{style:{fontSize:20}},m.i),
+              ce('span',{style:{fontSize:9,color:'#64748b',textAlign:'center',
+                lineHeight:1.2}},m.l));
+          })
+        )
+      ):null,
+      showMore?ce('div',{style:{position:'fixed',inset:0,zIndex:489,background:'rgba(0,0,0,.3)'},
+        onClick:function(){setShowMore(false);}}):null,
       ce('main',{key:'v'+appVer,className:'main'},
         !SGSS_HAS_SAVED_DATA?ce('div',{style:{background:'#fef3c7',border:'1px solid #f59e0b',borderRadius:8,padding:'10px 14px',margin:'0 0 12px',fontSize:12}},
           '\u26a0\ufe0f Nenhum dado salvo encontrado para este arquivo. '
