@@ -314,6 +314,7 @@ body.dark-mode .topbar{background:linear-gradient(90deg,#020617,#0f172a)!importa
 body.dark-mode .card{background:#1e293b!important;border-color:#334155!important}
 body.dark-mode .inp,body.dark-mode select{background:#253352!important;color:#e2e8f0!important;border-color:#475569!important}
 body.dark-mode .page-title{color:#e2e8f0!important}
+@keyframes spin{to{transform:rotate(360deg)}}
 .app-shell{display:block!important;height:auto!important}
 .app-body{display:block!important}
 .doc-paper{background:#fff!important;border-radius:10px;padding:28px;max-width:100%;box-shadow:none;border:1px solid #e2e8f0;page-break-inside:avoid}
@@ -3739,8 +3740,15 @@ function Auditoria(){
     'Login':'#2563eb','Criou':'#16a34a','Editou':'#d97706',
     'Eliminou':'#dc2626','Publicou':'#7c3aed','Concluiu':'#059669'
   };
+  var sload=useState(true);var loading=sload[0];var setLoading=sload[1];
+  React.useEffect(function(){var t=setTimeout(function(){setLoading(false);},400);return function(){clearTimeout(t);};}, []);
   return ce('div',{className:'page-content'},
     ce('h2',{className:'page-title'},'🔍 Auditoria'),
+    loading?ce('div',{style:{display:'flex',justifyContent:'center',alignItems:'center',padding:'60px'}},
+      ce('div',{style:{width:40,height:40,border:'4px solid #e2e8f0',borderTopColor:'#2563eb',
+        borderRadius:'50%',animation:'spin .8s linear infinite'}})):null,
+    !loading?ce('div',{style:{overflowX:'auto'}},
+    ce('div',{style:{minWidth:700}},
     ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:10,marginBottom:16}},
       ce('input',{className:'inp',placeholder:'Utilizador...',value:fUser,
         onChange:function(e){setFUser(e.target.value);setPg(1);}}),
