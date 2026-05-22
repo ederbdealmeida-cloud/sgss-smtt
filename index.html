@@ -3747,10 +3747,15 @@ function Auditoria(){
       ce('select',{className:'inp',value:fMod,onChange:function(e){setFMod(e.target.value);setPg(1);}},
         ce('option',{value:''},'Todos os módulos'),
         modulos.map(function(m){return ce('option',{key:m,value:m},m);})),
-      ce('input',{className:'inp',type:'date',value:fDe,
-        onChange:function(e){setFDe(e.target.value);setPg(1);}}),
-      ce('input',{className:'inp',type:'date',value:fAte,
-        onChange:function(e){setFAte(e.target.value);setPg(1);}})
+      ce('div',{className:'fg'},
+        ce('label',{style:{fontSize:11,color:'#64748b',marginBottom:2,display:'block'}},'Período: De'),
+        ce('input',{className:'inp',type:'date',value:fDe,
+          onChange:function(e){setFDe(e.target.value);setPg(1);}})),
+      ce('div',{className:'fg'},
+        ce('label',{style:{fontSize:11,color:'#64748b',marginBottom:2,display:'block'}},'Até'),
+        ce('input',{className:'inp',type:'date',value:fAte,
+          onChange:function(e){setFAte(e.target.value);setPg(1);}})
+      )
     ),
     ce('div',{style:{fontSize:12,color:'#64748b',marginBottom:10}},
       logs.length+' registo(s) encontrado(s)'
