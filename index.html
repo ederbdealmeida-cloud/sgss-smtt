@@ -5244,13 +5244,6 @@ function App(){
   },[]);
   var sp=useState('dashboard');var page=sp[0];var setPage=sp[1];
   var scol=useState(false);var collapsed=scol[0];var setCollapsed=scol[1];
-  var sim=useState(function(){return(window.innerWidth||screen.width)<=960;});
-  var isMobile=sim[0];var setIsMobile=sim[1];
-  React.useEffect(function(){
-    function onResize(){setIsMobile((window.innerWidth||screen.width)<=960);}
-    window.addEventListener('resize',onResize);
-    return function(){window.removeEventListener('resize',onResize);};
-  },[]);
   var sprev=useState({reqs:[],acoes:[],user:null});
   var prevSession=sprev[0];var setPrevSession=sprev[1];
   var smob=useState(false);var mobOpen=smob[0];var setMobOpen=smob[1];
@@ -5379,14 +5372,7 @@ function App(){
     ),
     ce('div',{className:'app-body'},
       mobOpen?ce('div',{className:'mob-overlay',onClick:function(){setMobOpen(false);}},null):null,
-      ce('aside',{className:'sidebar'+(collapsed?' collapsed':'')+(mobOpen?' mob-open':''),
-        style:isMobile?{
-          position:'fixed',top:0,left:0,
-          width:'82vw',maxWidth:'300px',height:'100vh',
-          transform:mobOpen?'translateX(0)':'translateX(-100%)',
-          transition:'transform .25s ease',
-          zIndex:500,overflowY:'auto'
-        }:{}},
+      ce('aside',{className:'sidebar'+(collapsed?' collapsed':'')+(mobOpen?' mob-open':'')},
         ce('nav',{className:'sb-nav'},renderNav()),
         ce('div',{className:'sb-footer'},
           collapsed?null:ce('div',{className:'sb-user'},
@@ -5396,16 +5382,13 @@ function App(){
           null
         )
       ),
-      ce('div',{className:'sidebar-overlay'+(mobOpen?' mob-open':''),
-        style:isMobile&&mobOpen?{display:'block',position:'fixed',inset:0,background:'rgba(0,0,0,.5)',zIndex:499}:{},
-        onClick:function(){setMobOpen(false);setUserOpen(false);}}),
+      ce('div',{className:'sidebar-overlay'+(mobOpen?' mob-open':''),onClick:function(){setMobOpen(false);setUserOpen(false);}}),
       ce('nav',{className:'bottom-nav',style:{display:'none'}},
         [{id:'dashboard',l:'Home',i:'\ud83c\udfe0'},{id:'solicitacoes',l:'Solicit.',i:'\ud83d\udcdd'},
          {id:'controle',l:'Controle',i:'\ud83d\udccc'},{id:'relatorios',l:'Relat.',i:'\ud83d\udcca'},{id:'agenda',l:'Agenda',i:'\ud83d\udcc5'}]
         .map(function(m){return ce('button',{key:m.id,className:'bottom-nav-item'+(page===m.id?' active':''),
           onClick:function(){setPageClose(m.id);}},ce('span',{className:'bni'},m.i),m.l);})),
-      ce('main',{key:'v'+appVer,className:'main',
-        style:isMobile?{width:'100vw',marginLeft:0,minHeight:'100vh',overflowX:'hidden'}:{}}),
+      ce('main',{key:'v'+appVer,className:'main'},
         !SGSS_HAS_SAVED_DATA?ce('div',{style:{background:'#fef3c7',border:'1px solid #f59e0b',borderRadius:8,padding:'10px 14px',margin:'0 0 12px',fontSize:12}},
           '\u26a0\ufe0f Nenhum dado salvo encontrado para este arquivo. '
           +'Se voc\u00ea usou uma vers\u00e3o anterior, v\u00e1 em Configura\u00e7\u00f5es \u2192 Importar JSON.'
