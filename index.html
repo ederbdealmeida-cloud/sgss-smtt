@@ -1931,7 +1931,14 @@ function imprimirDash(titulo,corpo,landscape){
         )
       )
     ),
-ce('div',{className:'stats-grid'},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));})),
+ce('div',{className:'stats-grid'},/* Banner Mural */
+  var _murals=COMUNICADOS_LIST.filter(function(c){return !c.dtVal||c.dtVal>=today();});
+  var _bc=_murals.filter(function(c){return c.prioridade==='urgente';})[0]||_murals[0]||null;
+  var _BG={'urgente':'#fef2f2','normal':'#eff6ff','info':'#f0fdf4'};
+  var _BD={'urgente':'#fca5a5','normal':'#93c5fd','info':'#86efac'};
+  var _BI={'urgente':'\ud83d\udd34','normal':'\ud83d\udd35','info':'\ud83d\udfe2'};
+
+CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));})),
     ce('div',{className:'ch-grid'},
       ce('div',{className:'ch-card'},
         ce('h3',null,'Solicita\xe7\xf5es por Categoria'),
