@@ -1588,8 +1588,8 @@ function Dashboard(){
     var pend=total-concl;
     var urgPend=reqs.filter(function(r){return r.urg==='Sim'&&r.status!=='Concluído';}).length;
     var sols=INIT_SOLS.length;
-    var receita=reqs.filter(function(r){return r.fp==='Pago'&&r.taxa;})
-      .reduce(function(a,r){return a+parseFloat(r.taxa||0);},0);
+    var receita=reqs.filter(function(r){return parseTaxa(r.taxa)>0;})
+      .reduce(function(a,r){return a+parseTaxa(r.taxa);},0);
     var pctConcl=total>0?Math.round(concl/total*100):0;
 
     var tempos=reqs.filter(function(r){return r.status==='Concluído'&&r.dt&&r.dtConclusao;})
