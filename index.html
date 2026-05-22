@@ -3741,60 +3741,70 @@ function Auditoria(){
   };
   return ce('div',{className:'page-content'},
     ce('h2',{className:'page-title'},'🔍 Auditoria'),
-    ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:10,marginBottom:16}},
-      ce('input',{className:'inp',placeholder:'Utilizador...',value:fUser,
-        onChange:function(e){setFUser(e.target.value);setPg(1);}}),
-      ce('select',{className:'inp',value:fMod,onChange:function(e){setFMod(e.target.value);setPg(1);}},
-        ce('option',{value:''},'Todos os módulos'),
-        modulos.map(function(m){return ce('option',{key:m,value:m},m);})),
-      ce('input',{className:'inp',type:'date',value:fDe,
-        onChange:function(e){setFDe(e.target.value);setPg(1);}}),
-      ce('input',{className:'inp',type:'date',value:fAte,
-        onChange:function(e){setFAte(e.target.value);setPg(1);}})
-    ),
-    ce('div',{style:{display:'flex',alignItems:'center',gap:12,fontSize:12,color:'#64748b',marginBottom:10}},
-      ce('span',null,logs.length+' registo(s) encontrado(s)'),
-      isAdmin&&AUDIT_LOG.length>0?ce('button',{className:'btn-icon',style:{color:'#dc2626',fontSize:11},
-        onClick:function(){showConfirm({ico:'🔍',titulo:'Limpar auditoria?',
-          corpo:'Todo o histórico será eliminado.',lblOk:'Limpar',cor:'red',
-          onOk:function(){AUDIT_LOG.length=0;AUDIT_NEXT_ID=1;sgssSave();notify('\u2705 Auditoria limpa.');}});
-        }},'Limpar tudo'):null
-    ),
-    ce('div',{style:{overflowX:'auto',marginTop:4}},
-    ce('div',{style:{minWidth:680}},
-    logs.length===0
-      ?ce('div',{style:{textAlign:'center',padding:'40px',color:'#94a3b8'}},
-          ce('div',{style:{fontSize:36,marginBottom:8}},'🔍'),
-          ce('div',null,'Nenhum registo encontrado.'))
-      :ce('div',{className:'tbl-wrap'},
-          ce('table',{className:'tbl'},
-            ce('thead',null,ce('tr',null,
-              ce('th',null,'Data/Hora'),
-              ce('th',null,'Utilizador'),
-              ce('th',null,'Módulo'),
-              ce('th',null,'Ação'),
-              ce('th',null,'Detalhe')
-            )),
-            ce('tbody',null,items.map(function(a){
-              return ce('tr',{key:a.id},
-                ce('td',null,fmtD(a.dt)+' '+a.hora),
-                ce('td',null,ce('strong',null,a.usuario)),
-                ce('td',null,ce('span',{style:{background:'#f1f5f9',borderRadius:4,padding:'2px 7px',fontSize:11}},a.modulo)),
-                ce('td',null,ce('span',{style:{background:(corAcao[a.acao]||'#64748b')+'22',
-                  color:corAcao[a.acao]||'#64748b',borderRadius:4,padding:'2px 8px',
-                  fontSize:11,fontWeight:700}},a.acao)),
-                ce('td',{style:{color:'#64748b',fontSize:12}},a.detalhe)
-              );
-            }))
-          ),
-          ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:10}},
-            ce('span',{style:{fontSize:12,color:'#94a3b8'}},'Página '+pg+' de '+Math.max(1,Math.ceil(logs.length/PER))),
-            ce('div',{style:{display:'flex',gap:6}},
-              ce('button',{className:'btn',disabled:pg<=1,onClick:function(){setPg(function(p){return p-1;});}},'\u2039 Anterior'),
-              ce('button',{className:'btn',disabled:pg>=Math.ceil(logs.length/PER),onClick:function(){setPg(function(p){return p+1;});}},'\u203a Próximo')
+    ce('div',{style:{overflowX:'auto',marginTop:8,marginLeft:4,border:'1px solid #e2e8f0',borderRadius:10,background:'#fff',padding:'16px'}},
+    ce('div',{style:{minWidth:720}},
+      /* Filtros com labels */
+      ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:10,marginBottom:12}},
+        ce('div',{className:'fg'},
+          ce('label',null,'Utilizador'),
+          ce('input',{className:'inp',placeholder:'Nome...',value:fUser,
+            onChange:function(e){setFUser(e.target.value);setPg(1);}})),
+        ce('div',{className:'fg'},
+          ce('label',null,'Módulo'),
+          ce('select',{className:'inp',value:fMod,onChange:function(e){setFMod(e.target.value);setPg(1);}},
+            ce('option',{value:''},'Todos'),
+            modulos.map(function(m){return ce('option',{key:m,value:m},m);}))),
+        ce('div',{className:'fg'},
+          ce('label',null,'Período: De'),
+          ce('input',{className:'inp',type:'date',value:fDe,
+            onChange:function(e){setFDe(e.target.value);setPg(1);}})),
+        ce('div',{className:'fg'},
+          ce('label',null,'Até'),
+          ce('input',{className:'inp',type:'date',value:fAte,
+            onChange:function(e){setFAte(e.target.value);setPg(1);}}))
+      ),
+      /* Contador */
+      ce('div',{style:{display:'flex',alignItems:'center',gap:12,fontSize:12,color:'#64748b',marginBottom:10}},
+        ce('span',null,logs.length+' registo(s) encontrado(s)'),
+        isAdmin&&AUDIT_LOG.length>0?ce('button',{className:'btn-icon',style:{color:'#dc2626',fontSize:11},
+          onClick:function(){showConfirm({ico:'🔍',titulo:'Limpar auditoria?',
+            corpo:'Todo o histórico será eliminado.',lblOk:'Limpar',cor:'red',
+            onOk:function(){AUDIT_LOG.length=0;AUDIT_NEXT_ID=1;sgssSave();notify('\u2705 Auditoria limpa.');}});
+          }},'Limpar tudo'):null
+      ),
+      /* Tabela */
+      logs.length===0
+        ?ce('div',{style:{textAlign:'center',padding:'32px',color:'#94a3b8'}},
+            ce('div',{style:{fontSize:32,marginBottom:6}},'🔍'),
+            ce('div',null,'Nenhum registo encontrado.'))
+        :ce('div',{className:'tbl-wrap'},
+            ce('table',{className:'tbl'},
+              ce('thead',null,ce('tr',null,
+                ce('th',null,'Data/Hora'),
+                ce('th',null,'Utilizador'),
+                ce('th',null,'Módulo'),
+                ce('th',null,'Ação'),
+                ce('th',null,'Detalhe')
+              )),
+              ce('tbody',null,items.map(function(a){
+                return ce('tr',{key:a.id},
+                  ce('td',null,fmtD(a.dt)+' '+a.hora),
+                  ce('td',null,ce('strong',null,a.usuario)),
+                  ce('td',null,ce('span',{style:{background:'#f1f5f9',borderRadius:4,padding:'2px 7px',fontSize:11}},a.modulo)),
+                  ce('td',null,ce('span',{style:{background:(corAcao[a.acao]||'#64748b')+'22',
+                    color:corAcao[a.acao]||'#64748b',borderRadius:4,padding:'2px 8px',fontSize:11,fontWeight:700}},a.acao)),
+                  ce('td',{style:{color:'#64748b',fontSize:12}},a.detalhe)
+                );
+              }))
+            ),
+            ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:10}},
+              ce('span',{style:{fontSize:12,color:'#94a3b8'}},'Página '+pg+' de '+Math.max(1,Math.ceil(logs.length/PER))),
+              ce('div',{style:{display:'flex',gap:6}},
+                ce('button',{className:'btn',disabled:pg<=1,onClick:function(){setPg(function(p){return p-1;});}},'\u2039 Anterior'),
+                ce('button',{className:'btn',disabled:pg>=Math.ceil(logs.length/PER),onClick:function(){setPg(function(p){return p+1;});}},'\u203a Próximo')
+              )
             )
           )
-        )
     ))
   );
 }
