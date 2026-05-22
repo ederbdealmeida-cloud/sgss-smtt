@@ -2896,7 +2896,7 @@ function Relatorios(){
             (function(){
               var TH='-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#1e3a5f;color:#fff;padding:8px 10px;font-size:11px;text-align:left;font-weight:700';
               var badge=function(txt){
-                var map={'Conclu\xc3\xaddo':'background:#dcfce7;color:#166534','Em andamento':'background:#dbeafe;color:#1e40af','Aguardando':'background:#fef9c3;color:#854d0e','Cancelado':'background:#fee2e2;color:#991b1b','Pago':'background:#dcfce7;color:#166534','Isento':'background:#f3e8ff;color:#6b21a8','Sim':'background:#fee2e2;color:#991b1b','N\xc3\xa3o':'background:#f1f5f9;color:#475569'};
+                var map={'Concluído':'background:#dcfce7;color:#166534','Em andamento':'background:#dbeafe;color:#1e40af','Aguardando':'background:#fef9c3;color:#854d0e','Cancelado':'background:#fee2e2;color:#991b1b','Pago':'background:#dcfce7;color:#166534','Isento':'background:#f3e8ff;color:#6b21a8','Sim':'background:#fee2e2;color:#991b1b','Não':'background:#f1f5f9;color:#475569'};
                 var st=map[txt]||'background:#f1f5f9;color:#374151';
                 return '<span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;'+st+';display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700">'+htmlEsc(txt||'\xe2\x80\x94')+'</span>';
               };
@@ -2906,21 +2906,21 @@ function Relatorios(){
                   +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9">'+htmlEsc(r.nom)+'</td>'
                   +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:11px">'+htmlEsc(r.sn||'')+'</td>'
                   +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9">'+badge(r.status)+'</td>'
-                  +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9">'+badge(r.urg==='Sim'?'Sim':'N\xc3\xa3o')+'</td>'
+                  +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9">'+badge(r.urg==='Sim'?'Sim':'Não')+'</td>'
                   +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9">'+badge(r.fp||'\xe2\x80\x94')+'</td>'
                   +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9;font-weight:700">R$ '+(parseFloat(r.taxa)||0).toFixed(2).replace('.',',')+'</td>'
                   +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:11px">'+htmlEsc(r.func||'\xe2\x80\x94')+'</td>'
                 +'</tr>';
               }).join('');
               var total=alvo.length;
-              var concl=filtered.filter(function(r){return r.status==='Conclu\xc3\xaddo';}).length;
+              var concl=filtered.filter(function(r){return r.status==='Concluído';}).length;
               var receita=alvo.reduce(function(s,r){return s+(parseFloat(r.taxa)||0);},0);
               var pct=total>0?Math.round(concl/total*100):0;
               var cards=function(v,l,c){'return "<div style=\"-webkit-print-color-adjust:exact;print-color-adjust:exact;background:"+c+";color:#fff;border-radius:8px;padding:10px 16px;text-align:center\"><div style=\"font-size:20px;font-weight:900\">"+(typeof v==="string"?v:v)+"</div><div style=\"font-size:10px;margin-top:2px;\">"+ l +"</div></div>"'};
               var summaryHtml='<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">'
                 +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#2563eb;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">'+total+'</div><div style="font-size:10px;margin-top:2px">Total</div></div>'
-                +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#16a34a;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">'+concl+'</div><div style="font-size:10px;margin-top:2px">Conclu\xc3\xaddo</div></div>'
-                +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#1e3a5f;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">'+pct+'%</div><div style="font-size:10px;margin-top:2px">Conclus\xc3\xa3o</div></div>'
+                +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#16a34a;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">'+concl+'</div><div style="font-size:10px;margin-top:2px">Concluído</div></div>'
+                +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#1e3a5f;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">'+pct+'%</div><div style="font-size:10px;margin-top:2px">Conclusão</div></div>'
                 +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#0891b2;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">R$ '+receita.toLocaleString('pt-BR',{minimumFractionDigits:2})+'</div><div style="font-size:10px;margin-top:2px">Receita</div></div>'
               +'</div>';
               var _pw=1020,_ph=750,_pl=Math.round((screen.width-_pw)/2),_pt=Math.round((screen.height-_ph)/2);var w=window.open('','_blank','width='+_pw+',height='+_ph+',left='+_pl+',top='+_pt+',scrollbars=yes');
