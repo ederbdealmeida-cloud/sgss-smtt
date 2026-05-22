@@ -2745,8 +2745,90 @@ function Controle(p){
               +'</div>'
             +'</div>';
   };
+    var allSorted=sorted;
+  var totalPgs=Math.ceil(allSorted.length/PER)||1;
+  function execPrint(){
+    var fp=Math.max(1,parseInt(printFrom)||1);
+    var tp=Math.min(totalPgs,parseInt(printTo)||totalPgs);
+    var pgItems=allSorted.slice((fp-1)*PER,tp*PER);
+    var target=pgItems.filter(function(r){return printCards[r.id]!==false&&printCards[r.id]!==undefined;});
+    if(!target.length){notify('\u26a0\ufe0f Nenhum card seleccionado.');return;}
+    var rows=[];for(var _i=0;_i<target.length;_i+=2){
+      rows.push('<tr><td style="width:50%;padding:5px;vertical-align:top">'+mkCard(target[_i])+'</td>'
+        +(target[_i+1]?'<td style="width:50%;padding:5px;vertical-align:top">'+mkCard(target[_i+1])+'</td>':'<td style="width:50%"></td>')
+        +'</tr>');
+    }
+    var _pw=1020,_ph=780;
+    var w=window.open('','_blank','width='+_pw+',height='+_ph+',scrollbars=yes');
+    if(!w){notify('\u26a0\ufe0f Permita pop-ups.');return;}
+    w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>@page{size:A4 landscape;margin:8mm}body{font-family:Arial,sans-serif;font-size:12px;}table{width:100%;border-collapse:separate;}</style></head><body>'
+      +'<table><tbody>'+rows.join('')+'</tbody></table>'
+      +'<button onclick="window.print()" style="margin:10px;padding:6px 16px;">Imprimir</button>'
+      +'</body></html>');
+    w.document.close();
+    setShowPrint(false);
+  }
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
+    showPrint?ce('div',{style:{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.55)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}},
+      ce('div',{style:{background:'#fff',borderRadius:12,padding:'22px 26px',width:'min(95vw,560px)',maxHeight:'88vh',overflowY:'auto',boxShadow:'0 20px 60px rgba(0,0,0,.3)'}},
+        ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}},
+          ce('h3',{style:{fontSize:15,fontWeight:700,color:'#1e3a5f',margin:0}},'\ud83d\udda8\ufe0f Impress\u00e3o Personalizada'),
+          ce('button',{className:'btn-icon',onClick:function(){setShowPrint(false);}},'\u00d7')
+        ),
+        ce('div',{style:{background:'#f8fafc',borderRadius:8,padding:'10px 14px',marginBottom:12}},
+          ce('div',{style:{fontWeight:600,fontSize:12,color:'#64748b',marginBottom:8}},'Intervalo de p\u00e1ginas (total: '+totalPgs+' p\u00e1g. / '+allSorted.length+' cards)'),
+          ce('div',{style:{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}},
+            ce('label',{style:{fontSize:13}},'De p\u00e1g.'),
+            ce('input',{className:'inp',type:'number',min:'1',max:String(totalPgs),style:{width:60},
+              value:printFrom,onChange:function(e){setPrintFrom(e.target.value);}}),
+            ce('label',{style:{fontSize:13}},'at\u00e9'),
+            ce('input',{className:'inp',type:'number',min:'1',max:String(totalPgs),style:{width:60},
+              value:printTo,onChange:function(e){setPrintTo(e.target.value);}}),
+            ce('button',{className:'btn',style:{fontSize:11},
+              onClick:function(){
+                var fp2=Math.max(1,parseInt(printFrom)||1);
+                var tp2=Math.min(totalPgs,parseInt(printTo)||totalPgs);
+                var pgi=allSorted.slice((fp2-1)*PER,tp2*PER);
+                var nw={};pgi.forEach(function(r){nw[r.id]=true;});
+                setPrintCards(nw);
+              }},'Aplicar p\u00e1ginas')
+          )
+        ),
+        ce('div',{style:{marginBottom:12}},
+          ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}},
+            ce('div',{style:{fontWeight:600,fontSize:12,color:'#64748b'}},
+              Object.values(printCards).filter(Boolean).length+' de '+allSorted.length+' cards seleccionados'),
+            ce('div',{style:{display:'flex',gap:6}},
+              ce('button',{className:'btn',style:{fontSize:11},
+                onClick:function(){var nw={};allSorted.forEach(function(r){nw[r.id]=true;});setPrintCards(nw);}},'Todos'),
+              ce('button',{className:'btn',style:{fontSize:11},
+                onClick:function(){setPrintCards({});}},'Nenhum')
+            )
+          ),
+          ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:5,maxHeight:260,overflowY:'auto'}},
+            allSorted.map(function(r){
+              var isChk=printCards[r.id]===true;
+              return ce('label',{key:r.id,style:{display:'flex',alignItems:'center',gap:6,padding:'5px 8px',
+                background:isChk?'#eff6ff':'#f8fafc',border:'1px solid '+(isChk?'#93c5fd':'#e2e8f0'),
+                borderRadius:6,cursor:'pointer',fontSize:11}},
+                ce('input',{type:'checkbox',checked:isChk,
+                  onChange:function(){setPrintCards(function(c){var n=Object.assign({},c);n[r.id]=!isChk;return n;});}}),
+                ce('div',null,
+                  ce('div',{style:{fontWeight:600,color:'#2563eb',fontSize:11}},r.prot),
+                  ce('div',{style:{color:'#64748b',fontSize:10,maxWidth:140,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},r.nom)
+                )
+              );
+            })
+          )
+        ),
+        ce('div',{style:{display:'flex',gap:8,justifyContent:'flex-end',borderTop:'1px solid #f1f5f9',paddingTop:10}},
+          ce('button',{className:'btn',onClick:function(){setShowPrint(false);}},'\u274c Cancelar'),
+          ce('button',{className:'btn btn-p',onClick:execPrint},
+            '\ud83d\udda8\ufe0f Gerar ('+Object.values(printCards).filter(Boolean).length+' cards)')
+        )
+      )
+    ):null,
     encItem?ce(EncerrarModal,{item:encItem,onConfirm:handleEncerrar,onCancel:function(){setEncItem(null);}}):null,
     ce('div',{className:'page-header'},
       ce('h2',{className:'page-title'},'\ud83c\udf9b\ufe0f Controle de Solicita\u00e7\u00f5es'),
