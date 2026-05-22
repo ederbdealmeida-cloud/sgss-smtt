@@ -322,7 +322,7 @@ body.dark-mode .topbar{background:linear-gradient(90deg,#020617,#0f172a)!importa
 body.dark-mode .card{background:#1e293b!important;border-color:#334155!important}
 body.dark-mode .inp,body.dark-mode select{background:#253352!important;color:#e2e8f0!important;border-color:#475569!important}
 body.dark-mode .page-title{color:#e2e8f0!important}
-@media(max-width:768px){.sidebar{position:fixed!important;z-index:300!important;width:220px!important;height:100vh!important;top:0;left:0;transform:translateX(-100%);transition:transform .22s ease;}.sidebar:not(.collapsed){transform:translateX(0)!important;}.sidebar.collapsed{transform:translateX(-100%)!important;}.main-content{margin-left:0!important;width:100vw!important;}.page-content{padding:10px 8px!important;}.cards-grid,.stats-grid{grid-template-columns:1fr 1fr!important;}input,select,.inp{font-size:16px!important;}}
+@media(max-width:768px){.sidebar{position:fixed!important;z-index:300!important;width:220px!important;height:100vh!important;top:0;left:0;transform:translateX(-100%)!important;transition:transform .22s ease!important;}.sidebar:not(.collapsed){transform:translateX(0)!important;}.main{margin-left:0!important;width:100vw!important;min-width:0!important;}.page-content{padding:10px 8px!important;}.cards-grid,.stats-grid{grid-template-columns:1fr 1fr!important;}input,select,.inp{font-size:16px!important;}}
 .app-shell{display:block!important;height:auto!important}
 .app-body{display:block!important}
 .doc-paper{background:#fff!important;border-radius:10px;padding:28px;max-width:100%;box-shadow:none;border:1px solid #e2e8f0;page-break-inside:avoid}
@@ -5157,8 +5157,7 @@ function App(){
     return function(){delete window._forceAppReload;delete window._setPrevSession;};
   },[]);
   var sp=useState('dashboard');var page=sp[0];var setPage=sp[1];
-  var scol=useState(false);var collapsed=scol[0];var setCollapsed=scol[1];
-  React.useEffect(function(){if(window.innerWidth<768)setCollapsed(true);},[]);
+  var scol=useState(function(){return typeof window!=='undefined'&&window.innerWidth<768;});var collapsed=scol[0];var setCollapsed=scol[1];
   var sprev=useState({reqs:[],acoes:[],user:null});
   var prevSession=sprev[0];var setPrevSession=sprev[1];
   var smob=useState(false);var mobOpen=smob[0];var setMobOpen=smob[1];
