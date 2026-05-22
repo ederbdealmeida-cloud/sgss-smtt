@@ -1652,7 +1652,7 @@ function Dashboard(){
       var bg=i%2===0?'#ffffff':'#f8fafc';
       return '<tr style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:'+bg+'">'+cells+'</tr>';
     }
-    function th(t,align){return '<th style="padding:7px 10px;font-size:10.5px;font-weight:700;color:#1e3a5f;text-align:'+(align||'left')+'">'+t+'</th>';}
+    function th(t,align){return '<th style="padding:7px 10px;font-size:10.5px;font-weight:700;color:#fff;text-align:'+(align||'left')+'">'+t+'</th>';}
     function td(t,align,fw,col){
       return '<td style="padding:6px 10px;font-size:10.5px'
         +(align?';text-align:'+align:'')+(fw?';font-weight:'+fw:'')+(col?';color:'+col:'')+'">'+t+'</td>';
