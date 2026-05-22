@@ -657,12 +657,30 @@ function fixText(s){
   }
   /* Corrige padrões genéricos */
   return R
+    /* Padrões com ? */
     .replace(/N\?o/g,'Não').replace(/n\?o/g,'não')
     .replace(/Conclu\?do/g,'Concluído').replace(/conclu\?do/g,'concluído')
     .replace(/p\?blic/gi,'públic')
     .replace(/a\?\?o/gi,'ação')
     .replace(/informa\?/gi,'informaç')
-    .replace(/solicita\?/gi,'solicitaç');
+    .replace(/solicita\?/gi,'solicitaç')
+    .replace(/remo\?\?o/gi,'remoção')
+    .replace(/execu\?\?o/gi,'execução')
+    .replace(/gest\?o/gi,'gestão')
+    .replace(/manuten\?\?o/gi,'manutenção')
+    .replace(/limpeza p\?/gi,'limpeza pú')
+    .replace(/pavimenta\?\?o/gi,'pavimentação')
+    .replace(/coleta\?/gi,'coletaç')
+    .replace(/vistoria\?/gi,'vistoriaç')
+    .replace(/constru\?\?o/gi,'construção')
+    .replace(/autoriza\?\?o/gi,'autorização')
+    .replace(/utiliza\?\?o/gi,'utilização')
+    /* Ã seguido de char = dupla codificação UTF-8 */
+    .replace(/Ã£/g,'ã').replace(/Ã©/g,'é')
+    .replace(/Ã­/g,'í').replace(/Ã³/g,'ó')
+    .replace(/Ãº/g,'ú').replace(/Ã§/g,'ç')
+    .replace(/Ãµ/g,'õ').replace(/Ã¢/g,'â')
+    .replace(/Ãª/g,'ê').replace(/Ã´/g,'ô');
 }
 function fixData(obj){
   if(typeof obj==='string')return fixText(obj);
@@ -699,6 +717,8 @@ function _apply(d){
       if(doc&&doc.fields&&doc.fields.dados&&doc.fields.dados.stringValue){
         var _parsed=JSON.parse(doc.fields.dados.stringValue);
           _apply(fixData(_parsed));
+          /* Persiste correcções de volta no Firebase */
+          setTimeout(function(){sgssSave();},1500);
       } else {
         try{var _r=localStorage.getItem(SGSS_STORAGE_KEY);if(_r){var _lp=JSON.parse(_r);_apply(fixData(_lp));}}catch(e){}
       }
