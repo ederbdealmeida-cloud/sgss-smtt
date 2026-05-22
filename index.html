@@ -3149,10 +3149,12 @@ function Relatorios(){
               }})),'#','Protocolo','Data','Solicitante','Bairro','Servi\u00e7o','Taxa','Urg.','Status','Funcion\u00e1rio'].map(function(c){return typeof c==='string'?ce('th',{key:c},c):c;}).concat([ce('th',{key:'ac',className:'no-print'},'A\xe7\xf5es')]))),
           ce('tbody',null,items.map(function(r,i){
             var isEditing=relEdit&&relEdit.id===r.id;
-            if(isEditing)return ce('tr',{key:r.id,style:{background:'#eff6ff',outline:'2px solid #2563eb',outlineOffset:'-2px'}},
-              ce('td',null,(pg-1)*PER+i+1),
-              ce('td',null,ce('code',null,r.prot)),
-              ce('td',null,fmtD(r.dt)),
+            if(isEditing)return ce('tr',{key:r.id,style:{background:'#eff6ff'}},
+              ce('td',{style:{borderTop:'2px solid #2563eb',borderBottom:'2px solid #2563eb',borderLeft:'2px solid #2563eb',borderRadius:'4px 0 0 4px'}},
+                ce('input',{type:'checkbox',checked:selIds.includes(r.id),onChange:function(){setSelIds(function(prev){return prev.includes(r.id)?prev.filter(function(x){return x!==r.id;}):[].concat(prev,[r.id]);});}})),
+              ce('td',{style:{borderTop:'2px solid #2563eb',borderBottom:'2px solid #2563eb'}},(pg-1)*PER+i+1),
+              ce('td',{style:{borderTop:'2px solid #2563eb',borderBottom:'2px solid #2563eb'}},ce('code',null,r.prot)),
+              ce('td',{style:{borderTop:'2px solid #2563eb',borderBottom:'2px solid #2563eb'}},fmtD(r.dt)),
               ce('td',null,ce('input',{style:{width:'100%',padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12},
                 value:relEdit.nom,onChange:function(e){setRelEdit(function(v){return Object.assign({},v,{nom:e.target.value});})}})),
               ce('td',null,ce('input',{style:{width:'100%',padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12},
