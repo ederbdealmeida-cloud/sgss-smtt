@@ -3728,25 +3728,26 @@ function MapaSolicitacoes(){
   var s3=useState('');var fSt=s3[0];var setFSt=s3[1];
   var s4=useState('');var fUrg=s4[0];var setFUrg=s4[1];
   /* Coordenadas aproximadas dos bairros de Cacequi/RS */
+  /* Coordenadas confirmadas por Eder Barros - SMTT Cacequi/RS */
   var BAIRRO_COORDS={
-    'Centro':[-29.8837,-54.8333],
-    'Ipon\u00e3':[-29.8780,-54.8290],
-    'Batovi':[-29.8900,-54.8370],
-    'Alvaro Leit\u00e3o':[-29.8860,-54.8250],
-    'Alto Alegre':[-29.8750,-54.8380],
-    'Progresso':[-29.8920,-54.8310],
-    'Industrial':[-29.8800,-54.8430],
-    'Jardim':[-29.8810,-54.8360],
-    'S\u00e3o Luiz':[-29.8870,-54.8290],
-    'Vila Nova':[-29.8840,-54.8400]
+    'Centro':[-29.8836,-54.8278],
+    'Povo Novo':[-29.8774,-54.8271],
+    'Alvaro Leit\u00e3o':[-29.8862,-54.8248],
+    'Ipon\u00e3':[-29.8782,-54.8320],
+    'Mau\u00e1':[-29.8820,-54.8355],
+    'Vila C\u00e2ndido':[-29.8910,-54.8300],
+    'Maria Nora':[-29.8848,-54.8218],
+    'S\u00e3o Miguel':[-29.8900,-54.8238],
+    'Charqueadas':[-29.8758,-54.8372],
+    'Vila Cruzeiro':[-29.8872,-54.8398]
   };
-  var CENTER=[-29.8837,-54.8333];
+  var CENTER=[-29.8836,-54.8278];
   React.useEffect(function(){
     if(!window.L)return;
     var el=document.getElementById('sgss-map');
     if(!el)return;
     if(el._leaflet_map){try{el._leaflet_map.remove();}catch(e){}}
-    var map=window.L.map('sgss-map').setView(CENTER,14);
+    var map=window.L.map('sgss-map').setView(CENTER,15);
     el._leaflet_map=map;
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
       attribution:'\u00a9 OpenStreetMap contributors',maxZoom:19}).addTo(map);
