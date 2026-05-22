@@ -1803,7 +1803,8 @@ function Dashboard(){
   var pctAno=Math.min(100,Math.round(concluiAno/META_ANO*100));
   return ce('div',{className:'page'},
     ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',width:'100%'}},
-      ce('h2',{className:'page-title'},'\ud83d\udcca Dashboard'),
+      ce('h2',{className:'page-title'},'\ud83d\udcca Dashboard',
+      ce('span',{style:{fontSize:10,color:'#94a3b8',fontWeight:400,marginLeft:8}},'v534a90c')),
       !funcSel?ce('button',{className:'btn btn-s',onClick:imprimirVisaoGeral},'\ud83d\udda8\ufe0f Imprimir Vis\u00e3o Geral'):null
     ),
     ce('div',{style:{display:'flex',alignItems:'center',gap:8}},
