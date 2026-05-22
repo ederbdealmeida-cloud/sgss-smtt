@@ -1,4 +1,4 @@
-const CACHE = 'sgss-smtt-v4';
+const CACHE = 'sgss-smtt-v5';
 const ASSETS = [
   '/sgss-smtt/',
   '/sgss-smtt/index.html',
@@ -22,13 +22,23 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  /* Firebase e APIs externas: sempre rede */
-  if(e.request.url.includes('firestore') || 
+  if(e.request.url.includes('firestore') ||
      e.request.url.includes('googleapis') ||
-     e.request.url.includes('nominatim') ||
-     e.request.url.includes('openstreetmap') ||
      e.request.url.includes('maps.google') ||
+     e.request.url.includes('openstreetmap') ||
+     e.request.url.includes('unpkg.com') ||
      e.request.url.includes('anthropic')){
+    return;
+  }
+  /* Network first para o index.html - garante versao mais recente */
+  if(e.request.url.includes('index.html') || e.request.url.endsWith('/sgss-smtt/')){
+    e.respondWith(
+      fetch(e.request).then(r => {
+        var clone = r.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return r;
+      }).catch(() => caches.match(e.request))
+    );
     return;
   }
   e.respondWith(
