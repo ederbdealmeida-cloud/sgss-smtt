@@ -638,43 +638,31 @@ var SGSS_STORAGE_KEY='sgss_v4_data';
 var SGSS_LOAD_STATUS={ok:false,reqs:0,sols:0,funcs:0,ts:null,err:null};
 function sgssLoad(){
   /* Corrige textos com caracteres corrompidos */
-var _REPL='\ufffd'; /* Unicode Replacement Character */
 function fixText(s){
   if(typeof s!=='string')return s;
-  /* Normaliza usando mapa de strings conhecidas */
-  var _r=_REPL;
-  var known={
-    /* Status */
-    'N'+_r+'o Conclu'+_r+'do':'Não Concluído',
-    'N'+_r+'o conclu'+_r+'do':'Não concluído',
-    'Conclu'+_r+'do':'Concluído','Concluido':'Concluído',
-    'N?o Conclu?do':'Não Concluído','N?o conclu?do':'Não concluído',
-    'Conclu?do':'Concluído',
-    /* Outros */
-    'N'+_r+'o informado':'Não informado','N?o informado':'Não informado',
-    'N'+_r+'o':'Não','N?o':'Não','Nao':'Não',
-    'Sim':'Sim','Pago':'Pago','Isento':'Isento','Gratuito':'Gratuito',
-    'Isento':'Isento','Pendente':'Pendente','Agendado':'Agendado'
-  };
-  if(known[s])return known[s];
-  /* Substitui padrões genéricos */
-  var R=new RegExp(_r,'g');
-  /* Tenta reconstruir por contexto */
-  return s
-    /* Replacement char em contexto específico */
-    .replace(new RegExp('N'+_r+'o','g'),'Não')
-    .replace(new RegExp('n'+_r+'o','g'),'não')
-    .replace(new RegExp('conclu'+_r+'do','gi'),'concluído')
-    .replace(new RegExp('Conclu'+_r+'do','g'),'Concluído')
-    .replace(new RegExp('a'+_r+'([ao])','g'),'aç$1')
-    .replace(new RegExp('([Cc])'+_r,'g'),'$1ç')
-    .replace(new RegExp('p'+_r+'blic','gi'),'públic')
-    .replace(new RegExp('informa'+_r,'gi'),'informaç')
-    /* ? no lugar de acentos */
+  var R=s.replace(/\ufffd/g,'?'); /* normaliza replacement char para ? */
+  /* Mapa de valores de status conhecidos */
+  var map=[
+    ['N?o Conclu?do','Não Concluído'],
+    ['N?o conclu?do','Não concluído'],
+    ['Conclu?do','Concluído'],
+    ['N?o Concluido','Não Concluído'],
+    ['N?o informado','Não informado'],
+    ['N?o Informado','Não Informado'],
+    ['Concluido','Concluído'],
+    ['Nao ','Não ']
+  ];
+  for(var i=0;i<map.length;i++){
+    if(R===map[i][0])return map[i][1];
+  }
+  /* Corrige padrões genéricos */
+  return R
     .replace(/N\?o/g,'Não').replace(/n\?o/g,'não')
-    .replace(/conclu\?do/gi,'concluído')
+    .replace(/Conclu\?do/g,'Concluído').replace(/conclu\?do/g,'concluído')
     .replace(/p\?blic/gi,'públic')
-    .replace(/informa\?/gi,'informaç');
+    .replace(/a\?\?o/gi,'ação')
+    .replace(/informa\?/gi,'informaç')
+    .replace(/solicita\?/gi,'solicitaç');
 }
 function fixData(obj){
   if(typeof obj==='string')return fixText(obj);
