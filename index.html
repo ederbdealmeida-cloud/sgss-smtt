@@ -1547,7 +1547,8 @@ function Dashboard(){
   var _pend=INIT_REQS.filter(function(r){return r.status!=='Conclu\u00eddo';}).length;
   var _urg=INIT_REQS.filter(function(r){return r.urg==='Sim'&&r.status!=='Conclu\u00eddo';}).length;
   var _sol=INIT_SOLS.length;
-  var _rec=INIT_REQS.filter(function(r){return r.fp==='Pago'&&parseFloat(r.taxa||0)>0;}).reduce(function(s,r){return s+(parseFloat(r.taxa)||0);},0);
+  function parseTaxa(v){return parseFloat(String(v||0).replace(',','.'))||0;}
+  var _rec=INIT_REQS.filter(function(r){return r.fp==='Pago'&&parseTaxa(r.taxa)>0;}).reduce(function(s,r){return s+parseTaxa(r.taxa);},0);
   var _agend=AGENDA_LIST.length;
   var CARDS=[
     {l:'Total de Solicita\u00e7\u00f5es',v:_tot,c:'s-bl',i:'\ud83d\udcdd'},
