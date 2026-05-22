@@ -4445,6 +4445,12 @@ function Anotacoes(){
 function App(){
   var su=useState(null);var user=su[0];var setUser=su[1];
   var shlid=useState(null);var hlId=shlid[0];var setHlId=shlid[1];
+  var sdark=useState(localStorage.getItem('SGSS_DARK')==='1');
+  var darkMode=sdark[0];var setDarkMode=sdark[1];
+  React.useEffect(function(){
+    if(darkMode)document.body.classList.add('dark-mode');
+    else document.body.classList.remove('dark-mode');
+  },[darkMode]);
   var sver=useState(0);var appVer=sver[0];var setAppVer=sver[1];
   React.useEffect(function(){
     window._forceAppReload=function(){setAppVer(function(v){return v+1;});};
@@ -4596,9 +4602,7 @@ function App(){
             ce('span',{className:'sb-uname'},'👤 '+user.nome),
             ce('span',{className:'sb-urole'},user.role==='admin'?'Administrador':'Usuário')
           ),
-          ce('button',{className:'btn-logout',
-            onClick:function(){setUser(null);setPage('dashboard');},title:'Sair'},
-            collapsed?'→':'→  Sair')
+          null
         )
       ),
       ce('div',{className:'sidebar-overlay'+(mobOpen?' mob-open':''),onClick:function(){setMobOpen(false);setUserOpen(false);}}),
@@ -4612,7 +4616,7 @@ function App(){
           '\u26a0\ufe0f Nenhum dado salvo encontrado para este arquivo. '
           +'Se voc\u00ea usou uma vers\u00e3o anterior, v\u00e1 em Configura\u00e7\u00f5es \u2192 Importar JSON.'
         ):null,
-        ce(Comp,{hlId:hlId,setHlId:setHlId})
+        ce(Comp,{hlId:hlId,setHlId:setHlId,darkMode:darkMode})
       )
     )
   );
