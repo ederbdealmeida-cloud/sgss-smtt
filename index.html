@@ -1637,14 +1637,24 @@ function Dashboard(){
         +'<div style="border:1px solid #e2e8f0;border-top:none;border-radius:0 0 8px 8px;overflow:hidden">'+content+'</div>'
         +'</div>';
     }
+    var _zIdx=0;
     function tbl(header,rows){
+      _zIdx=0;
       return '<table style="width:100%;border-collapse:collapse">'
-        +'<thead style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#f8fafc">'
+        +'<thead style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#1e3a5f">'
         +header+'</thead><tbody>'+rows+'</tbody></table>';
+    }
+    function ztr(cells){
+      var bg=(_zIdx++%2===0)?'#ffffff':'#f1f5f9';
+      return '<tr style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:'+bg+'">'+cells+'</tr>';
+    }
+    function tr(cells,i){
+      var bg=i%2===0?'#ffffff':'#f8fafc';
+      return '<tr style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:'+bg+'">'+cells+'</tr>';
     }
     function th(t,align){return '<th style="padding:7px 10px;font-size:10.5px;font-weight:700;color:#1e3a5f;text-align:'+(align||'left')+'">'+t+'</th>';}
     function td(t,align,fw,col){
-      return '<td style="padding:6px 10px;font-size:10.5px;border-bottom:1px solid #f1f5f9'
+      return '<td style="padding:6px 10px;font-size:10.5px'
         +(align?';text-align:'+align:'')+(fw?';font-weight:'+fw:'')+(col?';color:'+col:'')+'">'+t+'</td>';
     }
     function bar(v,max,col){
@@ -1725,12 +1735,10 @@ function Dashboard(){
         Object.keys(stMap).map(function(k){
           var cor=k==='Concluído'?C.green:k==='Em andamento'?C.accent:k==='Aguardando'?C.orange:C.red;
           var pct=total>0?Math.round(stMap[k]/total*100):0;
-          return '<tr>'
-            +td('<span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;display:inline-block;width:9px;height:9px;border-radius:50%;background:'+cor+';margin-right:6px;vertical-align:middle"></span>'+k)
+          return ztr(td('<span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;display:inline-block;width:9px;height:9px;border-radius:50%;background:'+cor+';margin-right:6px;vertical-align:middle"></span>'+k)
             +td(stMap[k],'center','700')
             +td(pct+'%','center','',C.muted)
-            +'<td style="padding:6px 10px;border-bottom:1px solid #f1f5f9;width:100px">'+bar(stMap[k],total,cor)+'</td>'
-            +'</tr>';
+            +'<td style="padding:6px 10px;width:100px">'+bar(stMap[k],total,cor)+'</td>');
         }).join(''))
     )
     +sec('👤','Por Funcionário',C.purple,
@@ -1738,10 +1746,7 @@ function Dashboard(){
         funcArr.map(function(f){
           var pct=f.t>0?Math.round(f.c/f.t*100):0;
           var cor=pct>=80?C.green:pct>=50?C.orange:C.red;
-          return '<tr>'+td(f.n)+td(f.t,'center','800')+td(f.c,'center','700',C.green)
-            +td(pct+'%','center','',cor)
-            +'<td style="padding:6px 10px;border-bottom:1px solid #f1f5f9;width:80px">'+bar(f.c,f.t,cor)+'</td>'
-            +'</tr>';
+          return ztr(td(f.n)+td(f.t,'center','800')+td(f.c,'center','700',C.green)+td(pct+'%','center','',cor)+'<td style="padding:6px 10px;width:80px">'+bar(f.c,f.t,cor)+'</td>');
         }).join(''))
     )
     +'</div>'
@@ -1751,10 +1756,7 @@ function Dashboard(){
       tbl('<tr>'+th('Serviço')+th('Qtd','center')+th('Concluídas','center')+th('R$ Arrecadado','center')+th('Barra')+th('%','center')+'</tr>',
         svcArr.map(function(s){
           var pct=total>0?Math.round(s.t/total*100):0;
-          return '<tr>'+td(s.n)+td(s.t,'center','800')+td(s.c,'center','700',C.green)
-            +td('R$'+s.r.toFixed(2).replace('.',','),'center')
-            +'<td style="padding:6px 10px;border-bottom:1px solid #f1f5f9">'+bar(s.t,maxSvc,C.teal)+'</td>'
-            +td(pct+'%','center','',C.muted)+'</tr>';
+          return ztr(td(s.n)+td(s.t,'center','800')+td(s.c,'center','700',C.green)+td('R$'+s.r.toFixed(2).replace('.',','),'center')+'<td style="padding:6px 10px">'+bar(s.t,maxSvc,C.teal)+'</td>'+td(pct+'%','center','',C.muted));
         }).join(''))
     )
 
@@ -1763,17 +1765,14 @@ function Dashboard(){
     +sec('🗺️','Por Bairro',C.green,
       tbl('<tr>'+th('#')+th('Bairro')+th('Total','center')+th('Concl.','center')+th('Barra')+'</tr>',
         bairArr.map(function(b,i){
-          return '<tr>'+td(i+1,'center','',C.muted)+td(b.n)+td(b.t,'center','800')
-            +td(b.c,'center','700',C.green)
-            +'<td style="padding:6px 10px;border-bottom:1px solid #f1f5f9">'+bar(b.t,maxB,C.green)+'</td>'
-            +'</tr>';
+          return ztr(td(i+1,'center','',C.muted)+td(b.n)+td(b.t,'center','800')+td(b.c,'center','700',C.green)+'<td style="padding:6px 10px">'+bar(b.t,maxB,C.green)+'</td>');
         }).join(''))
     )
     +sec('👥','Ranking de Solicitantes',C.orange,
       tbl('<tr>'+th('#')+th('Solicitante')+th('Solicitações','center')+'</tr>',
         solArr.map(function(s,i){
           var medals=['🥇','🥈','🥉'];
-          return '<tr>'+td((i<3?medals[i]:i+1),'center')+td(s.n)+td(s.v,'center','800')+'</tr>';
+          return ztr(td((i<3?medals[i]:i+1),'center')+td(s.n)+td(s.v,'center','800'));
         }).join(''))
     )
     +'</div>'
@@ -1784,10 +1783,7 @@ function Dashboard(){
         tbl('<tr>'+th('Protocolo')+th('Solicitante')+th('Serviço')+th('Bairro')+th('Dias','center')+'</tr>',
           urgArr.map(function(r){
             var cor=r.dias>30?C.red:r.dias>15?C.orange:'#f59e0b';
-            return '<tr>'+td(r.prot,'','700',C.accent)+td(r.nom)+td(r.cn||'-')+td(r.bairro||'-')
-              +'<td style="padding:6px 10px;border-bottom:1px solid #f1f5f9;text-align:center">'
-              +badge(r.dias+'d',cor==='#f59e0b'?'#fef9c3':cor===C.orange?'#fff7ed':'#fef2f2',cor)
-              +'</td></tr>';
+            return ztr(td(r.prot,'','700',C.accent)+td(r.nom)+td(r.cn||'-')+td(r.bairro||'-')+'<td style="padding:6px 10px;text-align:center">'+badge(r.dias+'d',cor==='#f59e0b'?'#fef9c3':cor===C.orange?'#fff7ed':'#fef2f2',cor)+'</td>');
           }).join(''))
       )
       :'');
