@@ -3752,13 +3752,13 @@ function Auditoria(){
       ce('input',{className:'inp',type:'date',value:fAte,
         onChange:function(e){setFAte(e.target.value);setPg(1);}})
     ),
-    ce('div',{style:{fontSize:12,color:'#64748b',marginBottom:10}},
-      logs.length+' registo(s) encontrado(s)'
-      +(isAdmin&&AUDIT_LOG.length>0?ce('button',{className:'btn-icon',style:{color:'#dc2626',marginLeft:12,fontSize:11},
+    ce('div',{style:{display:'flex',alignItems:'center',gap:12,fontSize:12,color:'#64748b',marginBottom:10}},
+      ce('span',null,logs.length+' registo(s) encontrado(s)'),
+      isAdmin&&AUDIT_LOG.length>0?ce('button',{className:'btn-icon',style:{color:'#dc2626',fontSize:11},
         onClick:function(){showConfirm({ico:'🔍',titulo:'Limpar auditoria?',
           corpo:'Todo o histórico será eliminado.',lblOk:'Limpar',cor:'red',
           onOk:function(){AUDIT_LOG.length=0;AUDIT_NEXT_ID=1;sgssSave();notify('\u2705 Auditoria limpa.');}});
-        }},'Limpar tudo'):null)
+        }},'Limpar tudo'):null
     ),
     ce('div',{style:{overflowX:'auto',marginTop:4}},
     ce('div',{style:{minWidth:680}},
