@@ -3159,7 +3159,22 @@ function Relatorios(){
                 value:relEdit.nom||'',onChange:function(e){setRelEdit(function(v){return Object.assign({},v,{nom:e.target.value});})}})),
               ce('td',null,ce('input',{style:{width:'100%',padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12},
                 value:relEdit.bairro||'',onChange:function(e){setRelEdit(function(v){return Object.assign({},v,{bairro:e.target.value});})}})),
-              ce('td',{title:r.cn||''},(r.cn||'').slice(0,22)+(r.cn&&r.cn.length>22?'\u2026':'')),
+              ce('td',null,
+                ce('select',{style:{fontSize:11,border:'1px solid #93c5fd',borderRadius:4,padding:'2px',width:'100%'},
+                  value:relEdit.catId||'',
+                  onChange:function(e){
+                    var cat=CATS.find(function(c){return String(c.id)===e.target.value;});
+                    setRelEdit(function(v){
+                      var upd={catId:e.target.value,cn:cat?cat.nome:v.cn};
+                      if(cat&&cat.fp==='Pago'&&cat.taxa)upd.taxa=parseFloat(cat.taxa)||v.taxa;
+                      return Object.assign({},v,upd);
+                    });
+                  }},
+                  ce('option',{value:''},'-- Selecione --'),
+                  CATS.map(function(c){return ce('option',{key:c.id,value:String(c.id),
+                    style:{color:c.fp==='Pago'?'#16a34a':'inherit'}},
+                    (c.fp==='Pago'?'R$ ':'')+c.nome);})
+                )),
               ce('td',null,ce('input',{type:'number',style:{width:70,padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12},
                 value:relEdit.taxa||0,onChange:function(e){setRelEdit(function(v){return Object.assign({},v,{taxa:parseFloat(e.target.value)||0});})}})),
               ce('td',null,ce('select',{style:{fontSize:11,border:'1px solid #93c5fd',borderRadius:4,padding:'2px'},
