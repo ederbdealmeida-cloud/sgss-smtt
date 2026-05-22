@@ -3495,7 +3495,7 @@ ce('h2',{className:'page-title'},'\u2699\ufe0f Configura\xe7\xf5es'),
 }
 
 /* ── APP ── */
-var MENU=[{id:'dashboard',l:'Dashboard',i:'🏠',g:'PRINCIPAL'},{id:'solicitacoes',l:'Solicitações',i:'📋',g:'OPERACIONAL'},{id:'controle',l:'Controle',i:'📌',g:'OPERACIONAL'},{id:'historico',l:'Histórico',i:'🗂',g:'OPERACIONAL'},{id:'auditoria',l:'Auditoria',i:'🔍',g:'GESTÃO'},{id:'comunicados',l:'Mural',i:'📰',g:'OPERACIONAL'},{id:'comunicacao',l:'Comunicação',i:'💬',g:'OPERACIONAL'},{id:'solicitantes',l:'Solicitantes',i:'👥',g:'CADASTROS'},{id:'servicos',l:'Tipos de Serv.',i:'🔧',g:'CADASTROS'},{id:'funcionarios',l:'Funcionários',i:'👤',g:'CADASTROS'},{id:'relatorios',l:'Relatórios',i:'📊',g:'GESTÃO'},{id:'agenda',l:'Agenda',i:'📅',g:'GESTÃO'},{id:'anotacoes',l:'Anotações',i:'📝',g:'GESTÃO'},{id:'configuracoes',l:'Configurações',i:'⚙️',g:'SISTEMA'}];
+var MENU=[{id:'dashboard',l:'Dashboard',i:'🏠',g:'PRINCIPAL'},{id:'solicitacoes',l:'Solicitações',i:'📋',g:'OPERACIONAL'},{id:'controle',l:'Controle',i:'📌',g:'OPERACIONAL'},{id:'historico',l:'Histórico',i:'🗂',g:'OPERACIONAL'},{id:'auditoria',l:'Auditoria',i:'🔍',g:'GESTÃO'},{id:'rel_custom',l:'Rel. Personalizado',i:'📋',g:'GESTÃO'},{id:'comunicados',l:'Mural',i:'📰',g:'OPERACIONAL'},{id:'comunicacao',l:'Comunicação',i:'💬',g:'OPERACIONAL'},{id:'solicitantes',l:'Solicitantes',i:'👥',g:'CADASTROS'},{id:'servicos',l:'Tipos de Serv.',i:'🔧',g:'CADASTROS'},{id:'funcionarios',l:'Funcionários',i:'👤',g:'CADASTROS'},{id:'relatorios',l:'Relatórios',i:'📊',g:'GESTÃO'},{id:'agenda',l:'Agenda',i:'📅',g:'GESTÃO'},{id:'anotacoes',l:'Anotações',i:'📝',g:'GESTÃO'},{id:'configuracoes',l:'Configurações',i:'⚙️',g:'SISTEMA'}];
 var MENU_GROUPS=['PRINCIPAL','OPERACIONAL','CADASTROS','GESTÃO','SISTEMA'];
 
 var DELETED_REQS=[];
@@ -3717,6 +3717,177 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
 
 
 
+
+function RelatoriosPersonalizados(){
+  /* Filtros */
+  var sfDe=useState('');var fDe=sfDe[0];var setFDe=sfDe[1];
+  var sfAte=useState('');var fAte=sfAte[0];var setFAte=sfAte[1];
+  var sfFunc=useState('');var fFunc=sfFunc[0];var setFFunc=sfFunc[1];
+  var sfBairro=useState('');var fBairro=sfBairro[0];var setFBairro=sfBairro[1];
+  var sfSvc=useState('');var fSvc=sfSvc[0];var setFSvc=sfSvc[1];
+  var sfSt=useState('');var fSt=sfSt[0];var setFSt=sfSt[1];
+  var sfUrg=useState('');var fUrg=sfUrg[0];var setFUrg=sfUrg[1];
+  var sfPag=useState('');var fPag=sfPag[0];var setFPag=sfPag[1];
+  /* Colunas visiveis */
+  var defCols={prot:true,dt:true,nom:true,bairro:true,svc:true,status:true,func:true,taxa:false,urg:false,pag:false,end:false};
+  var scols=useState(defCols);var cols=scols[0];var setCols=scols[1];
+  function toggleCol(k){setCols(function(c){var r=Object.assign({},c);r[k]=!r[k];return r;});}
+  var t=useToast();var notify=t[1];
+  /* Dados filtrados */
+  var bairros=[...new Set(INIT_REQS.map(function(r){return r.bairro||'';}).filter(Boolean))].sort();
+  var svcs=[...new Set(INIT_REQS.map(function(r){return r.cn||r.sn||'';}).filter(Boolean))].sort();
+  var status_opts=['Não Concluído','Em andamento','Aguardando','Concluído'];
+  var filtered=INIT_REQS.filter(function(r){return r.enc!==1;}).filter(function(r){
+    if(fDe&&r.dt<fDe)return false;
+    if(fAte&&r.dt>fAte)return false;
+    if(fFunc&&r.func!==fFunc)return false;
+    if(fBairro&&r.bairro!==fBairro)return false;
+    if(fSvc&&(r.cn||r.sn||'')!==fSvc)return false;
+    if(fSt&&r.status!==fSt)return false;
+    if(fUrg==='sim'&&r.urg!=='Sim')return false;
+    if(fUrg==='nao'&&r.urg==='Sim')return false;
+    if(fPag&&r.fp!==fPag)return false;
+    return true;
+  });
+  /* Lista de colunas disponiveis */
+  var COL_DEFS=[
+    {k:'prot',l:'Protocolo'},{k:'dt',l:'Data'},{k:'nom',l:'Solicitante'},
+    {k:'bairro',l:'Bairro'},{k:'svc',l:'Serviço'},{k:'status',l:'Status'},
+    {k:'func',l:'Funcionário'},{k:'taxa',l:'Taxa'},
+    {k:'urg',l:'Urgente'},{k:'pag',l:'Pagamento'},{k:'end',l:'Endereço'}
+  ];
+  var activeCols=COL_DEFS.filter(function(c){return cols[c.k];});
+  /* Funcao imprimir */
+  function imprimir(){
+    if(filtered.length===0){notify('\u26a0\ufe0f Nenhum resultado para imprimir.');return;}
+    var TH='style="padding:6px 10px;font-size:11px;font-weight:700;color:#fff;background:#1e3a5f;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact"';
+    var TD='style="padding:5px 10px;font-size:11px;border-bottom:1px solid #f1f5f9"';
+    function getCel(r,k){
+      if(k==='prot')return r.prot||'';
+      if(k==='dt')return fmtD(r.dt);
+      if(k==='nom')return r.nom||'';
+      if(k==='bairro')return r.bairro||'';
+      if(k==='svc')return r.cn||r.sn||'';
+      if(k==='status')return r.status||'';
+      if(k==='func'){var f=FUNC_LIST.find(function(x){return String(x.id)===String(r.func)||x.nome===r.func;});return f?f.nome:(r.func||'');}
+      if(k==='taxa')return r.taxa?'R$ '+parseFloat(r.taxa).toFixed(2).replace('.',','):'-';
+      if(k==='urg')return r.urg||'Não';
+      if(k==='pag')return r.fp||'';
+      if(k==='end')return (r.rua||'')+(r.num?' nº '+r.num:'');
+      return '';
+    }
+    var thead='<tr>'+activeCols.map(function(c){return '<th '+TH+'>'+c.l+'</th>';}).join('')+'</tr>';
+    var tbody=filtered.map(function(r,i){
+      var bg=i%2===0?'#fff':'#f8fafc';
+      return '<tr style="background:'+bg+';-webkit-print-color-adjust:exact;print-color-adjust:exact">'
+        +activeCols.map(function(c){return '<td '+TD+'>'+getCel(r,c.k)+'</td>';}).join('')+'</tr>';
+    }).join('');
+    var filtrosTxt=[];
+    if(fDe||fAte)filtrosTxt.push('Período: '+(fDe?fmtD(fDe):'início')+' a '+(fAte?fmtD(fAte):'hoje'));
+    if(fFunc){var fn=FUNC_LIST.find(function(x){return String(x.id)===String(fFunc);});filtrosTxt.push('Funcionário: '+(fn?fn.nome:fFunc));}
+    if(fBairro)filtrosTxt.push('Bairro: '+fBairro);
+    if(fSvc)filtrosTxt.push('Serviço: '+fSvc);
+    if(fSt)filtrosTxt.push('Status: '+fSt);
+    if(fUrg)filtrosTxt.push('Urgentes: '+(fUrg==='sim'?'Sim':'Não'));
+    if(fPag)filtrosTxt.push('Pagamento: '+fPag);
+    var html='<div style="margin-bottom:12px;font-size:11px;color:#64748b">'
+      +(filtrosTxt.length?'<b>Filtros:</b> '+filtrosTxt.join(' \u00b7 '):'Sem filtros aplicados')
+      +'</div>'
+      +'<table style="width:100%;border-collapse:collapse">'
+      +'<thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table>';
+    imprimirDash('Relatório Personalizado – '+filtered.length+' resultado(s)',html,false);
+  }
+  return ce('div',{className:'page-content'},
+    ce('h2',{className:'page-title',style:{marginBottom:20}},'📋 Relatório Personalizado'),
+    ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}},
+      /* Card filtros */
+      ce('div',{className:'card',style:{padding:'16px 18px'}},
+        ce('div',{style:{fontWeight:700,fontSize:13,color:'#1e3a5f',marginBottom:12}},'🔍 Filtros'),
+        ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}},
+          ce('div',{className:'fg'},ce('label',null,'De'),
+            ce('input',{className:'inp',type:'date',value:fDe,onChange:function(e){setFDe(e.target.value);}})),
+          ce('div',{className:'fg'},ce('label',null,'Até'),
+            ce('input',{className:'inp',type:'date',value:fAte,onChange:function(e){setFAte(e.target.value);}})),
+          ce('div',{className:'fg'},ce('label',null,'Funcionário'),
+            ce('select',{className:'inp',value:fFunc,onChange:function(e){setFFunc(e.target.value);}},
+              ce('option',{value:''},'Todos'),
+              FUNC_LIST.map(function(f){return ce('option',{key:f.id,value:String(f.id)},f.nome);}))),
+          ce('div',{className:'fg'},ce('label',null,'Bairro'),
+            ce('select',{className:'inp',value:fBairro,onChange:function(e){setFBairro(e.target.value);}},
+              ce('option',{value:''},'Todos'),
+              bairros.map(function(b){return ce('option',{key:b,value:b},b);}))),
+          ce('div',{className:'fg'},ce('label',null,'Tipo de Serviço'),
+            ce('select',{className:'inp',value:fSvc,onChange:function(e){setFSvc(e.target.value);}},
+              ce('option',{value:''},'Todos'),
+              svcs.map(function(s){return ce('option',{key:s,value:s},s);}))),
+          ce('div',{className:'fg'},ce('label',null,'Status'),
+            ce('select',{className:'inp',value:fSt,onChange:function(e){setFSt(e.target.value);}},
+              ce('option',{value:''},'Todos'),
+              status_opts.map(function(s){return ce('option',{key:s,value:s},s);}))),
+          ce('div',{className:'fg'},ce('label',null,'Urgente'),
+            ce('select',{className:'inp',value:fUrg,onChange:function(e){setFUrg(e.target.value);}},
+              ce('option',{value:''},'Todos'),
+              ce('option',{value:'sim'},'Sim'),
+              ce('option',{value:'nao'},'Não'))),
+          ce('div',{className:'fg'},ce('label',null,'Pagamento'),
+            ce('select',{className:'inp',value:fPag,onChange:function(e){setFPag(e.target.value);}},
+              ce('option',{value:''},'Todos'),
+              ce('option',{value:'Pago'},'Pago'),
+              ce('option',{value:'Gratuito'},'Gratuito'),
+              ce('option',{value:'Isento'},'Isento')))
+        )
+      ),
+      /* Card colunas */
+      ce('div',{className:'card',style:{padding:'16px 18px'}},
+        ce('div',{style:{fontWeight:700,fontSize:13,color:'#1e3a5f',marginBottom:12}},'📋 Colunas a exibir'),
+        ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}},
+          COL_DEFS.map(function(c){
+            return ce('label',{key:c.k,style:{display:'flex',alignItems:'center',gap:6,fontSize:13,cursor:'pointer'}},
+              ce('input',{type:'checkbox',checked:cols[c.k]||false,
+                onChange:function(){toggleCol(c.k);},style:{cursor:'pointer'}}),
+              c.l);
+          })
+        )
+      )
+    ),
+    /* Preview e botao */
+    ce('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}},
+      ce('span',{style:{fontSize:13,color:'#64748b',fontWeight:600}},filtered.length+' resultado(s) com os filtros actuais'),
+      ce('button',{className:'btn btn-p',onClick:imprimir},'🖨️ Gerar e Imprimir')
+    ),
+    /* Tabela preview */
+    ce('div',{style:{overflowX:'auto',border:'1px solid #e2e8f0',borderRadius:8,background:'#fff'}},
+      ce('div',{style:{minWidth:600}},
+        filtered.length===0
+          ?ce('div',{style:{textAlign:'center',padding:'32px',color:'#94a3b8'}},
+              ce('div',{style:{fontSize:32,marginBottom:6}},'📋'),
+              ce('div',null,'Nenhum resultado. Ajuste os filtros.'))
+          :ce('table',{className:'tbl'},
+              ce('thead',null,ce('tr',null,
+                activeCols.map(function(c){return ce('th',{key:c.k},c.l);})
+              )),
+              ce('tbody',null,filtered.slice(0,20).map(function(r){
+                return ce('tr',{key:r.id},
+                  activeCols.map(function(c){
+                    return ce('td',{key:c.k,style:{fontSize:12}},
+                      c.k==='prot'?ce('span',{style:{fontWeight:600,color:'#2563eb'}},r.prot||''):
+                      c.k==='dt'?fmtD(r.dt):
+                      c.k==='svc'?(r.cn||r.sn||''):
+                      c.k==='taxa'?(r.taxa?'R$ '+parseFloat(r.taxa).toFixed(2).replace('.',','):'-'):
+                      c.k==='func'?(function(){var f=FUNC_LIST.find(function(x){return String(x.id)===String(r.func)||x.nome===r.func;});return f?f.nome:(r.func||'');})():
+                      c.k==='end'?((r.rua||'')+(r.num?' nº '+r.num:'')):
+                      (r[c.k]||'')
+                    );
+                  })
+                );
+              }))
+            )
+      )
+    ),
+    filtered.length>20?ce('div',{style:{fontSize:11,color:'#94a3b8',marginTop:6,textAlign:'right'}},
+      'Preview: 20 de '+filtered.length+' resultados. O relatório impresso inclui todos.'):null
+  );
+}
 function Auditoria(){
   var _u=window._sgssUser||{};
   var isAdmin=_u.role==='admin';
@@ -4725,7 +4896,7 @@ function App(){
     setUser(u);
   }});
   var Comp={dashboard:Dashboard,solicitacoes:Solicitacoes,controle:Controle,
-    historico:Historico,auditoria:Auditoria,comunicados:Comunicados,comunicacao:Comunicacao,solicitantes:Solicitantes,
+    historico:Historico,auditoria:Auditoria,rel_custom:RelatoriosPersonalizados,comunicados:Comunicados,comunicacao:Comunicacao,solicitantes:Solicitantes,
     servicos:TiposServico,funcionarios:Funcionarios,relatorios:Relatorios,
     agenda:Agenda,anotacoes:Anotacoes,configuracoes:Configuracoes}[page]||Dashboard;
   return ce('div',{className:'app-shell',
