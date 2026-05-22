@@ -5445,16 +5445,15 @@ if(_cv!==APP_VER){
   localStorage.setItem("SGSS_APP_VER",APP_VER);
   if(_cv){window.location.reload(true);}
 }
-/* Mobile layout via JS - sem media queries */
+/* Debug: mostra viewport no ecra */
 (function(){
-  function applyMobile(){
-    var w=window.innerWidth||document.documentElement.clientWidth||screen.width;
-    if(w<=960){document.body.classList.add('is-mobile');}
-    else{document.body.classList.remove('is-mobile');}
-  }
-  applyMobile();
-  window.addEventListener('resize',applyMobile);
-  setTimeout(applyMobile,800);
+  var dbg=document.createElement('div');
+  dbg.id='sgss-dbg';
+  dbg.style.cssText='position:fixed;bottom:4px;right:4px;background:red;color:#fff;font-size:11px;padding:3px 6px;border-radius:4px;z-index:9999;font-family:monospace';
+  function upd(){dbg.textContent='W:'+window.innerWidth+'px S:'+screen.width;}
+  document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(dbg);upd();});
+  window.addEventListener('resize',upd);
+  setTimeout(function(){if(!dbg.parentNode&&document.body)document.body.appendChild(dbg);upd();},1000);
 })();
 </script>
 </body>
