@@ -1614,8 +1614,8 @@ function imprimirDash(titulo,corpo,landscape){
       +'<style>img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;}'+PRINT_CSS+pgCSS+'</style>'
       +'</head><body>'
       +'<div style="'+(landscape?'max-width:100%;padding:10px':'max-width:800px;margin:0 auto;padding:20px')+'">'
-      +buildHeader('&#128202; Relat&oacute;rio: '+titulo,'SMTT Cacequi')
-      +corpo
+      +buildHeader('&#128202; Relat&oacute;rio: '+emojiToTw(titulo),'SMTT Cacequi')
+      +emojiToTw(corpo)
       +'</div>'
       +'<div style="text-align:center;margin:16px">'
       +'<button class="btn-pr" onclick="window.print()">\ud83d\udda8\ufe0f Imprimir / Salvar PDF</button>'
