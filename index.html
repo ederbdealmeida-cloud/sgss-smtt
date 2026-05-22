@@ -3723,84 +3723,74 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
 
 
 
+
 function MapaSolicitacoes(){
-  var t=useToast();var notify=t[1];
-  var s1=useState(false);var geocoding=s1[0];var setGeocoding=s1[1];
-  var s2=useState(0);var progress=s2[0];var setProgress=s2[1];
   var s3=useState('');var fSt=s3[0];var setFSt=s3[1];
   var s4=useState('');var fUrg=s4[0];var setFUrg=s4[1];
-  var CACHE_KEY='SGSS_GEO_CACHE';
-  /* Carrega cache geocodificacao */
-  function getCache(){try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch(e){return {};}}
-  function setCache(obj){try{localStorage.setItem(CACHE_KEY,JSON.stringify(obj));}catch(e){}}
-  /* Inicializa o mapa via useEffect */
+  /* Coordenadas aproximadas dos bairros de Cacequi/RS */
+  var BAIRRO_COORDS={
+    'Centro':[-29.8837,-54.8333],
+    'Ipon\u00e3':[-29.8780,-54.8290],
+    'Batovi':[-29.8900,-54.8370],
+    'Alvaro Leit\u00e3o':[-29.8860,-54.8250],
+    'Alto Alegre':[-29.8750,-54.8380],
+    'Progresso':[-29.8920,-54.8310],
+    'Industrial':[-29.8800,-54.8430],
+    'Jardim':[-29.8810,-54.8360],
+    'S\u00e3o Luiz':[-29.8870,-54.8290],
+    'Vila Nova':[-29.8840,-54.8400]
+  };
+  var CENTER=[-29.8837,-54.8333];
   React.useEffect(function(){
     if(!window.L)return;
     var el=document.getElementById('sgss-map');
     if(!el)return;
-    /* Destroi mapa anterior se existir */
-    if(el._leaflet_id){try{el._leaflet_map&&el._leaflet_map.remove();}catch(e){}}
-    var map=window.L.map('sgss-map').setView([-30.083,-53.483],14);
+    if(el._leaflet_map){try{el._leaflet_map.remove();}catch(e){}}
+    var map=window.L.map('sgss-map').setView(CENTER,14);
     el._leaflet_map=map;
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
       attribution:'\u00a9 OpenStreetMap contributors',maxZoom:19}).addTo(map);
-    /* Cores por status */
-    var CORES={concluido:'#16a34a',andamento:'#2563eb',pendente:'#d97706',urgente:'#dc2626'};
+    var CORES={'Conclu\u00eddo':'#16a34a','Em andamento':'#2563eb','urgente':'#dc2626','default':'#d97706'};
     function mkIcon(cor){
-      return window.L.divIcon({className:'',iconSize:[24,24],iconAnchor:[12,24],popupAnchor:[0,-24],
-        html:'<div style="width:20px;height:20px;background:'+cor+';border:2px solid #fff;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.4)"></div>'});
-    }
-    var cache=getCache();
+      return window.L.divIcon({className:'',iconSize:[22,22],iconAnchor:[11,22],popupAnchor:[0,-22],
+        html:'<div style="width:18px;height:18px;background:'+cor+';border:2px solid #fff;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.4)"></div>'});}
     var reqs=INIT_REQS.filter(function(r){
       if(r.enc===1)return false;
       if(fSt&&r.status!==fSt)return false;
       if(fUrg==='sim'&&r.urg!=='Sim')return false;
       return true;
     });
-    var plotted=0;
+    /* Agrupar por bairro com pequeno offset para nao sobrepor */
+    var bairroCount={};
     reqs.forEach(function(r){
-      var addr=(r.rua?r.rua+(r.num?' '+r.num:'')+', ':'')+r.bairro+', Cacequi RS Brasil';
-      var key=addr.toLowerCase().trim();
-      if(!cache[key])return;
+      var b=r.bairro||'Centro';
+      bairroCount[b]=(bairroCount[b]||0)+1;
+      var base=BAIRRO_COORDS[b]||CENTER;
+      var idx=bairroCount[b]-1;
+      /* Espiral de offsets para nao sobrepor marcadores */
+      var angle=idx*2.4;var radius=idx*0.0003;
+      var lat=base[0]+radius*Math.cos(angle);
+      var lon=base[1]+radius*Math.sin(angle);
       var cor=r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?CORES.urgente:
-        r.status==='Conclu\u00eddo'?CORES.concluido:
-        r.status==='Em andamento'?CORES.andamento:CORES.pendente;
-      var mk=window.L.marker([cache[key].lat,cache[key].lon],{icon:mkIcon(cor)}).addTo(map);
-      mk.bindPopup('<b>'+r.prot+'</b><br/>'+r.nom+'<br/>'+(r.cn||r.sn||'')+'<br/><span style="color:'+cor+';font-weight:700">'+r.status+'</span>');
-      plotted++;
+        r.status==='Conclu\u00eddo'?CORES['Conclu\u00eddo']:
+        r.status==='Em andamento'?CORES['Em andamento']:CORES['default'];
+      window.L.marker([lat,lon],{icon:mkIcon(cor)}).addTo(map)
+        .bindPopup('<b>'+r.prot+'</b><br/>'+r.nom+'<br/>'+(r.cn||r.sn||'')+
+          '<br/>'+(r.rua?r.rua+(r.num?' n\u00ba '+r.num:''):'')+(r.bairro?'<br/>'+r.bairro:'')+
+          '<br/><span style="color:'+cor+';font-weight:700">'+r.status+'</span>');
     });
     return function(){try{map.remove();}catch(e){}};  
   },[fSt,fUrg]);
-  /* Geocodificar enderecos */
-  function geocodificar(){
-    var cache=getCache();
-    var reqs=INIT_REQS.filter(function(r){
-      if(r.enc===1||(!r.rua&&!r.bairro))return false;
-      var addr=(r.rua?r.rua+(r.num?' '+r.num:'')+', ':'')+r.bairro+', Cacequi RS Brasil';
-      return !cache[addr.toLowerCase().trim()];
-    });
-    if(reqs.length===0){notify('\u2705 Todos os endere\u00e7os j\u00e1 est\u00e3o geocodificados!');return;}
-    setGeocoding(true);setProgress(0);
-    var total=reqs.length;var done=0;
-    function next(){
-      if(done>=total){setGeocoding(false);setCache(cache);notify('\u2705 '+done+' endere\u00e7os geocodificados!');return;}
-      var r=reqs[done];
-      var addr=(r.rua?r.rua+(r.num?' '+r.num:'')+', ':'')+r.bairro+', Cacequi RS Brasil';
-      var key=addr.toLowerCase().trim();
-      var url='https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(addr)+'&format=json&limit=1';
-      fetch(url,{headers:{'Accept-Language':'pt-BR','User-Agent':'SGSS-SMTT-Cacequi'}}).then(function(res){return res.json();})
-        .then(function(data){if(data&&data[0]){cache[key]={lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon)};}
-          done++;setProgress(Math.round(done/total*100));setTimeout(next,1100);})
-        .catch(function(){done++;setTimeout(next,1100);});
-    }
-    next();
-  }
-  var cachedCount=Object.keys(getCache()).length;
-  var totalAddr=INIT_REQS.filter(function(r){return r.enc!==1&&(r.rua||r.bairro);}).length;
+  var total=INIT_REQS.filter(function(r){return r.enc!==1;}).length;
+  var vis=INIT_REQS.filter(function(r){
+    if(r.enc===1)return false;
+    if(fSt&&r.status!==fSt)return false;
+    if(fUrg==='sim'&&r.urg!=='Sim')return false;
+    return true;
+  }).length;
   return ce('div',{className:'page-content'},
-    ce('h2',{className:'page-title',style:{marginBottom:16,marginTop:8}},'\ud83d\uddfa\ufe0f Mapa de Solicita\u00e7\u00f5es'),
-    /* Barra de controlo */
-    ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:12,flexWrap:'wrap'}},
+    ce('h2',{className:'page-title',style:{marginBottom:14,marginTop:8}},'\ud83d\uddfa\ufe0f Mapa de Solicita\u00e7\u00f5es'),
+    ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:10,flexWrap:'wrap'}},
       ce('select',{className:'inp',style:{width:'auto'},value:fSt,onChange:function(e){setFSt(e.target.value);}},
         ce('option',{value:''},'Todos os status'),
         ce('option',{value:'N\u00e3o Conclu\u00eddo'},'N\u00e3o Conclu\u00eddo'),
@@ -3809,24 +3799,22 @@ function MapaSolicitacoes(){
       ce('select',{className:'inp',style:{width:'auto'},value:fUrg,onChange:function(e){setFUrg(e.target.value);}},
         ce('option',{value:''},'Urgentes e normais'),
         ce('option',{value:'sim'},'Apenas urgentes')),
-      geocoding
-        ?ce('div',{style:{display:'flex',alignItems:'center',gap:8,fontSize:12,color:'#2563eb'}},
-            ce('div',{style:{width:16,height:16,border:'3px solid #e2e8f0',borderTopColor:'#2563eb',borderRadius:'50%',animation:'spin .8s linear infinite'}}),
-            'Geocodificando... '+progress+'%')
-        :ce('button',{className:'btn btn-p',onClick:geocodificar},
-            '\ud83d\udccd Geocodificar endere\u00e7os ('+cachedCount+'/'+totalAddr+')')
+      ce('span',{style:{fontSize:12,color:'#64748b'}},vis+' de '+total+' solicita\u00e7\u00f5es')
     ),
-    /* Legenda */
-    ce('div',{style:{display:'flex',gap:16,marginBottom:10,fontSize:12}},
-      ce('span',null,ce('span',{style:{display:'inline-block',width:12,height:12,borderRadius:'50%',background:'#dc2626',marginRight:4}}),'\ud83d\udd34 Urgente'),
-      ce('span',null,ce('span',{style:{display:'inline-block',width:12,height:12,borderRadius:'50%',background:'#d97706',marginRight:4}}),'\ud83d\udfe1 Pendente'),
-      ce('span',null,ce('span',{style:{display:'inline-block',width:12,height:12,borderRadius:'50%',background:'#2563eb',marginRight:4}}),'\ud83d\udd35 Em andamento'),
-      ce('span',null,ce('span',{style:{display:'inline-block',width:12,height:12,borderRadius:'50%',background:'#16a34a',marginRight:4}}),'\ud83d\udfe2 Conclu\u00eddo')
+    ce('div',{style:{display:'flex',gap:14,marginBottom:10,fontSize:12}},
+      ce('span',null,ce('span',{style:{display:'inline-block',width:11,height:11,borderRadius:'50%',background:'#dc2626',marginRight:4,verticalAlign:'middle'}}),
+        'Urgente'),
+      ce('span',null,ce('span',{style:{display:'inline-block',width:11,height:11,borderRadius:'50%',background:'#d97706',marginRight:4,verticalAlign:'middle'}}),
+        'Pendente'),
+      ce('span',null,ce('span',{style:{display:'inline-block',width:11,height:11,borderRadius:'50%',background:'#2563eb',marginRight:4,verticalAlign:'middle'}}),
+        'Em andamento'),
+      ce('span',null,ce('span',{style:{display:'inline-block',width:11,height:11,borderRadius:'50%',background:'#16a34a',marginRight:4,verticalAlign:'middle'}}),
+        'Conclu\u00eddo')
     ),
-    /* Mapa */
-    ce('div',{id:'sgss-map',style:{height:500,borderRadius:10,border:'1px solid #e2e8f0',zIndex:1}})
+    ce('div',{id:'sgss-map',style:{height:480,borderRadius:10,border:'1px solid #e2e8f0',zIndex:1}})
   );
 }
+
 function RelatoriosPersonalizados(){
   var t=useToast();var notify=t[1];
   var s1=useState('');var fDe=s1[0];var setFDe=s1[1];
