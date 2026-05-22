@@ -2657,6 +2657,8 @@ function Controle(p){
   var spmode=useState('all');var printMode=spmode[0];var setPrintMode=spmode[1];
   var spfrom=useState('1');var printFrom=spfrom[0];var setPrintFrom=spfrom[1];
   var spto=useState('5');var printTo=spto[0];var setPrintTo=spto[1];
+  var spm=useState(false);var showPrint=spm[0];var setShowPrint=spm[1];
+  var spc=useState({});var printCards=spc[0];var setPrintCards=spc[1];
   var t=useToast();var toast=t[0];var notify=t[1];
   var _hlId=p&&p.hlId?p.hlId:null;
   React.useEffect(function(){
@@ -2760,7 +2762,7 @@ function Controle(p){
           setTimeout(function(){URL.revokeObjectURL(url);},1000);
         }},'\u2b07\ufe0f Excel'),
         ce('button',{className:'btn btn-s',onClick:function(){
-          var target=selItems.length>0?selItems:sorted;
+          setShowPrint(true);var _init={};(selIds.length>0?selItems:sorted).forEach(function(r){_init[r.id]=true;});setPrintCards(_init);return;var target=selItems.length>0?selItems:sorted;
           if(!target.length){notify('Sem itens para imprimir.');return;}
           var rows=[];for(var _i=0;_i<target.length;_i+=2){
             rows.push('<tr><td style="width:50%;padding:5px;vertical-align:top">'+mkCard(target[_i])+'</td>'
