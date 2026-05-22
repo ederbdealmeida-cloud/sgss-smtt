@@ -4579,7 +4579,7 @@ function App(){
                   ce('div',{style:{fontSize:11,color:sub,marginTop:1}},user&&user.email||'')
                 ),
                 ce('div',{style:{padding:'10px 16px',cursor:'pointer',display:'flex',alignItems:'center',gap:10,fontSize:13,color:txt},
-                  onClick:function(){document.body.classList.toggle('dark-mode');localStorage.setItem('SGSS_DARK',document.body.classList.contains('dark-mode')?'1':'0');setUserOpen(false);}},
+                  onClick:function(){var _nd=!document.body.classList.contains('dark-mode');if(_nd)document.body.classList.add('dark-mode');else document.body.classList.remove('dark-mode');localStorage.setItem('SGSS_DARK',_nd?'1':'0');if(typeof setDarkMode==='function')setDarkMode(_nd);setUserOpen(false);}},
                   ce('span',null,'\ud83c\udf19'),ce('span',null,'Modo escuro/claro')),
                 ce('div',{style:{height:1,background:bdiv,margin:'4px 0'}}),
                 ce('div',{style:{padding:'10px 16px',cursor:'pointer',display:'flex',alignItems:'center',gap:10,fontSize:13,color:'#dc2626'},
