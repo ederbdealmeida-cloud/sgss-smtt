@@ -308,13 +308,6 @@ body{margin:0;padding:0;background:#fff}
 .form-actions,.page-header button,.tb-dropdown-wrap,
 .toast-wrap,.sel-bar{display:none!important}
 .main,.page{display:block!important;overflow:visible!important}
-body.dark-mode{background:#0f172a!important;color:#e2e8f0!important}
-body.dark-mode .sidebar{background:linear-gradient(180deg,#020617,#0f172a)!important}
-body.dark-mode .topbar{background:linear-gradient(90deg,#020617,#0f172a)!important}
-body.dark-mode .card{background:#1e293b!important;border-color:#334155!important}
-body.dark-mode .tbl td{background:#1e293b!important;color:#e2e8f0!important}
-body.dark-mode .inp,body.dark-mode select{background:#253352!important;color:#e2e8f0!important;border-color:#475569!important}
-body.dark-mode .page-title{color:#e2e8f0!important}
 .app-shell{display:block!important;height:auto!important}
 .app-body{display:block!important}
 .doc-paper{background:#fff!important;border-radius:10px;padding:28px;max-width:100%;box-shadow:none;border:1px solid #e2e8f0;page-break-inside:avoid}
@@ -4453,8 +4446,6 @@ function App(){
   var su=useState(null);var user=su[0];var setUser=su[1];
   var shlid=useState(null);var hlId=shlid[0];var setHlId=shlid[1];
   var sdark=useState(localStorage.getItem('SGSS_DARK')==='1');
-  var darkMode=sdark[0];
-  var sdark=useState(localStorage.getItem('SGSS_DARK')==='1');
   var darkMode=sdark[0];var setDarkMode=sdark[1];
   React.useEffect(function(){
     if(darkMode)document.body.classList.add('dark-mode');
@@ -4568,18 +4559,36 @@ function App(){
             ce('span',{style:{color:'#fff',fontSize:10}},'▾')
           ),
           userOpen?ce('div',{className:'tb-dropdown user-dd'},
-            ce('div',{style:{padding:'14px 16px',borderBottom:'1px solid #f1f5f9'}},
-              ce('div',{style:{fontWeight:700,fontSize:14,color:'#1e293b',marginBottom:2}},user?user.nome:''),
-              ce('div',{style:{fontSize:11,color:'#64748b',marginTop:2}},user&&user.role==='admin'?'\ud83d\udc51 Administrador':'\ud83d\udc64 Operador'),
-              ce('div',{style:{fontSize:11,color:'#94a3b8',marginTop:1}},user&&user.email||'')
-            ),
-            ce('div',{className:'tb-dd-item',style:{padding:'10px 16px',cursor:'pointer',display:'flex',alignItems:'center',gap:10,fontSize:13},
-              onClick:function(){document.body.classList.toggle('dark-mode');localStorage.setItem('SGSS_DARK',document.body.classList.contains('dark-mode')?'1':'0');setUserOpen(false);}},
-              ce('span',null,'\ud83c\udf19'),ce('span',null,'Modo escuro/claro')),
-            ce('div',{style:{height:1,background:'#f1f5f9',margin:'4px 0'}}),
-            ce('div',{className:'tb-dd-item',style:{padding:'10px 16px',cursor:'pointer',display:'flex',alignItems:'center',gap:10,fontSize:13,color:'#dc2626'},
-              onClick:function(){setUser(null);setPage('dashboard');setUserOpen(false);}},
-              ce('span',null,'\ud83d\udeaa'),ce('span',null,'Terminar sess\u00e3o'))
+            ce('div',{className:'tb-dd-header'},'👤 '+(prevSession.user||'Sessão anterior')),
+            ce('div',{className:'tb-dd-subhdr'},
+            prevSession.user?'Sessão encerrada':'Nenhuma sessão anterior registrada'),
+            ce('div',{className:'tb-dd-divider'}),
+            ce('div',{className:'tb-dd-section'},'📋 Cadastros da sessão anterior'),
+            prevSession.reqs&&prevSession.reqs.length>0
+              ?prevSession.reqs.slice(0,5).map(function(r,i){
+                return ce('div',{key:'r'+i,className:'tb-dd-item tb-dd-info',
+                  onClick:function(){setPageClose('solicitacoes');}},
+                  ce('span',{className:'tb-dd-icon'},'📝'),
+                  ce('div',{className:'tb-dd-msg'},
+                    ce('div',null,r.prot),
+                    ce('div',{style:{fontSize:10,color:'#94a3b8'}},r.nom+' • '+(r.sn||''))));
+              })
+              :ce('div',{className:'tb-dd-empty'},'Nenhum cadastro na sessão anterior'),
+            prevSession.acoes&&prevSession.acoes.length>0?ce('div',null,
+              ce('div',{className:'tb-dd-section'},'⚡ Ações realizadas'),
+              prevSession.acoes.slice(0,5).map(function(a,i){
+                return ce('div',{key:'a'+i,className:'tb-dd-item tb-dd-warn'},
+                  ce('span',{className:'tb-dd-icon'},a.tipo==='Exclusão'?'🗑️':a.tipo==='Edição'?'✏️':'📝'),
+                  ce('div',{className:'tb-dd-msg'},
+                    ce('div',null,a.tipo+' — '+(a.prot||'')),
+                    ce('div',{style:{fontSize:10,color:'#94a3b8'}},a.dt||'')));
+              })):null,
+            ce('div',{className:'tb-dd-divider'}),
+            ce('button',{className:'tb-dd-logout',
+              onClick:function(){
+                try{localStorage.setItem('SGSS_LAST_SESSION',JSON.stringify({reqs:SGSS_SESSION.reqs,acoes:SGSS_SESSION.acoes,user:user.nome}));}catch(e){}
+                setUser(null);setPage('dashboard');setUserOpen(false);}},
+              '→ Sair da conta')
           ):null
         )
       )
