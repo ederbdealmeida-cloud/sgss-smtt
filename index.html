@@ -3495,7 +3495,7 @@ ce('h2',{className:'page-title'},'\u2699\ufe0f Configura\xe7\xf5es'),
 }
 
 /* ── APP ── */
-var MENU=[{id:'dashboard',l:'Dashboard',i:'🏠',g:'PRINCIPAL'},{id:'solicitacoes',l:'Solicitações',i:'📋',g:'OPERACIONAL'},{id:'controle',l:'Controle',i:'📌',g:'OPERACIONAL'},{id:'historico',l:'Histórico',i:'🗂',g:'OPERACIONAL'},{id:'auditoria',l:'Auditoria',i:'🔍',g:'GESTÃO'},{id:'comunicados',l:'Mural',i:'📰',g:'OPERACIONAL'},{id:'comunicacao',l:'Comunicação',i:'💬',g:'OPERACIONAL'},{id:'solicitantes',l:'Solicitantes',i:'👥',g:'CADASTROS'},{id:'servicos',l:'Tipos de Serv.',i:'🔧',g:'CADASTROS'},{id:'funcionarios',l:'Funcionários',i:'👤',g:'CADASTROS'},{id:'relatorios',l:'Relatórios',i:'📊',g:'GESTÃO'},{id:'agenda',l:'Agenda',i:'📅',g:'GESTÃO'},{id:'anotacoes',l:'Anotações',i:'📝',g:'GESTÃO'},{id:'configuracoes',l:'Configurações',i:'⚙️',g:'SISTEMA'}];
+var MENU=[{id:'dashboard',l:'Dashboard',i:'🏠',g:'PRINCIPAL'},{id:'solicitacoes',l:'Solicitações',i:'📋',g:'OPERACIONAL'},{id:'controle',l:'Controle',i:'📌',g:'OPERACIONAL'},{id:'historico',l:'Histórico',i:'🗂',g:'OPERACIONAL'},{id:'auditoria',l:'Auditoria',i:'🔍',g:'GESTÃO'},{id:'rel_custom',l:'Rel. Personalizado',i:'📋',g:'GESTÃO'},{id:'comunicados',l:'Mural',i:'📰',g:'OPERACIONAL'},{id:'comunicacao',l:'Comunicação',i:'💬',g:'OPERACIONAL'},{id:'solicitantes',l:'Solicitantes',i:'👥',g:'CADASTROS'},{id:'servicos',l:'Tipos de Serv.',i:'🔧',g:'CADASTROS'},{id:'funcionarios',l:'Funcionários',i:'👤',g:'CADASTROS'},{id:'relatorios',l:'Relatórios',i:'📊',g:'GESTÃO'},{id:'agenda',l:'Agenda',i:'📅',g:'GESTÃO'},{id:'anotacoes',l:'Anotações',i:'📝',g:'GESTÃO'},{id:'configuracoes',l:'Configurações',i:'⚙️',g:'SISTEMA'}];
 var MENU_GROUPS=['PRINCIPAL','OPERACIONAL','CADASTROS','GESTÃO','SISTEMA'];
 
 var DELETED_REQS=[];
@@ -3717,6 +3717,13 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
 
 
 
+
+function RelatoriosPersonalizados(){
+  return ce('div',{className:'page-content'},
+    ce('h2',{className:'page-title'},'📋 Relatório Personalizado'),
+    ce('p',null,'Em construcao...')
+  );
+}
 function Auditoria(){
   var _u=window._sgssUser||{};
   var isAdmin=_u.role==='admin';
@@ -4725,7 +4732,7 @@ function App(){
     setUser(u);
   }});
   var Comp={dashboard:Dashboard,solicitacoes:Solicitacoes,controle:Controle,
-    historico:Historico,auditoria:Auditoria,comunicados:Comunicados,comunicacao:Comunicacao,solicitantes:Solicitantes,
+    historico:Historico,auditoria:Auditoria,rel_custom:RelatoriosPersonalizados,comunicados:Comunicados,comunicacao:Comunicacao,solicitantes:Solicitantes,
     servicos:TiposServico,funcionarios:Funcionarios,relatorios:Relatorios,
     agenda:Agenda,anotacoes:Anotacoes,configuracoes:Configuracoes}[page]||Dashboard;
   return ce('div',{className:'app-shell',
