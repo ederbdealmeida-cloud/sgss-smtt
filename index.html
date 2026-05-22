@@ -3760,6 +3760,8 @@ function Auditoria(){
           onOk:function(){AUDIT_LOG.length=0;AUDIT_NEXT_ID=1;sgssSave();notify('\u2705 Auditoria limpa.');}});
         }},'Limpar tudo'):null)
     ),
+    ce('div',{style:{overflowX:'auto',marginTop:4}},
+    ce('div',{style:{minWidth:680}},
     logs.length===0
       ?ce('div',{style:{textAlign:'center',padding:'40px',color:'#94a3b8'}},
           ce('div',{style:{fontSize:36,marginBottom:8}},'🔍'),
@@ -3793,6 +3795,7 @@ function Auditoria(){
             )
           )
         )
+    ))
   );
 }
 function Comunicados(){
