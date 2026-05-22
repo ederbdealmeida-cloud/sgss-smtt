@@ -3186,15 +3186,15 @@ function Relatorios(){
                     var upd={svcVal:val};
                     if(parts[0]==='c'){
                       var cat=CATS.find(function(c){return String(c.id)===parts[1];});
-                      if(cat){upd.catId=cat.id;upd.cn=cat.nome;
+                      if(cat){upd.catId=cat.id;upd.cn=cat.nome;upd.fp=cat.fp||'Gratuito';
                         if(cat.fp==='Pago'&&cat.taxa)upd.taxa=parseFloat(cat.taxa)||0;}
                     } else if(parts[0]==='s'){
                       var cat2=CATS.find(function(c){return String(c.id)===parts[2];});
                       var subs2=cat2?SUBS[cat2.id]||[]:[];
                       var sub=subs2.find(function(s){return String(s.id)===parts[1];});
                       if(sub){upd.catId=cat2?cat2.id:'';upd.cn=sub.nome;upd.sn=sub.nome;
-                        var fp=sub.fp||cat2&&cat2.fp;
-                        if(fp==='Pago'){var t=sub.taxa||cat2&&cat2.taxa;if(t)upd.taxa=parseFloat(t)||0;}}
+                        var fp=sub.fp||(cat2&&cat2.fp)||'Gratuito';upd.fp=fp;
+                        if(fp==='Pago'){var t=sub.taxa||(cat2&&cat2.taxa);if(t)upd.taxa=parseFloat(t)||0;}}
                     }
                     setRelEdit(function(v){return Object.assign({},v,upd);});
                   }},
