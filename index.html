@@ -1547,7 +1547,7 @@ function Dashboard(){
   var _pend=INIT_REQS.filter(function(r){return r.status!=='Conclu\u00eddo';}).length;
   var _urg=INIT_REQS.filter(function(r){return r.urg==='Sim'&&r.status!=='Conclu\u00eddo';}).length;
   var _sol=INIT_SOLS.length;
-  var _rec=INIT_REQS.filter(function(r){return r.status==='Conclu\u00eddo';}).reduce(function(s,r){return s+(parseFloat(r.taxa)||0);},0);
+  var _rec=INIT_REQS.filter(function(r){return r.fp==='Pago'&&parseFloat(r.taxa||0)>0;}).reduce(function(s,r){return s+(parseFloat(r.taxa)||0);},0);
   var _agend=AGENDA_LIST.length;
   var CARDS=[
     {l:'Total de Solicita\u00e7\u00f5es',v:_tot,c:'s-bl',i:'\ud83d\udcdd'},
@@ -1556,7 +1556,7 @@ function Dashboard(){
     {l:'Urgentes Pendentes',v:_urg,c:'s-re',i:'\ud83d\udea8'},
     {l:'Agendamentos',v:_agend,c:'s-bl',i:'\ud83d\udcc5'},
     {l:'Solicitantes Cadastrados',v:_sol,c:'s-pu',i:'\ud83d\udc65'},
-    {l:'Receita Total (Conclu\u00eddas)',v:'R$\u00a0'+_rec.toLocaleString('pt-BR',{minimumFractionDigits:2}),c:'s-te',i:'\ud83d\udcb0'}
+    {l:'Receita Total (Pagas)',v:'R$\u00a0'+_rec.toLocaleString('pt-BR',{minimumFractionDigits:2}),c:'s-te',i:'\ud83d\udcb0'}
   ];
 
   var maxB=Math.max.apply(null,BARS.map(function(b){return b.v;}));
