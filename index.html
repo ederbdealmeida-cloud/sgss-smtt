@@ -1451,9 +1451,10 @@ function PainelFuncionario(p){
               +'<p style="font-size:11px;color:#64748b;margin-bottom:12px">'+(func.cargo||'')+'</p>'
               +cardsHtml+tblHtml
               +'<button class="btn-pr" onclick="window.print()">\ud83d\udda8\ufe0f Imprimir / Salvar PDF</button>'
-              +'</body></html>');
-            w.document.close();
-    w.onload=function(){if(w.twemoji)w.twemoji.parse(w.document.body,{folder:'svg',ext:'.svg'});};
+              +'<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" onload="twemoji.parse(document.body,{folder:\x27svg\x27,ext:\x27.svg\x27})"></scri'+'pt>'
+      +'</body></html>');
+            w.onload=function(){if(w.twemoji){w.twemoji.parse(w.document.body,{folder:'svg',ext:'.svg'});}else{setTimeout(function(){if(w.twemoji)w.twemoji.parse(w.document.body,{folder:'svg',ext:'.svg'});},1000);}};
+    w.document.close();
           }},'\ud83d\udda8\ufe0f Imprimir / PDF')
         )
       ),
@@ -1577,7 +1578,6 @@ function Dashboard(){
     var brasao=_BRASAO;
     var pgCSS=landscape?'@page{size:A4 landscape;margin:8mm}':'@page{size:A4 portrait;margin:12mm}';
     w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
-      +'<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js"></scri'+'pt>'
       +'<style>img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;}'+PRINT_CSS+pgCSS+'</style>'
       +'</head><body>'
       +'<div style="'+(landscape?'max-width:100%;padding:10px':'max-width:800px;margin:0 auto;padding:20px')+'">'
@@ -5193,8 +5193,9 @@ function _mountApp(){ReactDOM.createRoot(document.getElementById('root')).render
   // Twemoji: parse emoji as SVG after each React update
   var _twEl=document.getElementById('root');
   function _twParse(){if(window.twemoji)twemoji.parse(_twEl,{folder:'svg',ext:'.svg'});}
-  new MutationObserver(_twParse).observe(_twEl,{childList:true,subtree:true});
-  setTimeout(_twParse,600);
+  // Parse on load and on each navigation (via hash change or click)
+  setTimeout(_twParse,800);
+  setInterval(_twParse,2000);
 }
 if(window._sgssLoaded){_mountApp();} else {
   document.getElementById('root').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#eef2f7;gap:16px">'
