@@ -316,6 +316,21 @@ body.dark-mode .topbar{background:linear-gradient(90deg,#020617,#0f172a)!importa
 body.dark-mode .card{background:#1e293b!important;border-color:#334155!important}
 body.dark-mode .inp,body.dark-mode select{background:#253352!important;color:#e2e8f0!important;border-color:#475569!important}
 body.dark-mode .page-title{color:#e2e8f0!important}
+/* Responsive PWA */
+@media(max-width:768px){
+  .sidebar{width:200px!important;}
+  .sidebar.collapsed{width:0!important;overflow:hidden;}
+  .main-content{margin-left:0!important;}
+  .page-content{padding:10px!important;}
+  .topbar{padding:0 10px!important;}
+  .card{padding:12px!important;}
+  .tbl-wrap{overflow-x:auto;}
+  input,select,.inp{font-size:16px!important;} /* prevent zoom on iOS */
+}
+@media(max-width:480px){
+  .sidebar{width:180px!important;}
+  .page-title{font-size:16px!important;}
+}
 .app-shell{display:block!important;height:auto!important}
 .app-body{display:block!important}
 .doc-paper{background:#fff!important;border-radius:10px;padding:28px;max-width:100%;box-shadow:none;border:1px solid #e2e8f0;page-break-inside:avoid}
@@ -5092,10 +5107,9 @@ if(window._sgssLoaded){_mountApp();} else {
 <script>
 /* Limpa todos os service workers e caches antigos */
 var APP_VER="2026.05.21.v10";
-if("serviceWorker"in navigator){
-  navigator.serviceWorker.getRegistrations().then(function(regs){
-    regs.forEach(function(r){r.unregister();});
-  });
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sgss-smtt/sw.js',{scope:'/sgss-smtt/'})
+    .catch(function(e){console.log('SW error:',e);});
 }
 if("caches"in window){
   caches.keys().then(function(keys){
