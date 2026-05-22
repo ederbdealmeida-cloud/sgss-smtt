@@ -2123,7 +2123,26 @@ function TiposServico(){
   );
 }
 
-/* ── SOLICITAÇÕES ── */
+/* ── SOLICITAÇÕES ── *ce('div',{className:'form-grid'},
+        ce('div',{className:'fg s2'},ce('label',null,'Nome ',ce('span',{className:'req'},'*')),
+          ce('input',{value:subForm.nome||'',onChange:function(e){setSubForm(function(f){return Object.assign({},f,{nome:e.target.value});});}})),
+        ce('div',{className:'fg'},ce('label',null,'Forma de Presta\u00e7\u00e3o ',ce('span',{className:'req'},'*')),
+          ce('select',{value:subForm.fp||'',onChange:function(e){setSubForm(function(f){return Object.assign({},f,{fp:e.target.value,taxa:'',taxaHora:'',taxaMetro:''});});}},
+            ce('option',{value:''},'Selecione...'),
+            ce('option',{value:'Gratuito'},'Gratuito'),
+            ce('option',{value:'Pago'},'Pago')))),
+        subForm.fp==='Pago'?ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginTop:6}},
+          ce('div',{className:'fg'},ce('label',null,'Taxa fixa (R$)'),
+            ce('input',{className:'inp',type:'number',min:'0',step:'0.01',placeholder:'0,00',
+              value:subForm.taxa||'',onChange:function(e){setSubForm(function(f){return Object.assign({},f,{taxa:e.target.value});});}})),
+          ce('div',{className:'fg'},ce('label',null,'Cobran\u00e7a/hora (R$)'),
+            ce('input',{className:'inp',type:'number',min:'0',step:'0.01',placeholder:'0,00',
+              value:subForm.taxaHora||'',onChange:function(e){setSubForm(function(f){return Object.assign({},f,{taxaHora:e.target.value});});}})),
+          ce('div',{className:'fg'},ce('label',null,'Cobran\u00e7a/metro linear (R$)'),
+            ce('input',{className:'inp',type:'number',min:'0',step:'0.01',placeholder:'0,00',
+              value:subForm.taxaMetro||'',onChange:function(e){setSubForm(function(f){return Object.assign({},f,{taxaMetro:e.target.value});})}}))
+        ):null,
+/
 function imprimirComprovanteServico(r,allReqs){
   var parts=allReqs&&allReqs.length?allReqs:[r];
   var main=parts[0];
