@@ -3726,7 +3726,7 @@ function Auditoria(){
   var sa=useState('');var fAte=sa[0];var setFAte=sa[1];
   var spg=useState(1);var pg=spg[0];var setPg=spg[1];
   var t=useToast();var notify=t[1];
-  var modulos=['Solicitações','Utilizadores','Mural','Configurações','Sistema'];
+  var modulos=['Solicitações','Controle','Mural','Configurações','Sistema'];
   var logs=AUDIT_LOG.filter(function(a){
     if(fUser&&a.usuario.toLowerCase().indexOf(fUser.toLowerCase())<0)return false;
     if(fMod&&a.modulo!==fMod)return false;
