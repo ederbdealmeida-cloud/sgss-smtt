@@ -4923,7 +4923,8 @@ function App(){
     return function(){delete window._forceAppReload;delete window._setPrevSession;};
   },[]);
   var sp=useState('dashboard');var page=sp[0];var setPage=sp[1];
-  var scol=useState(window.innerWidth<768);var collapsed=scol[0];var setCollapsed=scol[1];
+  var scol=useState(false);var collapsed=scol[0];var setCollapsed=scol[1];
+  React.useEffect(function(){if(window.innerWidth<768)setCollapsed(true);},[]);
   var sprev=useState({reqs:[],acoes:[],user:null});
   var prevSession=sprev[0];var setPrevSession=sprev[1];
   var smob=useState(false);var mobOpen=smob[0];var setMobOpen=smob[1];
