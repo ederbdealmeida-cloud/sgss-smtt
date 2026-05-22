@@ -1755,6 +1755,43 @@ function Dashboard(){
       )
       :'');
 
+    /* ── Status das solicitações ── */
+    var stRows=Object.keys(stMap).map(function(k){
+      var cor=k==='Conclu\u00eddo'?'#16a34a':k==='Em andamento'?'#2563eb':k==='Aguardando'?'#d97706':'#dc2626';
+      var pct=total>0?Math.round(stMap[k]/total*100):0;
+      return '<tr><td '+TD+'><span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;display:inline-block;width:10px;height:10px;border-radius:50%;background:'+cor+';margin-right:6px"></span>'+k+'</td>'
+        +'<td '+TD+' style="text-align:center;font-weight:700">'+stMap[k]+'</td>'
+        +'<td '+TD+' style="text-align:center">'+pct+'%</td>'
+        +'<td '+TD+'>'+bar(stMap[k],total,cor)+'</td></tr>';
+    }).join('');
+    html+=sec('\ud83c\udf69 Status das Solicita\u00e7\u00f5es','#1e3a5f',
+      '<table style="width:100%;border-collapse:collapse">'
+      +'<thead><tr><th '+TH+'>Status</th><th '+THC+'>Qtd</th><th '+THC+'>%</th><th '+TH+'>Barra</th></tr></thead>'
+      +'<tbody>'+stRows+'</tbody></table>'
+    );
+
+    /* ── Metas de desempenho ── */
+    var _hj2=today();
+    var _anoAtual2=_hj2.slice(0,4); var _mesAtual2=_hj2.slice(0,7);
+    var concluiMes=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Conclu\u00eddo'&&r.dt&&(r.dt.startsWith(_mesAtual2)||(r.dtConclusao&&r.dtConclusao.startsWith(_mesAtual2)));}).length;
+    var concluiAno=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Conclu\u00eddo'&&r.dt&&(r.dt.startsWith(_anoAtual2)||(r.dtConclusao&&r.dtConclusao.startsWith(_anoAtual2)));}).length;
+    html+=sec('\ud83c\udfaf Metas de Desempenho','#f59e0b',
+      '<table style="width:100%;border-collapse:collapse">'
+      +'<thead><tr><th '+TH+'>Meta</th><th '+THC+'>Realizado</th><th '+THC+'>Alvo</th><th '+THC+'>%</th><th '+TH+'>Progresso</th></tr></thead>'
+      +'<tbody>'
+      +'<tr><td '+TD+'>Mensal</td>'
+      +'<td '+TD+' style="text-align:center;font-weight:700">'+concluiMes+'</td>'
+      +'<td '+TD+' style="text-align:center">'+META_MENSAL+'</td>'
+      +'<td '+TD+' style="text-align:center">'+(META_MENSAL>0?Math.round(concluiMes/META_MENSAL*100):0)+'%</td>'
+      +'<td '+TD+'>'+bar(concluiMes,META_MENSAL,concluiMes>=META_MENSAL?'#16a34a':'#f59e0b')+'</td></tr>'
+      +'<tr><td '+TD+'>Anual</td>'
+      +'<td '+TD+' style="text-align:center;font-weight:700">'+concluiAno+'</td>'
+      +'<td '+TD+' style="text-align:center">'+META_ANO+'</td>'
+      +'<td '+TD+' style="text-align:center">'+(META_ANO>0?Math.round(concluiAno/META_ANO*100):0)+'%</td>'
+      +'<td '+TD+'>'+bar(concluiAno,META_ANO,concluiAno>=META_ANO?'#16a34a':'#f59e0b')+'</td></tr>'
+      +'</tbody></table>'
+    );
+
     imprimirDash('Vis\u00e3o Geral',html,false);
   }
 
