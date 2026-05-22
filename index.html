@@ -1453,6 +1453,7 @@ function PainelFuncionario(p){
               +'<button class="btn-pr" onclick="window.print()">\ud83d\udda8\ufe0f Imprimir / Salvar PDF</button>'
               +'</body></html>');
             w.document.close();
+    w.onload=function(){if(w.twemoji)w.twemoji.parse(w.document.body,{folder:'svg',ext:'.svg'});};
           }},'\ud83d\udda8\ufe0f Imprimir / PDF')
         )
       ),
@@ -1576,7 +1577,8 @@ function Dashboard(){
     var brasao=_BRASAO;
     var pgCSS=landscape?'@page{size:A4 landscape;margin:8mm}':'@page{size:A4 portrait;margin:12mm}';
     w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
-      +'<style>'+PRINT_CSS+pgCSS+'</style>'
+      +'<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js"></scri'+'pt>'
+      +'<style>img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;}'+PRINT_CSS+pgCSS+'</style>'
       +'</head><body>'
       +'<div style="'+(landscape?'max-width:100%;padding:10px':'max-width:800px;margin:0 auto;padding:20px')+'">'
       +buildHeader('&#128202; Relat&oacute;rio: '+titulo,'SMTT Cacequi')
