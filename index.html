@@ -581,43 +581,12 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;displa
    ====================================================== */
 @media screen and (max-width:960px){
 
-  /* === SIDEBAR: escondido por padrao, slide-in === */
-  .sidebar{
-    position:fixed!important;
-    top:0!important;left:0!important;
-    width:82vw!important;max-width:300px!important;
-    height:100vh!important;
-    transform:translateX(-100%)!important;
-    transition:transform .25s ease!important;
-    z-index:500!important;
-    overflow-y:auto!important;
-  }
-  .sidebar.mob-open{
-    transform:translateX(0)!important;
-    box-shadow:4px 0 30px rgba(0,0,0,.4)!important;
-  }
-
-  /* === OVERLAY quando sidebar aberto === */
-  .sidebar-overlay{
-    display:none!important;
-    position:fixed!important;
-    inset:0!important;
-    background:rgba(0,0,0,.5)!important;
-    z-index:499!important;
-  }
-  .sidebar-overlay.mob-open{display:block!important;}
-
-  /* === MAIN CONTENT: ocupa 100% === */
+  /* === SIDEBAR: respeita collapsed === */
+  .sidebar.collapsed{width:52px!important;min-width:52px!important;}
+  /* === MAIN CONTENT === */
   .app-body{display:block!important;}
-  .main{
-    width:100vw!important;
-    margin-left:0!important;
-    min-height:100vh!important;
-    overflow-x:hidden!important;
-  }
-
+  .main{overflow-x:hidden!important;}
   /* === TOPBAR === */
-  .topbar{height:56px!important;padding:0 10px!important;}
   .topbar-center{display:none!important;}
   .topbar-uname{display:none!important;}
   /* === PAGINAS === */
