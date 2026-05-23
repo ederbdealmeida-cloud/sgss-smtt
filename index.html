@@ -5462,7 +5462,13 @@ if(window._sgssLoaded){_mountApp();} else {
 </script>
 <script>
 /* Limpa todos os service workers e caches antigos */
-var APP_VER="2026.05.21.v10";
+var APP_VER="2026.05.23.v14";
+/* Auto-reload quando SW actualiza */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='SW_UPDATED'){location.reload();}
+  });
+}
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sgss-smtt/sw.js',{scope:'/sgss-smtt/'})
     .catch(function(e){console.log('SW error:',e);});
