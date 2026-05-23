@@ -5452,7 +5452,24 @@ function App(){
         ce('button',{className:'topbar-ham',
           onClick:function(){setCollapsed(function(v){return !v;});setMobOpen(function(v){return !v;});}},
           '≡'),
-                ce('div',{className:'tb-dropdown-wrap'},
+                ce('button',{
+            title:'Atualizar app',
+            style:{background:'none',border:'none',cursor:'pointer',
+              fontSize:15,padding:'0 4px',opacity:.7,color:'#fff'},
+            onClick:function(){
+              if('serviceWorker' in navigator){
+                navigator.serviceWorker.getRegistrations().then(function(regs){
+                  regs.forEach(function(r){r.unregister();});
+                });
+              }
+              if('caches' in window){
+                caches.keys().then(function(keys){
+                  return Promise.all(keys.map(function(k){return caches.delete(k);}));
+                }).then(function(){location.reload(true);});
+              } else { location.reload(true); }
+            }},
+          '\ud83d\udd04'),
+          ce('div',{className:'tb-dropdown-wrap'},
           ce('div',{className:'topbar-bell',onClick:function(){setBellOpen(function(v){return !v;});setUserOpen(false);}},
             '🔔',
             getNotifications().length>0?ce('span',{className:'topbar-badge'},getNotifications().length):null
