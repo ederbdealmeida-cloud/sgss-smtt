@@ -790,14 +790,25 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;displa
   .brow{gap:2px!important;overflow:hidden!important;}
   .br{font-size:6px!important;min-width:0!important;flex:1!important;}
   .br-bar{min-height:4px!important;}
-  /* Tabela categoria */
-  .cat-tbl{width:100%!important;table-layout:fixed!important;}
-  .cat-tbl td,.cat-tbl th{padding:4px 4px!important;font-size:9px!important;
+  /* Tabela categoria - esconde coluna Proporcao no mobile */
+  .tbl th:last-child,.tbl td:last-child{display:none!important;}
+  .tbl{width:100%!important;table-layout:auto!important;font-size:10px!important;}
+  .tbl th,.tbl td{padding:4px 5px!important;font-size:10px!important;
     overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
-  /* Bloco colorido das categorias */
-  .cat-bars-wrap,.cat-chart{max-width:100%!important;overflow:hidden!important;
-    display:flex!important;gap:3px!important;flex-wrap:nowrap!important;}
-  .cat-bar-block{flex:1!important;min-width:0!important;font-size:6px!important;}
+  /* Coluna categoria mais larga */
+  .tbl td:nth-child(2),.tbl th:nth-child(2){max-width:120px!important;}
+  /* Blocos coloridos de categoria - tamanho fixo */
+  .bar-chart{height:60px!important;gap:3px!important;}
+  .bar-wrap{min-width:0!important;flex:1!important;}
+  .bar-lbl{font-size:7px!important;overflow:hidden!important;
+    text-overflow:ellipsis!important;white-space:nowrap!important;max-width:100%!important;}
+  /* Status - centra o donut */
+  .ch-card .donut-container,.ch-card svg{margin:0 auto!important;display:block!important;
+    max-width:160px!important;max-height:160px!important;}
+  /* ch-grid coluna unica */
+  .ch-grid{grid-template-columns:1fr!important;}
+  .ch-card,.ch-card.full{grid-column:span 1!important;
+    max-width:100%!important;overflow:hidden!important;box-sizing:border-box!important;}
 }
 
 </style>
