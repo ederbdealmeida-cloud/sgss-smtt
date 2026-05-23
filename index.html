@@ -4253,8 +4253,8 @@ function RelatoriosPersonalizados(){
                 ce('div',{style:{overflowX:'auto',WebkitOverflowScrolling:'touch'}},
               ce('table',{className:'tbl',style:{minWidth:600}},
                   ce('thead',null,ce('tr',null,
-                    ce('th',{style:{width:30}},ce('input',{type:'checkbox',checked:allChk,onChange:function(){var nw={};if(!allChk){pgData.forEach(function(r){nw[r.id]=true;});}else{pgData.forEach(function(r){nw[r.id]=false;});}setChk(function(c){return Object.assign({},c,nw);});}})),
-                    actCols.map(function(c){return ce('th',{key:c.k},c.l);})
+                    actCols.map(function(c){return ce('th',{key:c.k,style:{fontSize:11,padding:'6px 8px'}},c.l);}),
+                    ce('th',{style:{width:90,textAlign:'center',fontSize:11,padding:'6px 8px'}},'A\u00e7\u00e3o')
                   )),
                   ce('tbody',null,pgData.map(function(r){
                     return ce('tr',{key:r.id,style:{background:chk[r.id]?'#eff6ff':''}},
