@@ -661,18 +661,9 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;displa
   .bottom-nav-item.active{color:#60a5fa!important;}
   .bottom-nav-item .bni{font-size:20px!important;}
 }
-/* Mobile: hamburger abre sidebar correcto */
+/* Mobile: bottom-nav visivel */
 @media(max-device-width:960px),(max-width:960px){
   .bottom-nav{display:flex!important;}
-  .sidebar.mob-open{
-    transform:translateX(0)!important;
-    width:72vw!important;max-width:260px!important;
-    top:56px!important;height:calc(100vh - 56px)!important;
-    z-index:150!important;
-    position:fixed!important;
-  }
-  .sidebar:not(.mob-open){transform:translateX(-100%)!important;}
-  .topbar{z-index:200!important;}
 }
 /* Mobile scroll fix */
 @media(max-device-width:960px),(max-width:960px){
@@ -5339,11 +5330,7 @@ function App(){
       ),
       ce('div',{className:'topbar-right'},
         ce('button',{className:'topbar-ham',
-          onClick:function(){
-            var isMob=(window.innerWidth||screen.width)<=960;
-            if(isMob){setMobOpen(function(v){return !v;});}
-            else{setCollapsed(function(v){return !v;});}
-          }},
+          onClick:function(){setCollapsed(function(v){return !v;});},
           '≡'),
                 ce('div',{className:'tb-dropdown-wrap'},
           ce('div',{className:'topbar-bell',onClick:function(){setBellOpen(function(v){return !v;});setUserOpen(false);}},
