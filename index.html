@@ -790,14 +790,17 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;displa
   .brow{gap:2px!important;overflow:hidden!important;}
   .br{font-size:6px!important;min-width:0!important;flex:1!important;}
   .br-bar{min-height:4px!important;}
-  /* Tabela categoria */
-  .cat-tbl{width:100%!important;table-layout:fixed!important;}
-  .cat-tbl td,.cat-tbl th{padding:4px 4px!important;font-size:9px!important;
-    overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
-  /* Bloco colorido das categorias */
-  .cat-bars-wrap,.cat-chart{max-width:100%!important;overflow:hidden!important;
-    display:flex!important;gap:3px!important;flex-wrap:nowrap!important;}
-  .cat-bar-block{flex:1!important;min-width:0!important;font-size:6px!important;}
+  /* Tabela categoria - scroll horizontal */
+  .ch-card .tbl-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+  .ch-card .tbl{font-size:10px!important;min-width:280px!important;}
+  .ch-card .tbl th,.ch-card .tbl td{padding:4px 5px!important;font-size:10px!important;white-space:nowrap!important;}
+  /* Blocos coloridos - altura compacta */
+  .bar-chart{height:60px!important;overflow:hidden!important;}
+  .bar-wrap{min-width:0!important;flex:1!important;}
+  .bar-lbl{font-size:7px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
+  /* ch-grid coluna unica */
+  .ch-grid{grid-template-columns:1fr!important;}
+  .ch-card,.ch-card.full{grid-column:span 1!important;max-width:100%!important;overflow:hidden!important;box-sizing:border-box!important;}
 }
 
 </style>
