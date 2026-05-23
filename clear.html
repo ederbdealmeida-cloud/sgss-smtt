@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Limpar Cache SGSS</title>
+<style>
+body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;
+min-height:100vh;margin:0;background:#1e3a5f;color:#fff;text-align:center;padding:20px}
+.box{background:rgba(255,255,255,.1);border-radius:16px;padding:32px;max-width:320px}
+h2{margin-bottom:8px;color:#fde68a}
+p{font-size:14px;opacity:.8;margin-bottom:24px}
+button{background:#2563eb;color:#fff;border:none;border-radius:8px;
+padding:14px 28px;font-size:16px;font-weight:700;cursor:pointer;width:100%}
+.status{margin-top:16px;font-size:13px;color:#86efac}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>🔄 SGSS</h2>
+  <p>Clica o botão para limpar o cache e carregar a versão mais recente.</p>
+  <button onclick="clearAll()">Limpar e Actualizar</button>
+  <div class="status" id="st"></div>
+</div>
+<script>
+async function clearAll(){
+  var st=document.getElementById('st');
+  st.textContent='A limpar...';
+  try{
+    if('serviceWorker' in navigator){
+      var regs=await navigator.serviceWorker.getRegistrations();
+      for(var r of regs) await r.unregister();
+    }
+    if('caches' in window){
+      var keys=await caches.keys();
+      for(var k of keys) await caches.delete(k);
+    }
+    st.textContent='✅ Feito! A redirecionar...';
+    setTimeout(function(){window.location.href='/sgss-smtt/';},1500);
+  }catch(e){
+    st.textContent='Erro: '+e.message;
+  }
+}
+</script>
+</body>
+</html>
