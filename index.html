@@ -4234,9 +4234,8 @@ function RelatoriosPersonalizados(){
     ce('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10,marginLeft:4,gap:8,flexWrap:'wrap'}},
       ce('span',{style:{fontSize:13,color:'#64748b'}},filtered.length+' resultado(s)'),
       ce('div',{style:{display:'flex',gap:8}},
-        ce('button',{className:'btn',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},onClick:prtLote},'\ud83d\udda8\ufe0f Lote'),
         ce('button',{className:'btn',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac'},onClick:expCSV},'\ud83d\udcc4 CSV'),
-        ce('button',{className:'btn btn-p',onClick:prtAll},'\ud83d\udda8\ufe0f Tudo')
+        ce('button',{className:'btn',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},onClick:prtLote},'\ud83d\udda8\ufe0f Imprimir Lote')
       )
     ),
     /* Container tabela */
