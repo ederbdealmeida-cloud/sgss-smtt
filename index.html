@@ -4264,6 +4264,10 @@ function RelatoriosPersonalizados(){
                           style:{marginRight:4,background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
                           onClick:function(){prtSingle(r);}},
                           '\ud83d\udc41\ufe0f'),
+                        ce('button',{className:'btn-icon',title:'Editar',
+                          style:{marginRight:4,background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac'},
+                          onClick:function(){window._relEditReq=r.id;p.setPage('controle');}},
+                          '\u270f\ufe0f'),
                         ce('button',{className:'btn-icon',title:'Excluir',
                           style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
                           onClick:function(){showConfirm({msg:'Excluir #'+r.prot+'?',onOk:function(){
