@@ -665,6 +665,11 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;displa
 @media(max-device-width:960px),(max-width:960px){
   .ham,.topbar-ham,.hamburger{display:none!important;}
   .bottom-nav{display:flex!important;}
+  /* Sidebar: mais pequeno e abaixo do topbar */
+  .sidebar{width:68vw!important;max-width:240px!important;
+    top:56px!important;height:calc(100vh - 56px)!important;
+    z-index:150!important;}
+  .topbar{z-index:200!important;}
 }
 /* Mobile scroll fix */
 @media(max-device-width:960px),(max-width:960px){
