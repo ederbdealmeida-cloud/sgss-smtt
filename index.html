@@ -2511,11 +2511,11 @@ function Solicitacoes(){
               ce('button',{className:'btn btn-p',style:{padding:'3px 7px',fontSize:11},onClick:saveEditSol},'\u2714 Salvar'),
               ce('button',{className:'btn btn-s',style:{padding:'3px 7px',fontSize:11,marginLeft:3},onClick:function(){setEditId(null);setEditD({});}},'\u2715')
             ):ce(React.Fragment,null,
-              ce('button',{className:'btn-icon',title:'Visualizar / Imprimir',onClick:function(){setDocItem(r);}},'\ud83d\udc41\ufe0f'),
-              ce('button',{className:'btn-icon',title:'Imprimir Comprovante',style:{fontSize:13},onClick:function(){var _gp=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];imprimirComprovanteServico(r,_gp);}},'\ud83d\udda8\ufe0f'),
-              ce('button',{className:'btn-icon',title:'Editar campos',onClick:function(){setEditId(r.id);setEditD(Object.assign({},r));}},'\u270f\ufe0f'),
-              ce('button',{className:'btn-icon',title:'Editar (form completo)',onClick:function(){setSubcats(SUBS[r.catId]||[]);setSubInfo(null);setHoras(1);setLocked(false);setForm(Object.assign({},r));}},'\ud83d\udcdd'),
-              ce('button',{className:'btn-icon',style:{color:'#dc2626'},title:'Excluir',onClick:function(){showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir solicita\u00e7\u00e3o?',corpo:'O registro permanecer\u00e1 acess\u00edvel no Hist\u00f3rico.',lblOk:'Excluir',cor:'red',onOk:function(){
+              ce('button',{className:'btn-icon',title:'Visualizar / Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd',marginRight:3},onClick:function(){setDocItem(r);}},'\ud83d\udc41\ufe0f'),
+              ce('button',{className:'btn-icon',title:'Imprimir Comprovante',style:{background:'#fdf4ff',color:'#7c3aed',border:'1px solid #d8b4fe',marginRight:3},style:{fontSize:13},onClick:function(){var _gp=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];imprimirComprovanteServico(r,_gp);}},'\ud83d\udda8\ufe0f'),
+              ce('button',{className:'btn-icon',title:'Editar campos',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},onClick:function(){setEditId(r.id);setEditD(Object.assign({},r));}},'\u270f\ufe0f'),
+              ce('button',{className:'btn-icon',title:'Editar (form completo)',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},onClick:function(){setSubcats(SUBS[r.catId]||[]);setSubInfo(null);setHoras(1);setLocked(false);setForm(Object.assign({},r));}},'\ud83d\udcdd'),
+              ce('button',{className:'btn-icon',title:'Excluir',style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},onClick:function(){showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir solicita\u00e7\u00e3o?',corpo:'O registro permanecer\u00e1 acess\u00edvel no Hist\u00f3rico.',lblOk:'Excluir',cor:'red',onOk:function(){
 var idx=INIT_REQS.findIndex(function(x){return x.id===r.id;});var _pexcl=idx>=0?INIT_REQS[idx].prot:'';
 if(idx>=0)INIT_REQS.splice(idx,1);
 SGSS_SESSION.acoes.unshift({tipo:'Excluir Solicitação',prot:_pexcl,dt:new Date().toLocaleTimeString('pt-BR')});
@@ -3019,7 +3019,7 @@ function Controle(p){
               ce('option',{value:''},'\u2014 Nenhum'),
               FUNC_LIST.filter(function(f){return f.ativo;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);})):ce('span',null,r.func||'\u2013')),
             ce('td',null,
-              ce('button',{className:'btn-icon',title:'Visualizar',onClick:function(){
+              ce('button',{className:'btn-icon',title:'Visualizar',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd',marginRight:3},onClick:function(){
               var _pw=780,_ph=680,_pl=Math.round((screen.width-_pw)/2),_pt=Math.round((screen.height-_ph)/2);
               var w=window.open('','_blank','width='+_pw+',height='+_ph+',left='+_pl+',top='+_pt+',scrollbars=yes');
               if(!w){notify('Permita pop-ups!');return;}
@@ -3035,9 +3035,9 @@ function Controle(p){
                 ce('button',{className:'btn btn-p',style:{padding:'3px 6px',fontSize:11},onClick:function(){saveStatus(r.id);}},'\u2714'),
                 ce('button',{className:'btn btn-s',style:{padding:'3px 6px',fontSize:11},onClick:function(){cancelEdit(r.id);}},'\u2715')
               ):ce(React.Fragment,null,
-                ce('button',{className:'btn-icon',onClick:function(){startEdit(r);}},'\u270f\ufe0f'),
-                ce('button',{className:'btn-icon',title:'Encerrar',onClick:function(){setEncItem(r);}},'\u2705'),
-                ce('button',{className:'btn-icon',style:{color:'#dc2626'},
+                ce('button',{className:'btn-icon',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},onClick:function(){startEdit(r);}},'\u270f\ufe0f'),
+                ce('button',{className:'btn-icon',title:'Encerrar',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},onClick:function(){setEncItem(r);}},'\u2705'),
+                ce('button',{className:'btn-icon',style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
                   title:'Excluir (permanece no Hist\u00f3rico)',
                   onClick:function(){
                     showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir solicita\u00e7\u00e3o?',sub:r.prot,corpo:'O registro permanecer\u00e1 acess\u00edvel no Hist\u00f3rico.',lblOk:'Excluir',cor:'red',onOk:function(){
@@ -3185,7 +3185,7 @@ function Historico(){
           ce('td',null,r.func||'\u2013'),
           ce('td',{style:{textAlign:'right'}},
             ce('button',{className:'btn-icon',title:'Visualizar',onClick:function(){setDocItem(r);}},'\ud83d\udc41\ufe0f'),
-            ce('button',{className:'btn-icon',title:'Excluir',style:{color:'#dc2626'},onClick:function(){delHist(r);}},'\ud83d\uddd1\ufe0f')
+            ce('button',{className:'btn-icon',title:'Excluir',style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},onClick:function(){delHist(r);}},'\ud83d\uddd1\ufe0f')
           )
         );}))
       )),
@@ -3476,7 +3476,7 @@ function Relatorios(){
               ce('td',null,ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status)),
               ce('td',null,r.func||'\u2013'),
               ce('td',{className:'no-print'},
-                ce('button',{className:'btn-icon',title:'Visualizar',onClick:function(){
+                ce('button',{className:'btn-icon',title:'Visualizar',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd',marginRight:3},onClick:function(){
                   var _pw=820,_ph=680,_pl=Math.round((screen.width-_pw)/2),_pt=Math.round((screen.height-_ph)/2);
                   var w=window.open('','_blank','width='+_pw+',height='+_ph+',left='+_pl+',top='+_pt+',scrollbars=yes');
                   if(!w)return;
@@ -3500,7 +3500,7 @@ function Relatorios(){
                     +'</div></body></html>');
                   w.document.close();
                 }},'\ud83d\udc41\ufe0f'),
-                r.status!=='Conclu\u00eddo'?ce('button',{className:'btn-icon',title:'Editar',
+                r.status!=='Conclu\u00eddo'?ce('button',{className:'btn-icon',title:'Editar',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},
                   onClick:function(){setRelEdit(Object.assign({},r));setRelDel(null);}},'\u270f\ufe0f'):null,
                 ce('button',{className:'btn-icon',title:'Excluir',style:{color:'#dc2626'},
                   onClick:function(){
