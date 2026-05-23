@@ -759,7 +759,10 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;displa
   .donut-wrap,.donut,.chart-wrap{max-width:140px!important;max-height:140px!important;
     margin:0 auto!important;}
   svg.donut,svg.chart{width:120px!important;height:120px!important;}
-  /* Evolucao mensal */
+  /* Evolucao mensal - altura maior para caber labels */
+  .bar-chart{height:110px!important;align-items:flex-end!important;overflow:visible!important;}
+  .bar-wrap{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;gap:2px!important;}
+  .bar-lbl{font-size:7px!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:44px!important;}
   .brow{gap:2px!important;overflow:hidden!important;}
   .br{font-size:6px!important;min-width:0!important;flex:1!important;}
   .br-bar{min-height:4px!important;}
