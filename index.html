@@ -4169,7 +4169,7 @@ function RelatoriosPersonalizados(){
   function applyF(fn){setLoading(true);fn();setPg(1);setChk({});setTimeout(function(){setLoading(false);},320);}
   var bairros=INIT_REQS.map(function(r){return r.bairro||'';}).filter(function(v,i,a){return v&&a.indexOf(v)===i;}).sort();
   var svcs=INIT_REQS.map(function(r){return r.cn||r.sn||'';}).filter(function(v,i,a){return v&&a.indexOf(v)===i;}).sort();
-  var ST=['Pendente','Em andamento','Aguardando','Conclu\u00eddo'];
+  var ST=['N\u00e3o Conclu\u00eddo','Em andamento','Aguardando','Conclu\u00eddo'];
   function getCel(r,k){
     if(k==='prot')return r.prot||'';
     if(k==='dt')return fmtD(r.dt);
@@ -4198,7 +4198,10 @@ function RelatoriosPersonalizados(){
     }
     if(fBairro&&(r.bairro||'').trim()!==fBairro.trim())return false;
     if(fSvc&&(r.cn||r.sn||'').trim()!==fSvc.trim())return false;
-    if(fSt&&(r.status||'').trim()!==fSt.trim())return false;
+    if(fSt){
+      var _fst=fSt==='N\u00e3o Conclu\u00eddo'?'Pendente':fSt;
+      if((r.status||'').trim()!==_fst.trim())return false;
+    }
     if(fUrg==='sim'&&r.urg!=='Sim')return false;
     if(fUrg==='nao'&&r.urg==='Sim')return false;
     if(fPag&&(r.fp||'').trim()!==fPag.trim())return false;
