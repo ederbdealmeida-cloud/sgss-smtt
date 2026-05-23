@@ -763,6 +763,11 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;displa
     line-height:1!important;background:none!important;padding:0!important;}
 
   /* Cards Categoria/Status/Evolucao - cabe na tela */
+  .ch-grid,.card,.ch-card{
+    max-width:calc(100vw - 16px)!important;
+    overflow:hidden!important;
+    box-sizing:border-box!important;
+  }
   .ch-grid{grid-template-columns:1fr!important;gap:8px!important;
     max-width:100%!important;overflow:hidden!important;}
   .ch-card{padding:10px!important;border-radius:8px!important;
@@ -2107,7 +2112,7 @@ function imprimirDash(titulo,corpo,landscape){
   return ce('div',{className:'page'},
     ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',width:'100%'}},
       ce('h2',{className:'page-title'},'\ud83d\udcca Dashboard',
-      ce('span',{style:{fontSize:10,color:'#94a3b8',fontWeight:400,marginLeft:8}},'v534a90c')),
+      ce('span',{style:{fontSize:10,color:'#94a3b8',fontWeight:400,marginLeft:8,fontFamily:"'Segoe UI',Arial,sans-serif",letterSpacing:'normal'}},'v5.4.10')),
       !funcSel?ce('button',{className:'btn btn-s',onClick:imprimirVisaoGeral},'\ud83d\udda8\ufe0f Imprimir Vis\u00e3o Geral'):null
     ),
     ce('div',{style:{display:'flex',alignItems:'center',gap:8}},
