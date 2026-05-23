@@ -1,6 +1,25 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script>
+/* Forca limpeza de cache quando versao muda */
+(function(){
+  var V='5.4.10.0';
+  if(localStorage.getItem('_sgss_cv')!==V){
+    localStorage.setItem('_sgss_cv',V);
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){r.unregister();});
+      });
+    }
+    if('caches' in window){
+      caches.keys().then(function(keys){
+        keys.forEach(function(k){caches.delete(k);});
+      }).then(function(){location.reload();});
+    } else { location.reload(); }
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
