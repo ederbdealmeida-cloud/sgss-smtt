@@ -663,6 +663,12 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;displa
   .bottom-nav-item.active{color:#60a5fa!important;}
   .bottom-nav-item .bni{font-size:20px!important;}
 }
+/* Mobile scroll fix */
+@media(max-device-width:960px),(max-width:960px){
+  .app-body{overflow-y:auto!important;overflow-x:hidden!important;height:calc(100vh - 43px)!important;}
+  .main{overflow-y:visible!important;height:auto!important;}
+  .page,.page-content{padding-bottom:70px!important;}
+}
 </style>
 </head>
 <body>
