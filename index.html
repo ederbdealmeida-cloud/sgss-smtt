@@ -5330,7 +5330,7 @@ function App(){
       ),
       ce('div',{className:'topbar-right'},
         ce('button',{className:'topbar-ham',
-          onClick:function(){setCollapsed(function(v){return !v;});},
+          onClick:function(){setCollapsed(function(v){return !v;});setMobOpen(function(v){return !v;});},
           '≡'),
                 ce('div',{className:'tb-dropdown-wrap'},
           ce('div',{className:'topbar-bell',onClick:function(){setBellOpen(function(v){return !v;});setUserOpen(false);}},
