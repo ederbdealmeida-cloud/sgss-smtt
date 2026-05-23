@@ -4202,6 +4202,15 @@ function RelatoriosPersonalizados(){
   var TD='style="padding:5px 10px;font-size:11px;border-bottom:1px solid #f1f5f9"';
   function prtRows(rows){return rows.map(function(r,i){var bg=i%2===0?'#fff':'#f8fafc';return '<tr style="background:'+bg+'">'+actCols.map(function(c){return '<td '+TD+'>'+getCel(r,c.k)+'</td>';}).join('')+'</tr>';}).join('');}
   function prtHead(){return '<tr>'+actCols.map(function(c){return '<th '+TH+'>'+c.l+'</th>';}).join('')+'</tr>';}
+  function saveEdit(){
+    INIT_REQS.forEach(function(x,xi){
+      if(x.id===editRow.id){
+        INIT_REQS[xi]=Object.assign({},x,editData);
+      }
+    });
+    sgssSave();setTick(function(t){return t+1;});
+    setEditRow(null);notify('\u2705 Actualizado.');
+  }
   function prtSingle(r){imprimirDash('#'+r.prot,'<table style="width:100%;border-collapse:collapse"><thead>'+prtHead()+'</thead><tbody>'+prtRows([r])+'</tbody></table>',false);}
   function prtAll(){if(!filtered.length){notify('\u26a0\ufe0f Sem resultados.');return;}imprimirDash('Relat\u00f3rio','<table style="width:100%;border-collapse:collapse"><thead>'+prtHead()+'</thead><tbody>'+prtRows(filtered)+'</tbody></table>',false);}
   function prtLote(){var sel=filtered.filter(function(r){return chk[r.id];});if(!sel.length){notify('\u26a0\ufe0f Seleccione registos.');return;}imprimirDash('Lote: '+sel.length,'<table style="width:100%;border-collapse:collapse"><thead>'+prtHead()+'</thead><tbody>'+prtRows(sel)+'</tbody></table>',false);}
@@ -4265,13 +4274,13 @@ function RelatoriosPersonalizados(){
                           '\ud83d\udc41\ufe0f'),
                         ce('button',{className:'btn-icon',title:'Editar',
                           style:{marginRight:4,background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac'},
-                          onClick:function(){window._relEditReq=r.id;p.setPage('controle');}},
+                          onClick:function(){setEditRow(r);setEditData(Object.assign({},r));}},
                           '\u270f\ufe0f'),
                         ce('button',{className:'btn-icon',title:'Excluir',
                           style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
                           onClick:function(){showConfirm({msg:'Excluir #'+r.prot+'?',onOk:function(){
                             INIT_REQS.forEach(function(x,xi){if(x.id===r.id)INIT_REQS.splice(xi,1);});
-                            sgssSave();notify('\u2705 Exclu\u00eddo.');}});}},
+                            sgssSave();setTick(function(t){return t+1;});notify('\u2705 Exclu\u00eddo.');}});}},
                           '\ud83d\uddd1\ufe0f'))
                     );
                   }))
