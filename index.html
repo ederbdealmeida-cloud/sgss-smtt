@@ -5330,7 +5330,7 @@ function App(){
         )
       ),
       ce('div',{className:'topbar-right'},
-        ce('button',{className:'topbar-ham',
+        (window.innerWidth||screen.width)<=960?null:ce('button',{className:'topbar-ham',
           onClick:function(){setCollapsed(function(v){return !v;});setMobOpen(function(v){return !v;});}},
           '≡'),
                 ce('div',{className:'tb-dropdown-wrap'},
