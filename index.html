@@ -5458,4 +5458,83 @@ if(_cv!==APP_VER){
 })();
 </script>
 </body>
-</html>
+</html/* =============================================
+   LAYOUT MOBILE v8 - baseado no mockup original
+   Minimalista, compacto, nativo
+   ============================================= */
+@media(max-device-width:960px),(max-width:960px){
+
+  /* Sidebar: oculto, slide-in */
+  .sidebar{position:fixed!important;top:0!important;left:0!important;
+    width:78vw!important;max-width:280px!important;height:100vh!important;
+    transform:translateX(-100%)!important;transition:transform .22s ease!important;
+    z-index:500!important;overflow-y:auto!important;}
+  .sidebar.mob-open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.4)!important;}
+  .sidebar-overlay{display:none!important;position:fixed!important;inset:0!important;
+    background:rgba(0,0,0,.45)!important;z-index:499!important;}
+  .sidebar-overlay.mob-open{display:block!important;}
+
+  /* Layout principal */
+  .app-body{display:flex!important;flex-direction:column!important;}
+  .main{width:100vw!important;margin-left:0!important;overflow-x:hidden!important;}
+
+  /* Topbar compacto - 43px como no mockup */
+  .topbar{height:43px!important;padding:0 9px!important;
+    background:linear-gradient(90deg,#0f2240,#1e3a5f)!important;}
+  .topbar-center{display:flex!important;}
+  .topbar-uname{display:none!important;}
+  .ham{display:flex!important;}
+  .topbar-sgss{font-size:16px!important;font-weight:900!important;
+    color:#fde68a!important;letter-spacing:1.5px!important;}
+
+  /* Pagina */
+  .page,.page-content{padding:8px 7px 56px!important;}
+  .page-title{font-size:11.5px!important;font-weight:800!important;color:#1e3a5f!important;}
+  .page-sub,.page-subtitle{font-size:7px!important;color:#64748b!important;}
+
+  /* Stats - sem icone, border-left colorida como no mockup */
+  .stats-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;}
+  .stat{background:#fff!important;border-radius:8px!important;
+    padding:7px 8px!important;border-left:3px solid #2563eb!important;
+    box-shadow:0 1px 3px rgba(0,0,0,.06)!important;position:relative!important;}
+  .stat-ico{display:none!important;}
+  .stat-val{font-size:19px!important;font-weight:900!important;
+    color:#1e293b!important;line-height:1!important;font-family:'Segoe UI',Arial,sans-serif!important;}
+  .stat-lbl{font-size:7px!important;color:#64748b!important;margin-top:2px!important;}
+  /* Cores das bordas por classe */
+  .stat.s-gr{border-color:#16a34a!important;}
+  .stat.s-or,.stat.s-am{border-color:#d97706!important;}
+  .stat.s-re{border-color:#dc2626!important;}
+  .stat.s-pu{border-color:#7c3aed!important;}
+  .stat.s-te{border-color:#0891b2!important;}
+
+  /* Cards */
+  .card{background:#fff!important;border-radius:9px!important;
+    padding:8px 10px!important;box-shadow:0 1px 3px rgba(0,0,0,.07)!important;}
+  .card-title,.ch-title{font-size:9px!important;font-weight:700!important;
+    color:#1e3a5f!important;margin-bottom:5px!important;}
+
+  /* Listas */
+  .cards-grid{grid-template-columns:1fr!important;}
+  .tbl-wrap,table{overflow-x:auto!important;display:block!important;}
+  .tbl th,.tbl td{padding:5px 6px!important;font-size:11px!important;}
+  .form-grid{grid-template-columns:1fr!important;}
+  .fg.s2,.fg.s3{grid-column:span 1!important;}
+  input,select,textarea,.inp{font-size:16px!important;}
+
+  /* Bottom nav - 43px compacto como no mockup */
+  .bottom-nav{display:flex!important;position:fixed!important;
+    bottom:0!important;left:0!important;right:0!important;
+    height:44px!important;background:#0f2240!important;
+    z-index:400!important;border-top:1px solid rgba(255,255,255,.1)!important;
+    box-shadow:0 -2px 10px rgba(0,0,0,.3)!important;}
+  .bottom-nav-item{flex:1!important;display:flex!important;flex-direction:column!important;
+    align-items:center!important;justify-content:center!important;
+    color:rgba(255,255,255,.45)!important;font-size:6.5px!important;
+    gap:1.5px!important;border:none!important;background:none!important;
+    cursor:pointer!important;padding:3px 2px!important;transition:color .15s!important;}
+  .bottom-nav-item.active{color:#60a5fa!important;}
+  .bottom-nav-item .bni,.bottom-nav-item .bni-wrap{font-size:15px!important;
+    line-height:1!important;background:none!important;padding:0!important;}
+}
+>
