@@ -2,6 +2,23 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta name="app-version" content="sgss-v15">
+<script>
+/* Auto-actualiza quando SW detecta nova versao */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='SW_UPDATED'){window.location.reload(true);}
+  });
+  navigator.serviceWorker.register('/sgss-smtt/sw.js').then(function(reg){
+    reg.addEventListener('updatefound',function(){
+      var nw=reg.installing;
+      nw.addEventListener('statechange',function(){
+        if(nw.state==='activated'){window.location.reload(true);}
+      });
+    });
+  });
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
@@ -5575,10 +5592,7 @@ if(window._sgssLoaded){_mountApp();} else {
 /* Limpa todos os service workers e caches antigos */
 var APP_VER="2026.05.24.v15";
 /* Auto-reload quando SW actualiza */
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.addEventListener('message',function(e){
-    if(e.data&&e.data.type==='SW_UPDATED'){location.reload();}
-  });
+
 }
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sgss-smtt/sw.js',{scope:'/sgss-smtt/'})
