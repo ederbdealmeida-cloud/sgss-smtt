@@ -4104,6 +4104,17 @@ function MapaSolicitacoes(){
                   (r.urg==='Sim'?' 🚨':'')+
                   '</div>');
                 infoWin.open(map,mk);
+                var svEl=document.getElementById('sgss-sv');
+                if(svEl){svEl.innerHTML='';
+                  var sv=new window.google.maps.StreetViewPanorama(svEl,{
+                    position:res[0].geometry.location,
+                    pov:{heading:34,pitch:0},zoom:1,
+                    addressControl:false,fullscreenControl:true,
+                    motionTracking:false});
+                  sv.addListener('status_changed',function(){
+                    if(sv.getStatus()!=='OK')
+                      svEl.innerHTML='<div style="padding:20px;text-align:center;color:#94a3b8">🚫<br/>Street View indisponível</div>';
+                  });}
               });
             }
           });
@@ -4154,8 +4165,15 @@ function MapaSolicitacoes(){
       ce('span',{style:{marginLeft:'auto',color:'#64748b'}},
         Math.min(30,filtered.length)+' registos')
     ),
-    ce('div',{id:'sgss-map',style:{width:'100%',height:500,borderRadius:10,
-      border:'1px solid #e2e8f0',boxShadow:'0 2px 8px rgba(0,0,0,.08)'}})
+    ce('div',{style:{display:'flex',gap:8,height:500}},
+      ce('div',{id:'sgss-map',style:{flex:'1 1 0',minWidth:0,borderRadius:10,border:'1px solid #e2e8f0'}}),
+      ce('div',{id:'sgss-sv',style:{width:260,flexShrink:0,borderRadius:10,
+        border:'1px solid #e2e8f0',background:'#f8fafc',
+        display:'flex',alignItems:'center',justifyContent:'center',
+        flexDirection:'column',gap:8,color:'#94a3b8',fontSize:12,textAlign:'center',padding:12}},
+        ce('span',{style:{fontSize:28}},'🚖'),
+        'Clica num marcador\npara ver o local')
+    )
   );
 }
 
