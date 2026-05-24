@@ -4164,6 +4164,156 @@ function MapaSolicitacoes(){
     ),
     ce('div',{style:{display:'flex',gap:8,height:500,overflowX:'auto',overflowY:'hidden',WebkitOverflowScrolling:'touch',borderRadius:10}},
       ce('div',{id:'sgss-map',style:{flex:'1 1 0',minWidth:300,borderRadius:10,border:'1px solid #e2e8f0'}}),
+      ce('div',{style:{width:240,flexShrink:0,borderRadius:10,
+        border:'1px solid #e2e8f0',background:'#fff',
+        display:'flex',flexDirection:'column',overflow:'hidden'}},
+        ce('div',{style:{padding:'8px 10px',fontWeight:700,fontSize:11,
+          color:'#1e3a5f',borderBottom:'1px solid #f1f5f9',
+          background:'#f8fafc',flexShrink:0}},
+          '📋 Protocolos ('+filtered.length+')'),
+        ce('div',{style:{overflowY:'auto',flex:1}},
+          filtered.map(function(r){
+            var c=r.urg==='Sim'?'#dc2626':(r.status==='Concluído'?'#16a34a':'#2563eb');
+            return ce('div',{key:r.id,
+              style:{padding:'7px 10px',borderBottom:'1px solid #f1f5f9',
+                cursor:'pointer',fontSize:11},
+              onMouseEnter:function(e){e.currentTarget.style.background='#eff6ff';},
+              onMouseLeave:function(e){e.currentTarget.style.background='';},
+              onClick:function(){
+                if(window._sgssMarkers&&window._sgssMarkers[r.id]){
+                  var mk=window._sgssMarkers[r.id];
+                  window._sgssMap.panTo(mk.getPosition());
+                  window._sgssMap.setZoom(16);
+                  window.google.maps.event.trigger(mk,'click');
+                }
+              }},
+              ce('div',{style:{fontWeight:700,color:c,marginBottom:2}},'#'+r.prot),
+              ce('div',{style:{color:'#374151',overflow:'hidden',
+                textOverflow:'ellipsis',whiteSpace:'nowrap'}},
+                (r.rua||'')+(r.num?' nº'+r.num:'')),
+              ce('div',{style:{color:'#94a3b8',fontSize:10}},r.status||'')
+            );
+          })
+        ))seState('');var fSt=s1[0];var setFSt=s1[1];
+  var s2=useState('');var fUrg=s2[0];var setFUrg=s2[1];
+  var s3=useState('');var fBairro=s3[0];var setFBairro=s3[1];
+  var bairros=INIT_REQS.filter(function(r){return r.enc!==1;})
+    .map(function(r){return r.bairro||'';})
+    .filter(function(v,i,a){return v&&a.indexOf(v)===i;}).sort();
+  var filtered=INIT_REQS.filter(function(r){
+    if(r.enc===1)return false;
+    if(fSt&&(r.status||'').trim()!==fSt.trim())return false;
+    if(fUrg==='sim'&&r.urg!=='Sim')return false;
+    if(fUrg==='nao'&&r.urg==='Sim')return false;
+    if(fBairro&&(r.bairro||'').trim()!==fBairro.trim())return false;
+    return true;
+  });
+  var API_KEY='AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs';
+  React.useEffect(function(){
+    var el=document.getElementById('sgss-map');
+    if(!el)return;
+    function initGMap(){
+      if(window._sgssMap){window._sgssMap=null;}
+      var map=new window.google.maps.Map(el,{
+        center:{lat:-29.8833,lng:-54.822},
+        zoom:13,
+        mapTypeControl:false,
+        streetViewControl:false,
+        fullscreenControl:true
+      });
+      window._sgssMap=map;
+      var geo=new window.google.maps.Geocoder();
+      function markerColor(r){
+        if(r.urg==='Sim')return '#dc2626';
+        if((r.status||'')==='Concluído')return '#16a34a';
+        return '#2563eb';
+      }
+      var infoWin=new window.google.maps.InfoWindow();
+      filtered.slice(0,30).forEach(function(r,i){
+        if(!r.rua)return;
+        var addr=(r.rua||'')+(r.num?' '+r.num:'')+', Cacequi, RS, Brasil';
+        setTimeout(function(){
+          geo.geocode({address:addr},function(res,status){
+            if(status==='OK'&&res[0]){
+              var c=markerColor(r);
+              if(!window._sgssMarkers)window._sgssMarkers={};
+              var mk=new window.google.maps.Marker({
+                position:res[0].geometry.location,
+                map:map,
+                icon:{path:window.google.maps.SymbolPath.CIRCLE,scale:7,
+                  fillColor:c,fillOpacity:1,strokeColor:'#fff',strokeWeight:2},
+                title:'#'+r.prot
+              });
+              window._sgssMarkers[r.id]=mk;
+              mk.addListener('click',function(){
+                var lat2=res[0].geometry.location.lat();
+                var lng2=res[0].geometry.location.lng();
+                var svUrl2='https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='+lat2+','+lng2+'&heading=34&pitch=0&fov=80';
+                infoWin.setContent(
+                  '<div style="font-size:13px;min-width:180px">'+
+                  '<b>#'+r.prot+'</b><br/>'+
+                  (r.nom||'')+'<br/>'+
+                  (r.rua||'')+(r.num?' nº'+r.num:'')+
+                  (r.bairro?', '+r.bairro:'')+'<br/>'+
+                  '<span style="color:'+c+';font-weight:700">'+(r.status||'')+'</span>'+
+                  (r.urg==='Sim'?' 🚨':'')+
+                  '<br/><a href="'+svUrl2+'" target="_blank" style="color:#2563eb;font-size:11px;text-decoration:none">'+'🚖 Ver Street View</a>'+
+                  '</div>');
+                infoWin.open(map,mk);
+
+              });
+            }
+          });
+        },i*300);
+      });
+    }
+    if(window.google&&window.google.maps){initGMap();}
+    else{
+      window._initGMap=initGMap;
+      var sc=document.createElement('script');
+      sc.src='https://maps.googleapis.com/maps/api/js?key='+API_KEY+'&callback=_initGMap';
+      sc.async=true;sc.defer=true;
+      document.head.appendChild(sc);
+    }
+    return function(){
+      if(window._sgssMap)window._sgssMap=null;
+    };
+  window._sgssMarkers={};
+  },[fSt,fUrg,fBairro,filtered.length]);
+
+  return ce('div',{className:'page-content',style:{padding:'20px 20px 20px 20px'}},
+    ce('h2',{className:'page-title',style:{marginBottom:12}},'🗺 Mapa de Solicitações'),
+    ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginBottom:10}},
+      ce('select',{className:'inp',style:{flex:1,minWidth:130},value:fSt,
+        onChange:function(e){setFSt(e.target.value);}},
+        ce('option',{value:''},'Todos os status'),
+        ce('option',{value:'Não Concluído'},'Não Concluído'),
+        ce('option',{value:'Concluído'},'Concluído')),
+      ce('select',{className:'inp',style:{flex:1,minWidth:120},value:fUrg,
+        onChange:function(e){setFUrg(e.target.value);}},
+        ce('option',{value:''},'Todos'),
+        ce('option',{value:'sim'},'🚨 Urgentes'),
+        ce('option',{value:'nao'},'Não urgentes')),
+      ce('select',{className:'inp',style:{flex:1,minWidth:120},value:fBairro,
+        onChange:function(e){setFBairro(e.target.value);}},
+        ce('option',{value:''},'Todos os bairros'),
+        bairros.map(function(b){return ce('option',{key:b,value:b},b);}))
+    ),
+    ce('div',{style:{display:'flex',gap:12,marginBottom:8,fontSize:11,alignItems:'center',flexWrap:'wrap'}},
+      ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
+        ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#dc2626',display:'inline-block'}}),
+        'Urgente'),
+      ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
+        ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#2563eb',display:'inline-block'}}),
+        'Não Concluído'),
+      ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
+        ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#16a34a',display:'inline-block'}}),
+        'Concluído'),
+      ce('span',{style:{marginLeft:'auto',color:'#64748b'}},
+        Math.min(30,filtered.length)+' registos')
+    ),
+    ce('div',{style:{display:'flex',gap:8,height:500,overflowX:'auto',overflowY:'hidden',WebkitOverflowScrolling:'touch',borderRadius:10}},
+      ce('div',{id:'sgss-map',style:{flex:'1 1 0',minWidth:300,borderRadius:10,border:'1px solid #e2e8f0'}}),
       ce('div',{id:'sgss-sv',style:{width:260,flexShrink:0,borderRadius:10,
         border:'1px solid #e2e8f0',background:'#f8fafc',
         display:'flex',alignItems:'center',justifyContent:'center',
