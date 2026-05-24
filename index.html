@@ -887,7 +887,7 @@ function saveSession(){
 function sgssSave(){
   if(!window._sgssLoaded){console.log('Save bloqueado: aguardando Firebase');return;}
   try{
-    var _d={reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,notas:NOTAS_LIST,ts:Date.now()};
+    var _d={reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,notas:NOTAS_LIST,comunicados:COMUNICADOS_LIST,auditoria:AUDIT_LOG,ts:Date.now()};
     /* Firestore REST API - sem SDK */
     var _url='https://firestore.googleapis.com/v1/projects/smtt-cacequi/databases/(default)/documents/smtt/dados?key=AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs';
     fetch(_url,{method:'PATCH',headers:{'Content-Type':'application/json; charset=utf-8'},
