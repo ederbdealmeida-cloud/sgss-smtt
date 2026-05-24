@@ -4086,6 +4086,7 @@ function MapaSolicitacoes(){
           geo.geocode({address:addr},function(res,status){
             if(status==='OK'&&res[0]){
               var c=markerColor(r);
+              if(!window._sgssMarkers)window._sgssMarkers={};
               var mk=new window.google.maps.Marker({
                 position:res[0].geometry.location,
                 map:map,
@@ -4093,6 +4094,7 @@ function MapaSolicitacoes(){
                   fillColor:c,fillOpacity:1,strokeColor:'#fff',strokeWeight:2},
                 title:'#'+r.prot
               });
+              window._sgssMarkers[r.id]=mk;
               mk.addListener('click',function(){
                 var lat2=res[0].geometry.location.lat();
                 var lng2=res[0].geometry.location.lng();
@@ -4108,34 +4110,7 @@ function MapaSolicitacoes(){
                   '<br/><a href="'+svUrl2+'" target="_blank" style="color:#2563eb;font-size:11px;text-decoration:none">'+'🚖 Ver Street View</a>'+
                   '</div>');
                 infoWin.open(map,mk);
-                var svEl=document.getElementById('sgss-sv');
-                var lat=res[0].geometry.location.lat();
-                var lng=res[0].geometry.location.lng();
-                var svUrl='https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='+lat+','+lng+'&heading=34&pitch=0&fov=80';
-                if(svEl){
-                  svEl.innerHTML='';
-                  svEl.style.cursor='pointer';
-                  svEl.onclick=function(){window.open(svUrl,'_blank');};
-                  var sv=new window.google.maps.StreetViewPanorama(svEl,{
-                    position:res[0].geometry.location,
-                    pov:{heading:34,pitch:0},zoom:1,
-                    addressControl:false,fullscreenControl:false,
-                    motionTracking:false,linksControl:false,
-                    panControl:false,zoomControl:false,
-                    enableCloseButton:false});
-                  sv.addListener('status_changed',function(){
-                    if(sv.getStatus()!=='OK'){
-                      svEl.innerHTML='<div style="padding:20px;text-align:center;color:#94a3b8;cursor:default">🚫<br/>Street View<br/>indisponível</div>';
-                      svEl.onclick=null;svEl.style.cursor='default';
-                    } else {
-                      var tip=document.createElement('div');
-                      tip.innerHTML='🔗 Clica para abrir';
-                      tip.style.cssText='position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:10px;color:#fff;background:rgba(0,0,0,.5);padding:3px;pointer-events:none';
-                      svEl.style.position='relative';
-                      svEl.appendChild(tip);
-                    }
-                  });
-                }
+
               });
             }
           });
@@ -4153,6 +4128,7 @@ function MapaSolicitacoes(){
     return function(){
       if(window._sgssMap)window._sgssMap=null;
     };
+  window._sgssMarkers={};
   },[fSt,fUrg,fBairro,filtered.length]);
 
   return ce('div',{className:'page-content',style:{padding:'20px 20px 20px 20px'}},
