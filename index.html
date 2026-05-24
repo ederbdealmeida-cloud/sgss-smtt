@@ -4058,73 +4058,101 @@ function MapaSolicitacoes(){
     if(fBairro&&(r.bairro||'').trim()!==fBairro.trim())return false;
     return true;
   });
+  var API_KEY='AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs';
   React.useEffect(function(){
     var el=document.getElementById('sgss-map');
     if(!el)return;
-    function initMap(){
-      if(window._sgssMap){window._sgssMap.remove();window._sgssMap=null;}
-      var map=window.L.map('sgss-map').setView([-30.0833,-53.5],13);
+    function initGMap(){
+      if(window._sgssMap){window._sgssMap=null;}
+      var map=new window.google.maps.Map(el,{
+        center:{lat:-30.0833,lng:-53.5},
+        zoom:13,
+        mapTypeControl:false,
+        streetViewControl:false,
+        fullscreenControl:true
+      });
       window._sgssMap=map;
-      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-        attribution:'OpenStreetMap',maxZoom:19}).addTo(map);
-      function color(r){
+      var geo=new window.google.maps.Geocoder();
+      function markerColor(r){
         if(r.urg==='Sim')return '#dc2626';
         if((r.status||'')==='Concluído')return '#16a34a';
         return '#2563eb';
       }
-      function addMark(r,lat,lng){
-        var c=color(r);
-        var ic=window.L.divIcon({className:'',iconSize:[14,14],iconAnchor:[7,7],
-          html:'<div style="width:14px;height:14px;border-radius:50%;background:'+c+
-            ';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>'});
-        window.L.marker([lat,lng],{icon:ic}).addTo(map).bindPopup(
-          '<b>#'+r.prot+'</b><br/>'+(r.nom||'')+'<br/>'+
-          (r.rua||'')+(r.num?' nº'+r.num:'')+(r.bairro?', '+r.bairro:'')+'<br/>'+
-          '<span style="color:'+c+';font-weight:700">'+(r.status||'')+'</span>');
-      }
+      var infoWin=new window.google.maps.InfoWindow();
       filtered.slice(0,30).forEach(function(r,i){
         if(!r.rua)return;
-        var q=encodeURIComponent((r.rua||'')+(r.num?' '+r.num:'')+', Cacequi, RS, Brasil');
+        var addr=(r.rua||'')+(r.num?' '+r.num:'')+', Cacequi, RS, Brasil';
         setTimeout(function(){
-          fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+q)
-          .then(function(res){return res.json();})
-          .then(function(data){if(data&&data[0])addMark(r,+data[0].lat,+data[0].lon);})
-          .catch(function(){});
-        },i*400);
+          geo.geocode({address:addr},function(res,status){
+            if(status==='OK'&&res[0]){
+              var c=markerColor(r);
+              var mk=new window.google.maps.Marker({
+                position:res[0].geometry.location,
+                map:map,
+                icon:{path:window.google.maps.SymbolPath.CIRCLE,scale:7,
+                  fillColor:c,fillOpacity:1,strokeColor:'#fff',strokeWeight:2},
+                title:'#'+r.prot
+              });
+              mk.addListener('click',function(){
+                infoWin.setContent(
+                  '<div style="font-size:13px;min-width:180px">'+
+                  '<b>#'+r.prot+'</b><br/>'+
+                  (r.nom||'')+'<br/>'+
+                  (r.rua||'')+(r.num?' nº'+r.num:'')+
+                  (r.bairro?', '+r.bairro:'')+'<br/>'+
+                  '<span style="color:'+c+';font-weight:700">'+(r.status||'')+'</span>'+
+                  (r.urg==='Sim'?' 🚨':'')+
+                  '</div>');
+                infoWin.open(map,mk);
+              });
+            }
+          });
+        },i*300);
       });
     }
-    if(window.L){initMap();}
+    if(window.google&&window.google.maps){initGMap();}
     else{
-      var css=document.createElement('link');css.rel='stylesheet';
-      css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-      document.head.appendChild(css);
-      var js=document.createElement('script');
-      js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-      js.onload=initMap;document.head.appendChild(js);
+      window._initGMap=initGMap;
+      var sc=document.createElement('script');
+      sc.src='https://maps.googleapis.com/maps/api/js?key='+API_KEY+'&callback=_initGMap';
+      sc.async=true;sc.defer=true;
+      document.head.appendChild(sc);
     }
-    return function(){if(window._sgssMap){window._sgssMap.remove();window._sgssMap=null;}};
+    return function(){
+      if(window._sgssMap)window._sgssMap=null;
+    };
   },[fSt,fUrg,fBairro,filtered.length]);
 
   return ce('div',{className:'page-content'},
     ce('h2',{className:'page-title',style:{marginBottom:12}},'🗺 Mapa de Solicitações'),
     ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginBottom:10}},
-      ce('select',{className:'inp',style:{flex:1,minWidth:130},value:fSt,onChange:function(e){setFSt(e.target.value);}},
+      ce('select',{className:'inp',style:{flex:1,minWidth:130},value:fSt,
+        onChange:function(e){setFSt(e.target.value);}},
         ce('option',{value:''},'Todos os status'),
         ce('option',{value:'Não Concluído'},'Não Concluído'),
         ce('option',{value:'Concluído'},'Concluído')),
-      ce('select',{className:'inp',style:{flex:1,minWidth:120},value:fUrg,onChange:function(e){setFUrg(e.target.value);}},
+      ce('select',{className:'inp',style:{flex:1,minWidth:120},value:fUrg,
+        onChange:function(e){setFUrg(e.target.value);}},
         ce('option',{value:''},'Todos'),
         ce('option',{value:'sim'},'🚨 Urgentes'),
         ce('option',{value:'nao'},'Não urgentes')),
-      ce('select',{className:'inp',style:{flex:1,minWidth:120},value:fBairro,onChange:function(e){setFBairro(e.target.value);}},
+      ce('select',{className:'inp',style:{flex:1,minWidth:120},value:fBairro,
+        onChange:function(e){setFBairro(e.target.value);}},
         ce('option',{value:''},'Todos os bairros'),
         bairros.map(function(b){return ce('option',{key:b,value:b},b);}))
     ),
-    ce('div',{style:{display:'flex',gap:12,marginBottom:8,fontSize:11,alignItems:'center'}},
-      ce('span',null,ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#dc2626',display:'inline-block',marginRight:4}}),'Urgente'),
-      ce('span',null,ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#2563eb',display:'inline-block',marginRight:4}}),'Não Concluído'),
-      ce('span',null,ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#16a34a',display:'inline-block',marginRight:4}}),'Concluído'),
-      ce('span',{style:{marginLeft:'auto',color:'#64748b'}},Math.min(30,filtered.length)+' registos')
+    ce('div',{style:{display:'flex',gap:12,marginBottom:8,fontSize:11,alignItems:'center',flexWrap:'wrap'}},
+      ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
+        ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#dc2626',display:'inline-block'}}),
+        'Urgente'),
+      ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
+        ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#2563eb',display:'inline-block'}}),
+        'Não Concluído'),
+      ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
+        ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#16a34a',display:'inline-block'}}),
+        'Concluído'),
+      ce('span',{style:{marginLeft:'auto',color:'#64748b'}},
+        Math.min(30,filtered.length)+' registos')
     ),
     ce('div',{id:'sgss-map',style:{width:'100%',height:500,borderRadius:10,
       border:'1px solid #e2e8f0',boxShadow:'0 2px 8px rgba(0,0,0,.08)'}})
