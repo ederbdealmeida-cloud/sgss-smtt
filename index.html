@@ -313,7 +313,7 @@ body{margin:0;padding:0;background:#fff}
 .main,.page{display:block!important;overflow:visible!important}
 body.dark-mode{background:#0f172a!important;color:#e2e8f0!important}
 body.dark-mode .sidebar{background:linear-gradient(180deg,#020617,#0f172a)!important}
-body.dark-mode .topbar{background:linear-gradient(90deg,#1a2a4a 0%,#243656 35%,#2a3f6f 60%,#1e3060 80%,#1a2a4a 100%)!important}
+body.dark-mode 
 body.dark-mode .card{background:#1e293b!important;border-color:#334155!important}
 body.dark-mode .inp,body.dark-mode select{background:#253352!important;color:#e2e8f0!important;border-color:#475569!important}
 body.dark-mode .page-title{color:#e2e8f0!important}
@@ -397,7 +397,7 @@ body.dark-mode .page-title{color:#e2e8f0!important}
 
 .app-shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .app-body{display:flex;flex:1;overflow:hidden;position:relative}
-.topbar{border-bottom:2px solid rgba(255,255,255,.08);height:80px;background:linear-gradient(90deg,#0f2240,#1e3a5f);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:100}
+.topbar{border-bottom:2px solid rgba(255,255,255,.08);height:80px;background:linear-gradient(90deg,#1a2a4a 0%,#243656 35%,#2a3f6f 60%,#1e3060 80%,#1a2a4a 100%);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:100}
 .topbar-left{display:flex;flex-direction:column;justify-content:center;min-width:120px}
 .topbar-sgss{font-size:26px;font-weight:900;color:#fde68a;letter-spacing:2px;line-height:1}
 .topbar-sub{font-size:9px;color:rgba(255,255,255,.5)}
@@ -5429,6 +5429,7 @@ function App(){
       if(!e.target.closest('.tb-dropdown-wrap')){setBellOpen(false);setUserOpen(false);}
     }},
     ce('header',{className:'topbar'},
+      ce('button',{className:'topbar-ham',style:{marginRight:8},onClick:function(){setCollapsed(function(v){return !v;});setMobOpen(function(v){return !v;});}},'\xe2\x98\xb0'),
       ce('span',{id:'fb-status',title:'Estado Firebase',style:{width:8,height:8,borderRadius:'50%',background:'#94a3b8',display:'inline-block',marginRight:4,flexShrink:0,transition:'background .4s'}}),
       ce('div',{className:'topbar-left'},
         ce('button',{className:'topbar-ham',onClick:function(){setCollapsed(function(v){return !v;});setMobOpen(function(v){return !v;});}},'☰'),
