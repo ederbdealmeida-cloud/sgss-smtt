@@ -37,7 +37,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,Arial,sans-serif;font-siz
 /* ── LAYOUT ── */
 .app{display:flex;height:100vh;overflow:hidden}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199;backdrop-filter:blur(2px)}
-.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:linear-gradient(160deg,#0f2240 0%,#1e3a5f 100%);display:flex;flex-direction:column;height:100vh;position:relative;z-index:200;transition:transform var(--trans);flex-shrink:0;box-shadow:4px 0 20px rgba(0,0,0,.25);border-right:none}
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:linear-gradient(160deg,#0f2240 0%,#1e3a5f 100%);display:flex;flex-direction:column;height:100vh;padding-top:4px;position:relative;z-index:200;transition:transform var(--trans);flex-shrink:0;box-shadow:4px 0 20px rgba(0,0,0,.25);border-right:none}
 .main{flex:1;overflow-y:auto;background:#eef2f7;min-width:0}
 
 /* ── SIDEBAR BRAND ── */
@@ -4165,8 +4165,8 @@ function MapaSolicitacoes(){
       ce('span',{style:{marginLeft:'auto',color:'#64748b'}},
         Math.min(30,filtered.length)+' registos')
     ),
-    ce('div',{style:{display:'flex',gap:8,height:500}},
-      ce('div',{id:'sgss-map',style:{flex:'1 1 0',minWidth:0,borderRadius:10,border:'1px solid #e2e8f0'}}),
+    ce('div',{style:{display:'flex',gap:8,height:500,overflowX:'auto',WebkitOverflowScrolling:'touch'}},
+      ce('div',{id:'sgss-map',style:{flex:'1 1 0',minWidth:300,borderRadius:10,border:'1px solid #e2e8f0'}}),
       ce('div',{id:'sgss-sv',style:{width:260,flexShrink:0,borderRadius:10,
         border:'1px solid #e2e8f0',background:'#f8fafc',
         display:'flex',alignItems:'center',justifyContent:'center',
