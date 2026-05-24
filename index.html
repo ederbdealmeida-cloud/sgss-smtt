@@ -5555,6 +5555,128 @@ window._HTML_TEMPLATE=(function(){
   }catch(e){return null;}
 })();
 
+        ce('span',{className:'topbar-sgss'},'SGSS'),
+      ),
+      ce('div',{className:'topbar-center'},
+        /* Cabecalho padrao - igual aos relatorios */
+        ce('div',{style:{width:52,height:52,background:'#fff',border:'1.5px solid rgba(255,255,255,.3)',
+          borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',
+          padding:4,flexShrink:0,boxShadow:'0 1px 6px rgba(0,0,0,.3)'}},
+          ce('img',{src:_BRASAO,style:{width:'100%',height:'auto'}})
+        ),
+        ce('div',{style:{display:'flex',flexDirection:'column',gap:1}},
+          ce('span',{style:{fontSize:15,fontWeight:800,color:'#fde68a',lineHeight:1.2,letterSpacing:.2}},'Prefeitura Municipal de Cacequi – RS'),
+          ce('span',{style:{fontSize:11,fontWeight:600,color:'rgba(255,255,255,.9)',lineHeight:1.3}},'Secretaria Municipal de Transporte e Trânsito – SMTT')
+        )
+      ),
+      ce('div',{className:'topbar-right'},
+        
+                ce('button',{
+            title:'Actualizar app',
+            style:{background:'none',border:'none',cursor:'pointer',fontSize:15,
+              padding:'0 6px',color:'rgba(255,255,255,.7)',lineHeight:1},
+            onClick:function(){
+              if('serviceWorker' in navigator){
+                navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(sw){sw.unregister();});});
+              }
+              if('caches' in window){
+                caches.keys().then(function(keys){
+                  return Promise.all(keys.map(function(k){return caches.delete(k);}));
+                }).then(function(){location.reload(true);});
+              } else { location.reload(true); }
+            }},
+          '\ud83d\udd04'),
+          ce('div',{className:'tb-dropdown-wrap'},
+          ce('div',{className:'topbar-bell',onClick:function(){setBellOpen(function(v){return !v;});setUserOpen(false);}},
+            '🔔',
+            getNotifications().length>0?ce('span',{className:'topbar-badge'},getNotifications().length):null
+          ),
+          bellOpen?ce('div',{className:'tb-dropdown bell-dd'},
+            ce('div',{className:'tb-dd-header'},'🔔 Notificações'),
+            getNotifications().length===0
+              ?ce('div',{className:'tb-dd-empty'},'\u2705 Tudo em dia!')
+              :getNotifications().map(function(n,i){
+                return ce('div',{key:i,className:'tb-dd-item tb-dd-'+n.type,
+                  onClick:function(){setHlId(n.id);setBellOpen(false);setPageClose('controle');}},
+                  ce('span',{className:'tb-dd-icon'},n.icon),
+                  ce('span',{className:'tb-dd-msg'},n.msg));
+              })
+          ):null
+        ),
+        ce('div',{className:'tb-dropdown-wrap'},
+          ce('div',{className:'topbar-user',onClick:function(){setUserOpen(function(v){return !v;});setBellOpen(false);}},
+            ce('span',{className:'topbar-avatar'},user.nome?user.nome[0].toUpperCase():'A'),
+            ce('span',{style:{color:'#fff',fontSize:10}},'▾')
+          ),
+          (function(){
+            try{
+              if(!userOpen)return null;
+              var dm=document.body.classList.contains('dark-mode');
+              var bg=dm?'#1e293b':'#fff';
+              var txt=dm?'#e2e8f0':'#1e293b';
+              var sub=dm?'#94a3b8':'#64748b';
+              var bdiv=dm?'#334155':'#f1f5f9';
+              return ce('div',{className:'tb-dropdown user-dd',style:{background:bg,border:'1px solid '+(dm?'#334155':'#e2e8f0')}},
+                ce('div',{style:{padding:'14px 16px',borderBottom:'1px solid '+bdiv}},
+                  ce('div',{style:{fontWeight:700,fontSize:14,color:txt,marginBottom:2}},user?user.nome:''),
+                  ce('div',{style:{fontSize:11,color:sub,marginTop:2}},user&&user.role==='admin'?'\ud83d\udc51 Administrador':'\ud83d\udc64 Operador'),
+                  ce('div',{style:{fontSize:11,color:sub,marginTop:1}},user&&user.email||'')
+                ),
+                ce('div',{style:{padding:'10px 16px',cursor:'pointer',display:'flex',alignItems:'center',gap:10,fontSize:13,color:txt},
+                  onClick:function(){var _nd=!document.body.classList.contains('dark-mode');if(_nd)document.body.classList.add('dark-mode');else document.body.classList.remove('dark-mode');localStorage.setItem('SGSS_DARK',_nd?'1':'0');if(typeof setDarkMode==='function')setDarkMode(_nd);setUserOpen(false);}},
+                  ce('span',null,'\ud83c\udf19'),ce('span',null,'Modo escuro/claro')),
+                ce('div',{style:{height:1,background:bdiv,margin:'4px 0'}}),
+                ce('div',{style:{padding:'10px 16px',cursor:'pointer',display:'flex',alignItems:'center',gap:10,fontSize:13,color:'#dc2626'},
+                  onClick:function(){setUser(null);setPage('dashboard');setUserOpen(false);}},
+                  ce('span',null,'\ud83d\udeaa'),ce('span',null,'Terminar sess\u00e3o'))
+              );
+            }catch(e){return null;}
+          })()
+        )
+      )
+    ),
+    ce('div',{className:'app-body'},
+      mobOpen?ce('div',{className:'mob-overlay',onClick:function(){setMobOpen(false);}},null):null,
+      ce('aside',{className:'sidebar'+(collapsed?' collapsed':'')+(mobOpen?' mob-open':'')},
+        ce('nav',{className:'sb-nav'},renderNav()),
+        ce('div',{className:'sb-footer'},
+          collapsed?null:ce('div',{className:'sb-user'},
+            ce('span',{className:'sb-uname'},'👤 '+user.nome),
+            ce('span',{className:'sb-urole'},user.role==='admin'?'Administrador':'Usuário')
+          ),
+          null
+        )
+      ),
+      ce('div',{className:'sidebar-overlay'+(mobOpen?' mob-open':''),onClick:function(){setMobOpen(false);setUserOpen(false);}}),
+      ce('nav',{className:'bottom-nav',style:{display:'none'}},
+        [{id:'dashboard',l:'Home',i:'\ud83c\udfe0'},{id:'solicitacoes',l:'Solicit.',i:'\ud83d\udcdd'},
+         {id:'controle',l:'Controle',i:'\ud83d\udccc'},{id:'relatorios',l:'Relat.',i:'\ud83d\udcca'},{id:'agenda',l:'Agenda',i:'\ud83d\udcc5'}]
+        .map(function(m){return ce('button',{key:m.id,className:'bottom-nav-item'+(page===m.id?' active':''),
+          onClick:function(){setPageClose(m.id);}},ce('span',{className:'bni'},m.i),m.l);})),
+      ce('main',{key:'v'+appVer,className:'main'},
+        !SGSS_HAS_SAVED_DATA?ce('div',{style:{background:'#fef3c7',border:'1px solid #f59e0b',borderRadius:8,padding:'10px 14px',margin:'0 0 12px',fontSize:12}},
+          '\u26a0\ufe0f Nenhum dado salvo encontrado para este arquivo. '
+          +'Se voc\u00ea usou uma vers\u00e3o anterior, v\u00e1 em Configura\u00e7\u00f5es \u2192 Importar JSON.'
+        ):null,
+        ce(Comp,{hlId:hlId,setHlId:setHlId,darkMode:darkMode})
+      )
+    )
+  );
+}
+
+/* Capturar HTML original antes do React montar (para Salvar Arquivo) */
+window._HTML_TEMPLATE=(function(){
+  try{
+    /* Garantir que script tag esta vazia antes de capturar */
+    var _t=document.getElementById('sgss-data');
+    var _saved=_t?_t.textContent:'';
+    if(_t)_t.textContent='';
+    var _tpl='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+    if(_t)_t.textContent=_saved;
+    return _tpl;
+  }catch(e){return null;}
+})();
+
 function _mountApp(){ReactDOM.createRoot(document.getElementById('root')).render(ce(App,null));
   // Twemoji: parse emoji as SVG after each React update
   var _twEl=document.getElementById('root');
