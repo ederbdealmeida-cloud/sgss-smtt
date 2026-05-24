@@ -12,8 +12,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SGSS SMTT">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -4049,96 +4047,90 @@ function MapaSolicitacoes(){
   var s1=useState('');var fSt=s1[0];var setFSt=s1[1];
   var s2=useState('');var fUrg=s2[0];var setFUrg=s2[1];
   var s3=useState('');var fBairro=s3[0];var setFBairro=s3[1];
-  var s4=useState(null);var sel=s4[0];var setSel=s4[1];
-  var bairros=INIT_REQS.map(function(r){return r.bairro||'';}).filter(function(v,i,a){return v&&a.indexOf(v)===i;}).sort();
-  var COR={'Conclu\u00eddo':'#16a34a','Em andamento':'#2563eb','urgente':'#dc2626','default':'#d97706'};
-  function corReq(r){
-    if(r.urg==='Sim'&&r.status!=='Conclu\u00eddo')return COR.urgente;
-    if(r.status==='Conclu\u00eddo')return COR['Conclu\u00eddo'];
-    if(r.status==='Em andamento')return COR['Em andamento'];
-    return COR['default'];
-  }
+  var bairros=INIT_REQS.filter(function(r){return r.enc!==1;})
+    .map(function(r){return r.bairro||'';})
+    .filter(function(v,i,a){return v&&a.indexOf(v)===i;}).sort();
   var filtered=INIT_REQS.filter(function(r){
     if(r.enc===1)return false;
-    if(fSt&&r.status!==fSt)return false;
+    if(fSt&&(r.status||'').trim()!==fSt.trim())return false;
     if(fUrg==='sim'&&r.urg!=='Sim')return false;
-    if(fBairro&&r.bairro!==fBairro)return false;
+    if(fUrg==='nao'&&r.urg==='Sim')return false;
+    if(fBairro&&(r.bairro||'').trim()!==fBairro.trim())return false;
     return true;
   });
-  function abrirGmaps(r){
-    var end=(r.rua?r.rua+(r.num?' '+r.num+', ':' '):'')+(r.bairro?r.bairro+', ':'')+'Cacequi RS Brasil';
-    window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(end),'_blank');
-  }
-  /* URL do embed - mostra Cacequi no Google Maps */
-  var embedUrl='https://maps.google.com/maps?q=-29.8836,-54.8278&z=15&output=embed&hl=pt-BR';
+  React.useEffect(function(){
+    var el=document.getElementById('sgss-map');
+    if(!el)return;
+    function initMap(){
+      if(window._sgssMap){window._sgssMap.remove();window._sgssMap=null;}
+      var map=window.L.map('sgss-map').setView([-30.0833,-53.5],13);
+      window._sgssMap=map;
+      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+        attribution:'OpenStreetMap',maxZoom:19}).addTo(map);
+      function color(r){
+        if(r.urg==='Sim')return '#dc2626';
+        if((r.status||'')==='Concluído')return '#16a34a';
+        return '#2563eb';
+      }
+      function addMark(r,lat,lng){
+        var c=color(r);
+        var ic=window.L.divIcon({className:'',iconSize:[14,14],iconAnchor:[7,7],
+          html:'<div style="width:14px;height:14px;border-radius:50%;background:'+c+
+            ';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>'});
+        window.L.marker([lat,lng],{icon:ic}).addTo(map).bindPopup(
+          '<b>#'+r.prot+'</b><br/>'+(r.nom||'')+'<br/>'+
+          (r.rua||'')+(r.num?' nº'+r.num:'')+(r.bairro?', '+r.bairro:'')+'<br/>'+
+          '<span style="color:'+c+';font-weight:700">'+(r.status||'')+'</span>');
+      }
+      filtered.slice(0,30).forEach(function(r,i){
+        if(!r.rua)return;
+        var q=encodeURIComponent((r.rua||'')+(r.num?' '+r.num:'')+', Cacequi, RS, Brasil');
+        setTimeout(function(){
+          fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+q)
+          .then(function(res){return res.json();})
+          .then(function(data){if(data&&data[0])addMark(r,+data[0].lat,+data[0].lon);})
+          .catch(function(){});
+        },i*400);
+      });
+    }
+    if(window.L){initMap();}
+    else{
+      var css=document.createElement('link');css.rel='stylesheet';
+      css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(css);
+      var js=document.createElement('script');
+      js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      js.onload=initMap;document.head.appendChild(js);
+    }
+    return function(){if(window._sgssMap){window._sgssMap.remove();window._sgssMap=null;}};
+  },[fSt,fUrg,fBairro,filtered.length]);
+
   return ce('div',{className:'page-content'},
-    ce('h2',{className:'page-title',style:{marginBottom:14,marginTop:12}},'\ud83d\uddfa\ufe0f Mapa de Solicita\u00e7\u00f5es'),
-    /* Filtros */
-    ce('div',{style:{display:'flex',gap:8,marginBottom:12,marginLeft:20,flexWrap:'wrap'}},
-      ce('select',{className:'inp',style:{width:'auto'},value:fSt,onChange:function(e){setFSt(e.target.value);}},
+    ce('h2',{className:'page-title',style:{marginBottom:12}},'🗺 Mapa de Solicitações'),
+    ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginBottom:10}},
+      ce('select',{className:'inp',style:{flex:1,minWidth:130},value:fSt,onChange:function(e){setFSt(e.target.value);}},
         ce('option',{value:''},'Todos os status'),
-        ce('option',{value:'N\u00e3o Conclu\u00eddo'},'N\u00e3o Conclu\u00eddo'),
-        ce('option',{value:'Em andamento'},'Em andamento'),
-        ce('option',{value:'Conclu\u00eddo'},'Conclu\u00eddo')),
-      ce('select',{className:'inp',style:{width:'auto'},value:fUrg,onChange:function(e){setFUrg(e.target.value);}},
+        ce('option',{value:'Não Concluído'},'Não Concluído'),
+        ce('option',{value:'Concluído'},'Concluído')),
+      ce('select',{className:'inp',style:{flex:1,minWidth:120},value:fUrg,onChange:function(e){setFUrg(e.target.value);}},
         ce('option',{value:''},'Todos'),
-        ce('option',{value:'sim'},'Apenas urgentes')),
-      ce('select',{className:'inp',style:{width:'auto'},value:fBairro,onChange:function(e){setFBairro(e.target.value);}},
+        ce('option',{value:'sim'},'🚨 Urgentes'),
+        ce('option',{value:'nao'},'Não urgentes')),
+      ce('select',{className:'inp',style:{flex:1,minWidth:120},value:fBairro,onChange:function(e){setFBairro(e.target.value);}},
         ce('option',{value:''},'Todos os bairros'),
         bairros.map(function(b){return ce('option',{key:b,value:b},b);}))
     ),
-    /* Layout duas colunas */
-    ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 340px',gap:12,height:520,marginLeft:20}},
-      /* Google Maps Embed */
-      ce('div',{style:{borderRadius:10,overflow:'hidden',border:'1px solid #e2e8f0'}},
-        ce('iframe',{
-          src:embedUrl,
-          width:'100%',height:'100%',style:{border:0},
-          allowFullScreen:true,loading:'lazy',
-          referrerPolicy:'no-referrer-when-downgrade'
-        })
-      ),
-      /* Lista lateral */
-      ce('div',{style:{display:'flex',flexDirection:'column',gap:0,border:'1px solid #e2e8f0',borderRadius:10,background:'#fff',overflow:'hidden'}},
-        ce('div',{style:{padding:'10px 14px',borderBottom:'1px solid #f1f5f9',background:'#f8fafc'}},
-          ce('div',{style:{fontSize:12,fontWeight:700,color:'#1e3a5f'}},'Solicita\u00e7\u00f5es ('+filtered.length+')'),
-          ce('div',{style:{fontSize:11,color:'#94a3b8',marginTop:2}},'Clique para abrir no Google Maps')
-        ),
-        /* Legenda */
-        ce('div',{style:{display:'flex',gap:10,padding:'6px 14px',borderBottom:'1px solid #f1f5f9',flexWrap:'wrap'}},
-          [{c:'#dc2626',l:'Urgente'},{c:'#d97706',l:'Pendente'},{c:'#2563eb',l:'Andamento'},{c:'#16a34a',l:'Conclu\u00eddo'}].map(function(x){
-            return ce('span',{key:x.l,style:{display:'flex',alignItems:'center',gap:3,fontSize:10,color:'#64748b'}},
-              ce('span',{style:{width:8,height:8,borderRadius:'50%',background:x.c,display:'inline-block'}}),x.l);
-          })
-        ),
-        /* Lista scrollavel */
-        ce('div',{style:{overflowY:'auto',flex:1}},
-          filtered.length===0
-            ?ce('div',{style:{textAlign:'center',padding:'30px',color:'#94a3b8'}},'Nenhuma solicita\u00e7\u00e3o.')
-            :filtered.map(function(r){
-                var cor=corReq(r);
-                var isS=sel&&sel.id===r.id;
-                return ce('div',{key:r.id,
-                  style:{padding:'8px 14px',borderBottom:'1px solid #f8fafc',cursor:'pointer',
-                    background:isS?'#eff6ff':'#fff',transition:'background .15s'},
-                  onClick:function(){setSel(r);abrirGmaps(r);}},
-                  ce('div',{style:{display:'flex',alignItems:'center',gap:6,marginBottom:2}},
-                    ce('span',{style:{width:8,height:8,borderRadius:'50%',background:cor,flexShrink:0}}),
-                    ce('span',{style:{fontSize:11,fontWeight:700,color:'#2563eb'}},r.prot),
-                    r.urg==='Sim'?ce('span',{style:{fontSize:9,background:'#fef2f2',color:'#dc2626',borderRadius:3,padding:'1px 4px'}},'URG'):null
-                  ),
-                  ce('div',{style:{fontSize:11,color:'#374151',marginLeft:14}},r.nom),
-                  ce('div',{style:{fontSize:10,color:'#94a3b8',marginLeft:14}},
-                    (r.rua?r.rua+(r.num?' n\u00ba '+r.num:''):'')+
-                    (r.bairro?(r.rua?', ':'')+r.bairro:'')
-                  )
-                );
-              })
-        )
-      )
-    )
+    ce('div',{style:{display:'flex',gap:12,marginBottom:8,fontSize:11,alignItems:'center'}},
+      ce('span',null,ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#dc2626',display:'inline-block',marginRight:4}}),'Urgente'),
+      ce('span',null,ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#2563eb',display:'inline-block',marginRight:4}}),'Não Concluído'),
+      ce('span',null,ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#16a34a',display:'inline-block',marginRight:4}}),'Concluído'),
+      ce('span',{style:{marginLeft:'auto',color:'#64748b'}},Math.min(30,filtered.length)+' registos')
+    ),
+    ce('div',{id:'sgss-map',style:{width:'100%',height:500,borderRadius:10,
+      border:'1px solid #e2e8f0',boxShadow:'0 2px 8px rgba(0,0,0,.08)'}})
   );
 }
+
 
 function RelatoriosPersonalizados(){
   var t=useToast();var notify=t[1];
