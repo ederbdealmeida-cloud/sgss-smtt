@@ -41,7 +41,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,Arial,sans-serif;font-siz
 .main{flex:1;overflow-y:auto;background:#eef2f7;min-width:0}
 
 /* ── SIDEBAR BRAND ── */
-.sgss-logo{display:flex;align-items:center;gap:0;padding:14px 14px 14px 12px;border-bottom:1px solid rgba(255,255,255,.09)}
+.sgss-logo{display:flex;align-items:center;gap:0;padding:18px 14px 18px 12px;border-bottom:1px solid rgba(255,255,255,.09)}
 .sgss-left{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;flex-shrink:0}
 .sgss-sigla{font-size:22px;font-weight:900;color:#fde68a;letter-spacing:1px;line-height:1;font-family:'Arial Black',Arial,sans-serif}
 .sgss-nome{font-size:6px;color:#94a3b8;line-height:1.4;max-width:58px;margin-top:3px;font-weight:500}
@@ -71,7 +71,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,Arial,sans-serif;font-siz
 .hamburger span{display:block;width:18px;height:2.5px;background:#fff;border-radius:2px;transition:all var(--trans)}
 
 /* ── PAGE ── */
-.page{padding:22px 24px 22px 24px;max-width:1120px;margin-left:0}
+.page{padding:22px 24px 22px 24px;margin-top:4px;max-width:1120px;margin-left:0}
 .page-title{font-size:22px;font-weight:800;color:var(--c-dark);margin-bottom:20px;letter-spacing:-.3px}
 .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:12px;flex-wrap:wrap}
 .page-header .page-title{margin-bottom:0}
@@ -397,7 +397,7 @@ body.dark-mode .page-title{color:#e2e8f0!important}
 
 .app-shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .app-body{display:flex;flex:1;overflow:hidden;position:relative}
-.topbar{height:80px;background:linear-gradient(90deg,#0f2240,#1e3a5f);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:100}
+.topbar{border-bottom:2px solid rgba(255,255,255,.08);height:80px;background:linear-gradient(90deg,#0f2240,#1e3a5f);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:100}
 .topbar-left{display:flex;flex-direction:column;justify-content:center;min-width:120px}
 .topbar-sgss{font-size:26px;font-weight:900;color:#fde68a;letter-spacing:2px;line-height:1}
 .topbar-sub{font-size:9px;color:rgba(255,255,255,.5)}
@@ -4186,7 +4186,7 @@ function MapaSolicitacoes(){
       ce('span',{style:{marginLeft:'auto',color:'#64748b'}},
         Math.min(30,filtered.length)+' registos')
     ),
-    ce('div',{style:{display:'flex',gap:8,height:500,overflowX:'auto',WebkitOverflowScrolling:'touch'}},
+    ce('div',{style:{display:'flex',gap:8,height:500,overflowX:'auto',overflowY:'hidden',WebkitOverflowScrolling:'touch',borderRadius:10}},
       ce('div',{id:'sgss-map',style:{flex:'1 1 0',minWidth:300,borderRadius:10,border:'1px solid #e2e8f0'}}),
       ce('div',{id:'sgss-sv',style:{width:260,flexShrink:0,borderRadius:10,
         border:'1px solid #e2e8f0',background:'#f8fafc',
