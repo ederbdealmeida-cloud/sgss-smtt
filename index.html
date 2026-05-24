@@ -3802,7 +3802,7 @@ ce('h2',{className:'page-title'},'\u2699\ufe0f Configura\xe7\xf5es'),
         (npw.c&&npw.p!==npw.c)?ce('small',{style:{color:'#dc2626',fontSize:11}},'As senhas n\xe3o coincidem'):null
       ),
       ce('button',{className:'btn btn-p',onClick:function(){if(!npw.p||npw.p.length<4){notify('Mínimo 4 caracteres.');return;}if(npw.p!==npw.c){notify('Senhas não coincidem.');return;}var me=USERS_LIST.find(function(x){return x.user==='admin';});if(me){var idx=USERS_LIST.indexOf(me);USERS_LIST[idx]=Object.assign({},me,{pw:npw.p});
-            var _du={reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,notas:NOTAS_LIST,ts:Date.now()};
+            var _du={reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,notas:NOTAS_LIST,comunicados:COMUNICADOS_LIST,auditoria:AUDIT_LOG,ts:Date.now()};
             var _su=JSON.stringify(_du);
             try{localStorage.setItem(SGSS_STORAGE_KEY,_su);}catch(e){}
             fetch('https://firestore.googleapis.com/v1/projects/smtt-cacequi/databases/(default)/documents/smtt/dados?key=AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs',{method:'PATCH',headers:{'Content-Type':'application/json; charset=utf-8'},
