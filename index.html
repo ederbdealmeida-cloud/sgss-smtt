@@ -2344,10 +2344,10 @@ function imprimirComprovanteServico(r,allReqs){
   }).join('');
   var endStr=(main.rua||'')+(main.num?', '+main.num:'')+(main.bairro?' - '+main.bairro:'');
   var card2=card('Dados do Solicitante','#0891b2',
-    rw('Nome',main.nom||'-')
-    +rw('Endereço',endStr||'-')
-    +(main.tel?rw('Telefone',main.tel):'')
-    +(main.email?rw('E-mail',main.email):'')
+    rw('Nome',main.nom||'Não informado')
+    +rw('Endereço',endStr||'Não informado')
+    +rw('Telefone',main.tel||'Não informado')
+    +rw('E-mail',main.email||'Não informado')
   );
   var card3=card('Execução e Pagamento','#059669',
     rw('Funcionário',main.func||'A designar')
