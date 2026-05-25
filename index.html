@@ -4706,6 +4706,8 @@ function Agenda(){
   var now=new Date();
   var sano=useState(now.getFullYear());var ano=sano[0];var setAno=sano[1];
   var sChk=useState({});var chkAg=sChk[0];var setChkAg=sChk[1];
+  var seAg=useState(null);var editAgId=seAg[0];var setEditAgId=seAg[1];
+  var seAgD=useState({});var editAgD=seAgD[0];var setEditAgD=seAgD[1];
   var smes=useState(now.getMonth());var mes=smes[0];var setMes=smes[1];
   var sdia=useState(null);var selDia=sdia[0];var setSelDia=sdia[1];
   var sview=useState('list');var view=sview[0];var setView=sview[1];
@@ -5033,7 +5035,7 @@ function Agenda(){
       ce('thead',null,ce('tr',null,[ce('input',{type:'checkbox',onChange:function(e){var o={};listSlice.forEach(function(r){o[(r._src||'r')+r.id]=e.target.checked;});setChkAg(o);}}),'Data','Protocolo','Solicitante','Bairro','Servi\u00e7o','Funcion\u00e1rio','Taxa','Urg.','Status',''].map(function(c,i){return ce('th',{key:i},c);}))),
       ce('tbody',null,filtAll.length===0
         ?ce('tr',null,ce('td',{colSpan:11,className:'empty'},'Nenhum servi\u00e7o encontrado.'))
-        :listSlice.map(function(r){return ce('tr',{key:(r._src||'r')+r.id,className:r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':''},
+        :listSlice.map(function(r){return ce('tr',{key:(r._src||'r')+r.id,className:(editAgId===r.id?'row-hl ':(r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':''))},
           ce('td',{style:{width:28}},ce('input',{type:'checkbox',
             checked:!!chkAg[(r._src||'r')+r.id],
             onChange:function(e){var k=(r._src||'r')+r.id;setChkAg(function(p){var o=Object.assign({},p);o[k]=e.target.checked;return o;});}})),
@@ -5045,9 +5047,31 @@ function Agenda(){
           ce('td',null,r.func||'\u2013'),
           ce('td',{style:{textAlign:'right',fontWeight:600}},r.taxa>0?fmt(r.taxa):'\u2013'),
           ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
-          ce('td',null,r.status?ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status):ce('span',{className:'badge',style:{background:'#e0f2fe',color:'#0369a1'}},'Agendado')),
-          ce('td',null,ce('button',{className:'btn-icon',title:'Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
-            onClick:function(){prtAgendaRow(r);}},'\ud83d\udda8\ufe0f'))
+          ce('td',null,editAgId===r.id
+            ?ce('select',{value:editAgD.status||r.status||'Agendado',onChange:function(e){setEditAgD(function(p){return Object.assign({},p,{status:e.target.value});});},style:{padding:'2px 4px',fontSize:11,border:'1px solid #93c5fd',borderRadius:4}},
+              ce('option',{value:'Agendado'},'Agendado'),ce('option',{value:'Em andamento'},'Em andamento'),ce('option',{value:'Concluído'},'Concluído'))
+            :r.status?ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status):ce('span',{className:'badge',style:{background:'#e0f2fe',color:'#0369a1'}},'Agendado')),
+          ce('td',{style:{whiteSpace:'nowrap'}},
+            editAgId===r.id
+            ? ce('span',null,
+                ce('button',{className:'btn-icon',title:'Salvar',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},
+                  onClick:function(){
+                    var idx=AGENDA_LIST.findIndex(function(a){return a.id===r.id;});
+                    if(idx>=0){AGENDA_LIST[idx]=Object.assign({},AGENDA_LIST[idx],editAgD);setAgItems(AGENDA_LIST.slice());sgssSave();}
+                    setEditAgId(null);setEditAgD({});notify('\u2705 Agendamento actualizado!');
+                  }},'\u2714\ufe0f'),
+                ce('button',{className:'btn-icon',title:'Cancelar',style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
+                  onClick:function(){setEditAgId(null);setEditAgD({});}},'\u274c')
+              )
+            : ce('span',null,
+                r._src==='ag'?ce('button',{className:'btn-icon',title:'Editar',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},
+                  onClick:function(){setEditAgId(r.id);setEditAgD({status:r.status,func:r.func});}},'\u270f\ufe0f'):null,
+                r._src==='ag'?ce('button',{className:'btn-icon',title:'Excluir',style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5',marginRight:3},
+                  onClick:function(){if(confirm('Excluir agendamento?'))excluirAg(r.id);}},'\ud83d\uddd1\ufe0f'):null,
+                ce('button',{className:'btn-icon',title:'Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
+                  onClick:function(){prtAgendaRow(r);}},'\ud83d\udda8\ufe0f')
+              )
+          ))
         );})
       )
     )),
@@ -5066,10 +5090,10 @@ function Agenda(){
     if(!w){notify('Permita popups!');return;}
     var rows=sel.map(function(r,i){
       var dt=(r.dt||r.date||'');var dtF=dt?dt.split('-').reverse().join('/'):'--';
-      var bg=i%2===0?'#f0fdf4':'#ffffff';
+      var bg=i%2===0?'#f0f9ff':'#ffffff';
       return '<tr style="background:'+bg+'">'
         +'<td>'+dtF+'</td>'
-        +'<td><code>'+(r.prot||'--')+'</code></td>'
+        +'<td><b>'+(r.prot||'--')+'</b></td>'
         +'<td>'+(r.nom||r.nome||'--')+'</td>'
         +'<td>'+(r.cn||r.sn||'--')+'</td>'
         +'<td>'+(r.func||'--')+'</td>'
@@ -5077,29 +5101,29 @@ function Agenda(){
         +'<td style="text-align:right">'+(r.taxa>0?fmt(r.taxa):'--')+'</td>'
         +'</tr>';
     }).join('');
-    var tbl='<table style="width:100%;border-collapse:collapse;margin-top:12px">'
-      +'<thead><tr style="background:#065f46;color:#fff">'
-      +'<th style="padding:8px 10px;text-align:left;font-size:11px">Data</th>'
-      +'<th style="padding:8px 10px;text-align:left;font-size:11px">Protocolo</th>'
-      +'<th style="padding:8px 10px;text-align:left;font-size:11px">Solicitante</th>'
-      +'<th style="padding:8px 10px;text-align:left;font-size:11px">Serviço</th>'
-      +'<th style="padding:8px 10px;text-align:left;font-size:11px">Funcionário</th>'
-      +'<th style="padding:8px 10px;text-align:left;font-size:11px">Status</th>'
-      +'<th style="padding:8px 10px;text-align:right;font-size:11px">Taxa</th>'
-      +'</tr></thead>'
-      +'<tbody style="font-size:11px">'+rows+'</tbody></table>';
+    var tbl='<table style="width:100%;border-collapse:collapse;font-size:11px;margin-top:10px">'
+      +'<thead><tr style="background:#1e3a5f;color:#fff">'
+      +'<th style="padding:7px 8px;text-align:left">Data</th>'
+      +'<th style="padding:7px 8px;text-align:left">Protocolo</th>'
+      +'<th style="padding:7px 8px;text-align:left">Solicitante</th>'
+      +'<th style="padding:7px 8px;text-align:left">Serviço</th>'
+      +'<th style="padding:7px 8px;text-align:left">Funcionário</th>'
+      +'<th style="padding:7px 8px;text-align:left">Status</th>'
+      +'<th style="padding:7px 8px;text-align:right">Taxa</th>'
+      +'</tr></thead><tbody>'+rows+'</tbody></table>';
     w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
       +PRINT_CSS
       +'body{padding:20px;background:#f8fafc}'
       +'.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:900px;margin:0 auto}'
-      +'td,th{padding:7px 10px;border-bottom:1px solid #d1fae5}'
+      +'td,th{padding:6px 8px;border-bottom:1px solid #e2e8f0}'
       +'</style></head><body><div class="wrap">'
       +buildHeader('Relatório de Agendamentos',sel.length+' registo(s)')
       +tbl
-      +'<button onclick="window.print()" style="display:block;margin:16px auto 0;padding:9px 24px;background:#065f46;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Imprimir / Salvar PDF</button>'
+      +'<button onclick="window.print()" style="display:block;margin:16px auto 0;padding:9px 24px;background:#1e3a5f;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Imprimir / Salvar PDF</button>'
       +'</div></body></html>');
     w.document.close();
   }
+
   function prtAgendaRow(r){
     var w=window.open('','_blank','width=820,height=650,scrollbars=yes');
     if(!w){notify('Permita popups!');return;}
