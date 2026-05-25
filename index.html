@@ -5025,9 +5025,9 @@ function Agenda(){
   /* LISTA */
   var listaView=ce('div',null,
     ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl'},
-      ce('thead',null,ce('tr',null,['Data','Protocolo','Solicitante','Bairro','Servi\u00e7o','Funcion\u00e1rio','Taxa','Urg.','Status'].map(function(c){return ce('th',{key:c},c);}))),
+      ce('thead',null,ce('tr',null,['Data','Protocolo','Solicitante','Bairro','Servi\u00e7o','Funcion\u00e1rio','Taxa','Urg.','Status',''].map(function(c){return ce('th',{key:c},c);}))),
       ce('tbody',null,filtAll.length===0
-        ?ce('tr',null,ce('td',{colSpan:9,className:'empty'},'Nenhum servi\u00e7o encontrado.'))
+        ?ce('tr',null,ce('td',{colSpan:10,className:'empty'},'Nenhum servi\u00e7o encontrado.'))
         :listSlice.map(function(r){return ce('tr',{key:(r._src||'r')+r.id,className:r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':''},
           ce('td',null,fmtD(r.dt||r.date)),
           ce('td',null,r.prot?ce('code',null,r.prot):ce('span',{style:{color:'#94a3b8',fontSize:10}},'\ud83d\udcc5')),
@@ -5037,7 +5037,9 @@ function Agenda(){
           ce('td',null,r.func||'\u2013'),
           ce('td',{style:{textAlign:'right',fontWeight:600}},r.taxa>0?fmt(r.taxa):'\u2013'),
           ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
-          ce('td',null,r.status?ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status):ce('span',{className:'badge',style:{background:'#e0f2fe',color:'#0369a1'}},'Agendado'))
+          ce('td',null,r.status?ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status):ce('span',{className:'badge',style:{background:'#e0f2fe',color:'#0369a1'}},'Agendado')),
+          ce('td',null,ce('button',{className:'btn-icon',title:'Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
+            onClick:function(){prtAgendaRow(r);}},'\ud83d\udda8\ufe0f'))
         );})
       )
     )),
