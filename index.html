@@ -2576,7 +2576,7 @@ setAll(function(prev){return prev.filter(function(x){return x.id!==r.id;});});no
 function Documentos2(p){
   var sd=useState('comp');var doc=sd[0];var setDoc=sd[1];
   var t=useToast();var toast=t[0];var notify=t[1];
-  var d=p.item;var isPago=d.fp==='Pago';
+  var d=p.item;var isPago=d.fp==='Pago'||(d.taxa&&parseFloat(d.taxa)>0);
   var smn=useState('');var memoNum=smn[0];var setMemoNum=smn[1];
   var sfot=useState(d.foto||null);var eFoto=sfot[0];var setEFoto=sfot[1];
   var sds=useState(d.descricao||'');var eDesc=sds[0];var setEDesc=sds[1];
