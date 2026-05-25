@@ -4081,9 +4081,14 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
               ce('button',{className:'btn-icon',title:'Excluir Funcionário',
                 style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
                 onClick:function(){
-                  if(window.confirm('Excluir '+f.nome+'? Os registros relacionados serão mantidos.')){
-                    delFunc(f.id);
-                  }}},'\ud83d\uddd1\ufe0f')
+                  showConfirm({
+                    ico:'\ud83d\uddd1\ufe0f',
+                    titulo:'Excluir funcionário?',
+                    sub:'"'+f.nome+'"',
+                    corpo:'Os registros históricos serão mantidos.',
+                    lblOk:'Excluir',cor:'red',
+                    onOk:function(){delFunc(f.id);}
+                  });}},'\ud83d\uddd1\ufe0f')
             )
           );})
         )
