@@ -5090,7 +5090,7 @@ function Agenda(){
     if(!w){notify('Permita popups!');return;}
     var rows=sel.map(function(r,i){
       var dt=(r.dt||r.date||'');var dtF=dt?dt.split('-').reverse().join('/'):'--';
-      var bg=i%2===0?'#f0f9ff':'#ffffff';
+      var bg=i%2===0?'#f0fdf4':'#ffffff';
       return '<tr style="background:'+bg+'">'
         +'<td>'+dtF+'</td>'
         +'<td><b>'+(r.prot||'--')+'</b></td>'
