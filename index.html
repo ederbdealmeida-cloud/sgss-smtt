@@ -5447,7 +5447,7 @@ function App(){
     onClick:function(e){
       if(!e.target.closest('.tb-dropdown-wrap')){setBellOpen(false);setUserOpen(false);}
     }},
-    ce('header',{className:'topbar'},
+    ce('header',{className:'topbar',style:{background:'linear-gradient(90deg,#1c2e50 0%,#253d63 30%,#2a4170 60%,#1e3560 85%,#1c2e50 100%)'}},
       ce('button',{className:'topbar-ham',style:{marginRight:8},onClick:function(){setCollapsed(function(v){return !v;});setMobOpen(function(v){return !v;});}},'☰'),
       ce('span',{id:'fb-status',title:'Estado Firebase',style:{width:8,height:8,borderRadius:'50%',background:'#94a3b8',display:'inline-block',marginRight:4,flexShrink:0,transition:'background .4s'}}),
       ce('div',{className:'topbar-left'},
