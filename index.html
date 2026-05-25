@@ -3942,14 +3942,14 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
       setFuncs(function(prev){return prev.map(function(f){return f.id===_fdata.id?Object.assign({},_fdata):f;});});
       var _ix=FUNC_LIST.findIndex(function(x){return x.id===_fdata.id;});if(_ix>=0)FUNC_LIST[_ix]=Object.assign({},_fdata);
       SGSS_SESSION.acoes.unshift({tipo:'Editar Funcionário',prot:form.nome||'',dt:new Date().toLocaleTimeString('pt-BR')});
-    saveSession();notify('Funcion\u00e1rio atualizado!');sgssSave();
+    saveSession();notlogAudit('Editou','Funcionários','Atualizado');ify('Funcion\u00e1rio atualizado!');sgssSave();
     }else{
       var nid=FUNC_LIST_NEXT_ID++;
       var novo=Object.assign({},_fdata,{id:nid,ativo:1});
       FUNC_LIST.push(novo);
       setFuncs(function(prev){return prev.concat([novo]);});
       SGSS_SESSION.reqs.unshift({tipo:'Funcionário',acao:'Cadastro',nom:form.nome||'',dt:new Date().toLocaleTimeString('pt-BR')});
-    saveSession();notify('Funcion\u00e1rio cadastrado!');sgssSave();
+    saveSession();notlogAudit('Criou','Funcionários','Cadastrado');ify('Funcion\u00e1rio cadastrado!');sgssSave();
     }
   }
   function handleToggle(id){
@@ -3962,7 +3962,7 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
     });});
   }
   function saveEdit(){setFuncs(function(prev){return prev.map(function(f){return f.id===editId?Object.assign({},editD):f;});});var ix=FUNC_LIST.findIndex(function(x){return x.id===editId;});if(ix>=0)FUNC_LIST[ix]=Object.assign({},editD);setEditId(null);setEditD({});SGSS_SESSION.acoes.unshift({tipo:'Editar Funcionário (inline)',prot:editD.nome||'',dt:new Date().toLocaleTimeString('pt-BR')});
-    saveSession();notify('\u2705 Funcion\u00e1rio atualizado!');sgssSave();}
+    saveSession();notlogAudit('Editou','Funcionários','Inline edit');ify('\u2705 Funcion\u00e1rio atualizado!');sgssSave();}
   /* TELA DE IMPRESSÃO */
   
   /* FORM */
