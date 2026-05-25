@@ -5534,7 +5534,7 @@ function App(){
     ),
     ce('div',{className:'app-body'},
       mobOpen?ce('div',{className:'mob-overlay',onClick:function(){setMobOpen(false);}},null):null,
-      ce('aside',{className:'sidebar'+(collapsed?' collapsed':'')+(mobOpen?' mob-open':''),style:{background:'linear-gradient(160deg,#1c2e50 0%,#253d63 25%,#1e3560 50%,#253d63 75%,#1c2e50 100%)'},
+      ce('aside',{className:'sidebar'+(collapsed?' collapsed':'')+(mobOpen?' mob-open':''),style:{background:'linear-gradient(160deg,#1c2e50 0%,#253d63 25%,#1e3560 50%,#253d63 75%,#1c2e50 100%)'}},
         ce('nav',{className:'sb-nav'},renderNav()),
         ce('div',{className:'sb-footer'},
           collapsed?null:ce('div',{className:'sb-user'},
