@@ -758,6 +758,27 @@ function sgssSave(){
     if(window._sgssLastSave)window._sgssLastSave.textContent='\ud83d\udcbe Salvo '+new Date().toLocaleTimeString('pt-BR');
   }catch(e){console.error('sgssSave erro:',e);}
 }
+function _startPolling(){
+  if(window._pollTimer)clearInterval(window._pollTimer);
+  window._pollTimer=setInterval(function(){
+    if(!window._sgssUser)return;
+    fetch('https://firestore.googleapis.com/v1/projects/smtt-cacequi/databases/(default)/documents/smtt/dados?key=AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs')
+      .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
+      .then(function(doc){
+        if(doc&&doc.fields&&doc.fields.dados&&doc.fields.dados.stringValue){
+          var _parsed=JSON.parse(doc.fields.dados.stringValue);
+          var ts=_parsed.ts||0;
+          if(ts&&ts!==window._lastSyncTs&&ts>(window._lastSyncTs||0)){
+            window._lastSyncTs=ts;
+            _apply(fixData(_parsed));
+            window.dispatchEvent(new CustomEvent('sgss-data-changed'));
+            console.log('[SGSS] Dados sincronizados do servidor.');
+          }
+        }
+      }).catch(function(){});
+  },60000);
+}
+
 function sgssClear(){
   localStorage.removeItem(SGSS_STORAGE_KEY);
   localStorage.removeItem('SGSS_LAST_SESSION');
@@ -869,7 +890,7 @@ function _apply(d){
     .then(function(doc){
       if(doc&&doc.fields&&doc.fields.dados&&doc.fields.dados.stringValue){
         var _parsed=JSON.parse(doc.fields.dados.stringValue);
-          _apply(fixData(_parsed));
+          _apply(fixData(_parsed));window._lastSyncTs=_parsed.ts||Date.now();
           /* Persiste correcções de volta no Firebase */
           setTimeout(function(){sgssSave();},1500);
       } else {
@@ -892,7 +913,7 @@ function saveSession(){
 function sgssSave(){
   if(!window._sgssLoaded){console.log('Save bloqueado: aguardando Firebase');return;}
   try{
-    var _d={reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,notas:NOTAS_LIST,comunicados:COMUNICADOS_LIST,auditoria:AUDIT_LOG,ts:Date.now()};
+    var _d={ts:Date.now(),reqs:INIT_REQS,sols:INIT_SOLS,funcs:FUNC_LIST,cats:CATS,subs:SUBS,users:USERS_LIST,agenda:AGENDA_LIST,notas:NOTAS_LIST,comunicados:COMUNICADOS_LIST,auditoria:AUDIT_LOG,ts:Date.now()};
     /* Firestore REST API - sem SDK */
     var _url='https://firestore.googleapis.com/v1/projects/smtt-cacequi/databases/(default)/documents/smtt/dados?key=AIzaSyAbJ38elShzDuBtt0vLcNSawm6AlXfnzWs';
     fetch(_url,{method:'PATCH',headers:{'Content-Type':'application/json; charset=utf-8'},
@@ -1348,6 +1369,7 @@ function Login(p){
       sgssSave();
       window._fbUser={uid:res.uid,email:res.email,idToken:res.idToken};
       window._sgssUser={nome:profile.nome,role:profile.role,uid:res.uid,email:profile.email};
+      window._lastSyncTs=0;_startPolling();
       setTimeout(function(){logAudit('Login','Sistema','Acesso ao sistema');},1000);
       p.onLogin({nome:profile.nome,role:profile.role,id:profile.id,user:profile.user,email:profile.email,uid:res.uid});
     });
