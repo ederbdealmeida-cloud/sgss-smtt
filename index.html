@@ -20,6 +20,7 @@ if('serviceWorker' in navigator){
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e3a5f">
@@ -48,7 +49,8 @@ if('serviceWorker' in navigator){
   --trans:.18s ease;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'Segoe UI',system-ui,Arial,sans-serif;font-size:13.5px;background:#eef2f7;color:var(--c-text);-webkit-font-smoothing:antialiased}
+html,.nav-icon,.topbar-avatar,.stat-ico,.card-ico,.badge,.btn-icon,[class*='-ico']{font-family:'Noto Color Emoji','Segoe UI Emoji','Apple Color Emoji',sans-serif!important}
+body{height:100%;font-family:'Segoe UI',system-ui,Arial,sans-serif;font-size:13.5px;background:#eef2f7;color:var(--c-text);-webkit-font-smoothing:antialiased}
 
 /* ── LAYOUT ── */
 .app{display:flex;height:100vh;overflow:hidden}
@@ -74,7 +76,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,Arial,sans-serif;font-siz
 .nav-item:hover{background:rgba(255,255,255,.1);color:#fff;padding-left:18px}
 .nav-item.active{background:rgba(37,99,235,.8);color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .nav-item.active::before{content:'';position:absolute;left:0;top:20%;height:60%;width:3px;background:#60a5fa;border-radius:0 3px 3px 0}
-.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;opacity:.85;font-family:'Segoe UI Emoji','Apple Color Emoji','Twemoji Mozilla',sans-serif}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;opacity:.85;font-family:'Noto Color Emoji','Segoe UI Emoji','Apple Color Emoji','Twemoji Mozilla',sans-serif}
 .sb-footer{padding:10px 14px;border-top:1px solid rgba(255,255,255,.09);flex-shrink:0}
 .sb-uname{display:block;color:#e2e8f0;font-size:12.5px;font-weight:600;margin-bottom:1px}
 .sb-urole{color:#94a3b8;font-size:11px;display:block;margin-bottom:8px}
