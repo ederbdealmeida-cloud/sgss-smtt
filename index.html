@@ -4634,7 +4634,7 @@ function Comunicacao(){
     var reqs=INIT_REQS.filter(function(r){return r.solId===s.id||r.nom===s.nome;});
     return {nom:s.nome,bairro:s.bairro||'',tel:s.telefone||'',
       email:s.email||'',total:reqs.length};
-  }).filter(function(c){return c.tel||c.email;})
+  })
   var filtered=CONTATOS.filter(function(c){if(!srch)return true;var q=srch.toLowerCase();return c.nom.toLowerCase().indexOf(q)>=0||c.bairro.toLowerCase().indexOf(q)>=0;});
   var items=paginate(filtered,pg);
   function openW(s){setMsg('Ol\xe1, '+s.nom+'! Aqui \xe9 a SMTT de Cacequi. Estamos entrando em contato sobre sua solicita\xe7\xe3o de servi\xe7o. Obrigado!');setModal({tipo:'whatsapp',item:s});}
