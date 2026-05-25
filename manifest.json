@@ -2,7 +2,7 @@
   "name": "SGSS - Secretaria Municipal de Transporte e Trânsito",
   "short_name": "SGSS SMTT",
   "description": "Sistema de Gestão de Solicitações de Serviços - SMTT Cacequi/RS",
-  "start_url": "/sgss-smtt/",
+  "start_url": "/sgss-smtt/?v=3",
   "scope": "/sgss-smtt/",
   "display": "standalone",
   "background_color": "#0f172a",
@@ -34,5 +34,6 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "id": "/sgss-smtt/?v=3"
 }
