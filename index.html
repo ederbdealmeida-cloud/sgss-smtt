@@ -146,7 +146,7 @@ body{height:100%;font-family:'Segoe UI',system-ui,Arial,sans-serif;font-size:13.
 /* ── BADGES ── */
 .badge{display:inline-flex;align-items:center;padding:3px 12px;border-radius:9999px;font-size:11px;font-weight:800;letter-spacing:.3px;white-space:nowrap}
 .b-gr{background:#dcfce7;color:#166534}.b-bl{background:#dbeafe;color:#1e40af}
-.b-or{background:#ffedd5;color:#9a3412}.b-gy{background:#f1f5f9;color:#475569}
+.b-or{background:#ffedd5;color:#9a3412}.b-yw{background:#fef9c3;color:#854d0e}.b-cy{background:#e0f2fe;color:#0369a1}.b-gy{background:#f1f5f9;color:#475569}
 .b-re{background:#fee2e2;color:#991b1b}
 
 /* ── PAGINATION ── */
@@ -778,10 +778,10 @@ function fixText(s){
   var R=s.replace(/\ufffd/g,'?'); /* normaliza replacement char para ? */
   /* Mapa de valores de status conhecidos */
   var map=[
-    ['N?o Conclu?do','Não Concluído'],
+    ['N?o Conclu?do','Pendente'],
     ['N?o conclu?do','Não concluído'],
     ['Conclu?do','Concluído'],
-    ['N?o Concluido','Não Concluído'],
+    ['N?o Concluido','Pendente'],
     ['N?o informado','Não informado'],
     ['N?o Informado','Não Informado'],
     ['Concluido','Concluído'],
@@ -2426,7 +2426,7 @@ function Solicitacoes(){
       var novoEx={id:uid(),prot:makeProtocol(),nom:novo.nom,solId:novo.solId||null,dt:novo.dt,urg:ex.urg||'Não',
         rua:ex.rua||novo.rua,num:ex.num||novo.num,bairro:ex.bairro||novo.bairro,ref:ex.ref||novo.ref,
         tel:novo.tel,email:novo.email,catId:ex.catId,cn:ex.cn,fp:ex.fp,subId:ex.subId,sn:ex.sn,
-        taxa:_taxa,status:'Não Concluído',func:'',enc:0};
+        taxa:_taxa,status:'Pendente',func:'',enc:0};
       novoEx.grupo=_grupoId;
       INIT_REQS.push(novoEx);
       SGSS_SESSION.reqs.unshift({prot:novoEx.prot,nom:novoEx.nom,sn:novoEx.sn||'',dt:novoEx.dt});
@@ -3008,7 +3008,7 @@ function Controle(p){
         ce(Sel,{val:fst,set:function(v){setFst(v);setPg(1);},ph:'Todos os status',
             opts:[
               {v:'',l:'Todos os status'},
-              {v:'Não Concluído',l:'Não Concluído'},
+              {v:'Pendente',l:'Pendente'},
               {v:'Concluído',l:'Concluído'}
             ]}),
         ce(Sel,{val:furg,set:function(v){setFurg(v);setPg(1);},ph:'Todas as prioridades',
@@ -3045,14 +3045,14 @@ function Controle(p){
             ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
             ce('td',null,e?ce(React.Fragment,null,
               ce('select',{value:e.status,onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{status:ev.target.value});setEd(n);},style:{marginBottom:2}},
-                ce('option',{value:'Não Concluído'},'Não Concluído'),
+                ce('option',{value:'Pendente'},'Pendente'),
                 ce('option',{value:'Concluído'},'Concluído')
               ),
               e.status==='Concluído'?ce('input',{type:'date',value:e.dtConclusao||'',
                 title:'Data de conclusão',
                 onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{dtConclusao:ev.target.value});setEd(n);},
                 style:{display:'block',padding:'2px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11,width:'100%'}}):null
-            ):ce('span',{className:'badge '+(r.status==='Concluído'?'b-gr':'b-or')},fmtStatusLabel(r))),
+            ):ce('span',{className:'badge '+(r.status==='Concluído'?'b-gr':r.status==='Em andamento'?'b-cy':r.status==='Agendado'?'b-yw':'b-or')},fmtStatusLabel(r))),
             ce('td',null,e?ce('select',{value:e.func||'',onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{func:ev.target.value});setEd(n);}},
               ce('option',{value:''},'\u2014 Nenhum'),
               FUNC_LIST.filter(function(f){return f.ativo;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);})):ce('span',null,r.func||'\u2013')),
@@ -4166,7 +4166,7 @@ function MapaSolicitacoes(){
       ce('select',{className:'inp',style:{flex:1,minWidth:130},value:fSt,
         onChange:function(e){setFSt(e.target.value);}},
         ce('option',{value:''},'Todos os status'),
-        ce('option',{value:'Não Concluído'},'Não Concluído'),
+        ce('option',{value:'Pendente'},'Pendente'),
         ce('option',{value:'Concluído'},'Concluído')),
       ce('select',{className:'inp',style:{flex:1,minWidth:120},value:fUrg,
         onChange:function(e){setFUrg(e.target.value);}},
@@ -4184,7 +4184,7 @@ function MapaSolicitacoes(){
         'Urgente'),
       ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
         ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#2563eb',display:'inline-block'}}),
-        'Não Concluído'),
+        'Pendente'),
       ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
         ce('span',{style:{width:10,height:10,borderRadius:'50%',background:'#16a34a',display:'inline-block'}}),
         'Concluído'),
