@@ -2319,9 +2319,9 @@ function imprimirComprovanteServico(r,allReqs){
       +rows+'</div>';
   }
   function rw(l,v){
-    return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f1f5f9;">'
-      +'<span style="font-size:11px;color:#64748b">'+l+'</span>'
-      +'<span style="font-size:12px;color:#1e293b;font-weight:700">'+v+'</span></div>';
+    return '<div style="padding:4px 0;border-bottom:1px solid #f1f5f9;">'
+      +'<div style="font-size:10px;color:#64748b;margin-bottom:1px">'+l+'</div>'
+      +'<div style="font-size:12px;color:#1e293b;font-weight:700">'+v+'</div></div>';
   }
   var svcCards=parts.map(function(s,i){
     var sn=s.cn||s.sn||'-';
