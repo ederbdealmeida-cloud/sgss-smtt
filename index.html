@@ -2319,9 +2319,9 @@ function imprimirComprovanteServico(r,allReqs){
       +rows+'</div>';
   }
   function rw(l,v){
-    return '<div style="padding:4px 0;border-bottom:1px solid #f1f5f9;">'
-      +'<div style="font-size:10px;color:#64748b;margin-bottom:1px">'+l+'</div>'
-      +'<div style="font-size:12px;color:#1e293b;font-weight:700">'+v+'</div></div>';
+    return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f1f5f9;">'
+      +'<span style="font-size:11px;color:#64748b">'+l+'</span>'
+      +'<span style="font-size:12px;color:#1e293b;font-weight:700">'+v+'</span></div>';
   }
   var svcCards=parts.map(function(s,i){
     var sn=s.cn||s.sn||'-';
@@ -2499,19 +2499,10 @@ function Solicitacoes(){
       );}),
       ce('button',{style:{marginTop:8,marginBottom:4,width:'100%',padding:'8px',border:'2px dashed #93c5fd',borderRadius:8,background:'#eff6ff',color:'#1d4ed8',fontWeight:700,fontSize:13,cursor:'pointer'},onClick:function(){setExtras(function(p){return p.concat([Object.assign({},EMPTY_EXTRA,{rua:form.rua||'',num:form.num||'',bairro:form.bairro||'',ref:form.ref||''})]);});}},'+ Adicionar Serviço'),
       ce('div',{className:'form-actions'},ce('button',{className:'btn btn-s',onClick:function(){setForm(null);setSubcats([]);setSubInfo(null);setLocked(false);setSugs([]);setIsento(false);setMetros(1);setSolFilled({});}},'Cancelar'),
-        ce('div',{style:{display:'flex',flexDirection:'column',gap:4}},
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b'}},'Forma de Pagamento'),
-          ce('select',{className:'inp',value:form.fp||'',
-            onChange:function(e){
-              var v=e.target.value;
-              setField('fp',v);
-              setIsento(v==='Isento'||v==='Gratuito');
-              if(v==='Isento')setField('taxa',0);
-            }},
-            ce('option',{value:'Pago'},'Pago'),
-            ce('option',{value:'Gratuito'},'Gratuito'),
-            ce('option',{value:'Isento'},'Isento \u2014 hipossufici\u00eancia')
-          ))),
+        ce('div',{style:{display:'flex',alignItems:'center',gap:8,background:'#fffbeb',border:'1px solid #fde68a',borderRadius:8,padding:'8px 12px'}},
+          ce('input',{type:'checkbox',id:'cb-isento',checked:isento,onChange:function(e){setIsento(e.target.checked);if(e.target.checked){setField('fp','Isento');setField('taxa',0);}else{setField('fp','N\u00e3o Pago');}}}),
+          ce('label',{htmlFor:'cb-isento',style:{cursor:'pointer',fontSize:12,color:'#92400e',fontWeight:500}},'\u26d4 Isento \u2014 hipossufici\u00eancia declarada')
+        ),
         ce('button',{className:'btn btn-p',onClick:save},'\ud83d\udcbe Registrar Solicita\xe7\xe3o')
       )
     )
@@ -2546,8 +2537,7 @@ function Solicitacoes(){
           isE?ce('td',null,ce('input',{value:editD.bairro||'',onChange:function(e){setEditD(function(v){return Object.assign({},v,{bairro:e.target.value});});},style:{padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12,width:'100%'}})):ce('td',null,r.bairro),
           ce('td',{title:r.sn},r.cn.slice(0,20)+'\u2026'),ce('td',null,fmtTaxa(r)),
           isE?ce('td',null,ce('select',{value:editD.urg,onChange:function(e){setEditD(function(v){return Object.assign({},v,{urg:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11}},ce('option',{value:'Sim'},'\ud83d\udea8 Sim'),ce('option',{value:'N\u00e3o'},'N\u00e3o'))):ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
-          isE?ce('td',null,ce('select',{value:editD.status,onChange:function(e){setEditD(function(v){return Object.assign({},v,{status:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11}},ce('option',{value:'N\u00e3o Conclu\u00eddo'},'Pendente'),ce('option',{value:'Conclu\u00eddo'},'Conclu\u00eddo'))):ce('td',
-          isE?ce('td',null,ce('select',{value:editD.fp||'',onChange:function(e){setEditD(function(v){return Object.assign({},v,{fp:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11}},ce('option',{value:'Pago'},'Pago'),ce('option',{value:'Gratuito'},'Gratuito'),ce('option',{value:'Isento'},'Isento'))):ce('td',null,r.fp||'-'),null,ce('span',{className:'badge '+(r.status==='Conclu\xeddo'?'b-gr':'b-or')},r.status)),
+          isE?ce('td',null,ce('select',{value:editD.status,onChange:function(e){setEditD(function(v){return Object.assign({},v,{status:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11}},ce('option',{value:'N\u00e3o Conclu\u00eddo'},'Pendente'),ce('option',{value:'Conclu\u00eddo'},'Conclu\u00eddo'))):ce('td',null,ce('span',{className:'badge '+(r.status==='Conclu\xeddo'?'b-gr':'b-or')},r.status)),
           ce('td',null,
             isE?ce(React.Fragment,null,
               ce('button',{className:'btn btn-p',style:{padding:'3px 7px',fontSize:11},onClick:saveEditSol},'\u2714 Salvar'),
