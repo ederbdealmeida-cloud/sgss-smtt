@@ -5051,6 +5051,31 @@ function Agenda(){
   );
 
   /* RENDER PRINCIPAL */
+  function prtAgendaRow(r){
+    var w=window.open('','_blank','width=820,height=650,scrollbars=yes');
+    if(!w){notify('Permita popups!');return;}
+    var dt=r.dt||r.date||'';
+    var dtF=dt?dt.split('-').reverse().join('/'):'--';
+    function lv(l,v){return '<div style="padding:4px 0;border-bottom:1px solid #f1f5f9">'
+      +'<div style="font-size:10px;color:#64748b">'+l+'</div>'
+      +'<div style="font-size:12px;color:#1e293b;font-weight:700">'+(v||'--')+'</div></div>';}
+    var corpo='<div style="border:1px solid #1d4ed8;border-left:4px solid #1d4ed8;border-radius:8px;padding:14px 16px;margin:10px 0">'
+      +'<div style="font-size:10px;font-weight:700;color:#1d4ed8;text-transform:uppercase;margin-bottom:8px">Agendamento</div>'
+      +lv('Data',dtF)+lv('Protocolo',r.prot)+lv('Solicitante',r.nom||r.nome)
+      +lv('Bairro',r.bairro)+lv('Serviço',r.cn||r.sn)+lv('Funcionário',r.func)
+      +lv('Urgência',r.urg==='Sim'?'Urgente':'Normal')+lv('Status',r.status||'Agendado')
+      +(r.taxa>0?lv('Taxa',fmt(r.taxa)):'')
+      +'</div>';
+    w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
+      +PRINT_CSS+'body{padding:20px;background:#f8fafc}'
+      +'.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:680px;margin:0 auto}'
+      +'</style></head><body><div class="wrap">'
+      +buildHeader('Comprovante de Agendamento',dtF)
+      +corpo
+      +'<button onclick="window.print()" style="display:block;margin:16px auto 0;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Imprimir / Salvar PDF</button>'
+      +'</div></body></html>');
+    w.document.close();
+  }
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
     ce('div',{className:'page-header'},
