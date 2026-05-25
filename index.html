@@ -2234,7 +2234,7 @@ function Solicitantes(){
 }
 
 /* ── TIPOS DE SERVIÇO ── */
-fu,ce('input',{value:editCatD.taxa||'',placeholder:'Taxa R$',onClick:function(e){e.stopPropagation();},onChange:function(e){setEditCatD(function(v){return Object.assign({},v,{taxa:e.target.value});});},style:{padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12,width:80,marginLeft:4}})nction TiposServico(){
+function TiposServico(){
   var scat=useState(CATS.map(function(x){return Object.assign({},x);}));var cats=scat[0];var setCats=scat[1];
   var ssub=useState(JSON.parse(JSON.stringify(SUBS)));var subs=ssub[0];var setSubs=ssub[1];
   var sexp=useState(null);var exp=sexp[0];var setExp=sexp[1];
