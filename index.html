@@ -2104,9 +2104,9 @@ function Solicitantes(){
   function save(){
     if(!form.nome||!form.rua||!form.numero||!form.bairro){notify('Preencha os campos obrigat\xf3rios!');return;}
     if(form.id){setAll(function(prev){return prev.map(function(x){return x.id===form.id?Object.assign({},form):x;});});INIT_SOLS.forEach(function(x,i){if(x.id===form.id)INIT_SOLS[i]=Object.assign({},form);});SGSS_SESSION.acoes.unshift({tipo:'Editar Solicitante',prot:form.nome||'',dt:new Date().toLocaleTimeString('pt-BR')});
-    saveSession();notify('Solicitante atualizado!');sgssSave();}
+    saveSession();logAudit('Editou','Solicitantes','Nome: '+form.nome);notify('Solicitante atualizado!');sgssSave();}
     else{var nSol=Object.assign({},form,{id:uid()});INIT_SOLS.push(nSol);setAll(function(prev){return prev.concat([nSol]);});SGSS_SESSION.reqs.unshift({tipo:'Solicitante',acao:'Cadastro',nom:nSol.nome,dt:new Date().toLocaleTimeString('pt-BR')});
-    saveSession();notify('Solicitante cadastrado!');sgssSave();}
+    saveSession();logAudit('Criou','Solicitantes','Nome: '+form.nome);notify('Solicitante cadastrado!');sgssSave();}
     setForm(null);
   }
   function del(id,nome){
@@ -2247,14 +2247,14 @@ function TiposServico(){
   var ssf=useState(null);var subForm=ssf[0];var setSubForm=ssf[1];
   var t=useToast();var toast=t[0];var notify=t[1];
   var items=paginate(cats,pg);
-  function saveCat(){if(!catForm.nome||!catForm.fp){notify('Preencha todos os campos.');return;}if(catForm.id){setCats(function(prev){return prev.map(function(c){return c.id===catForm.id?Object.assign({},catForm):c;});});notify('Categoria atualizada!');sgssSave();}else{var nid=uid();CATS.push({id:nid,nome:catForm.nome,fp:catForm.fp,taxa:catForm.taxa||'',taxaHora:catForm.taxaHora||'',taxaMetro:catForm.taxaMetro||''});if(catForm._subInicial){SUBS[nid]=[{id:uid(),nome:catForm._subInicial,catId:nid}];}else{SUBS[nid]=[];}setCats(function(prev){return prev.concat([{id:nid,nome:catForm.nome,fp:catForm.fp}]);});setSubs(function(prev){var n=Object.assign({},prev);n[nid]=catForm._subInicial?[{id:uid(),nome:catForm._subInicial,catId:nid}]:[];return n;});notify('Categoria criada!');sgssSave();}setCatForm(null);}
+  function saveCat(){if(!catForm.nome||!catForm.fp){notify('Preencha todos os campos.');return;}if(catForm.id){setCats(function(prev){return prev.map(function(c){return c.id===catForm.id?Object.assign({},catForm):c;});});logAudit('Editou','Tipos de Serviço','Categoria: '+catForm.nome);notify('Categoria atualizada!');sgssSave();}else{var nid=uid();CATS.push({id:nid,nome:catForm.nome,fp:catForm.fp,taxa:catForm.taxa||'',taxaHora:catForm.taxaHora||'',taxaMetro:catForm.taxaMetro||''});if(catForm._subInicial){SUBS[nid]=[{id:uid(),nome:catForm._subInicial,catId:nid}];}else{SUBS[nid]=[];}setCats(function(prev){return prev.concat([{id:nid,nome:catForm.nome,fp:catForm.fp}]);});setSubs(function(prev){var n=Object.assign({},prev);n[nid]=catForm._subInicial?[{id:uid(),nome:catForm._subInicial,catId:nid}]:[];return n;});logAudit('Criou','Tipos de Serviço','Categoria: '+catForm.nome);notify('Categoria criada!');sgssSave();}setCatForm(null);}
   function delCat(id,nome){showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir categoria?',sub:'"'+nome+'"',lblOk:'Excluir',cor:'red',onOk:function(){var _ci=CATS.findIndex(function(c){return c.id===id;});if(_ci>=0)CATS.splice(_ci,1);delete SUBS[id];setCats(function(prev){return prev.filter(function(c){return c.id!==id;});});setSubs(function(prev){var n=Object.assign({},prev);delete n[id];return n;});if(exp===id)setExp(null);notify('Categoria exclu\xedda!');sgssSave();
     }});}
-  function saveSub(){if(!subForm.nome){notify('Informe o nome.');return;}var cid=subForm.catId;if(subForm.id){if(SUBS[cid])SUBS[cid]=SUBS[cid].map(function(s){return s.id===subForm.id?Object.assign({},subForm):s;});setSubs(function(prev){var n=Object.assign({},prev);n[cid]=n[cid].map(function(s){return s.id===subForm.id?Object.assign({},subForm):s;});return n;});notify('Subcategoria atualizada!');sgssSave();}else{var _newSub=Object.assign({},subForm,{id:uid()});if(!SUBS[cid])SUBS[cid]=[];SUBS[cid].push(_newSub);setSubs(function(prev){var n=Object.assign({},prev);n[cid]=(n[cid]||[]).concat([_newSub]);return n;});notify('Subcategoria adicionada!');sgssSave();}setSubForm(null);}
+  function saveSub(){if(!subForm.nome){notify('Informe o nome.');return;}var cid=subForm.catId;if(subForm.id){if(SUBS[cid])SUBS[cid]=SUBS[cid].map(function(s){return s.id===subForm.id?Object.assign({},subForm):s;});setSubs(function(prev){var n=Object.assign({},prev);n[cid]=n[cid].map(function(s){return s.id===subForm.id?Object.assign({},subForm):s;});return n;});logAudit('Editou','Tipos de Serviço','Subcategoria: '+subForm.nome);notify('Subcategoria atualizada!');sgssSave();}else{var _newSub=Object.assign({},subForm,{id:uid()});if(!SUBS[cid])SUBS[cid]=[];SUBS[cid].push(_newSub);setSubs(function(prev){var n=Object.assign({},prev);n[cid]=(n[cid]||[]).concat([_newSub]);return n;});logAudit('Criou','Tipos de Serviço','Subcategoria: '+subForm.nome);notify('Subcategoria adicionada!');sgssSave();}setSubForm(null);}
   function delSub(id,cid,nome){showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir subcategoria?',sub:'"'+nome+'"',lblOk:'Excluir',cor:'red',onOk:function(){if(SUBS[cid])SUBS[cid]=SUBS[cid].filter(function(s){return s.id!==id;});setSubs(function(prev){var n=Object.assign({},prev);n[cid]=n[cid].filter(function(s){return s.id!==id;});return n;});notify('Subcategoria exclu\xedda!');sgssSave();
     }});}
-  function saveEditCat(){setCats(function(prev){return prev.map(function(c){return c.id===editCatId?Object.assign({},editCatD):c;});});setEditCatId(null);setEditCatD({});notify('\u2705 Categoria atualizada!');sgssSave();}
-  function saveEditSub(){setSubs(function(prev){var n=Object.assign({},prev);n[editSubD.catId]=n[editSubD.catId].map(function(s){return s.id===editSubId?Object.assign({},editSubD):s;});return n;});setEditSubId(null);setEditSubD({});notify('\u2705 Subcategoria atualizada!');sgssSave();}
+  function saveEditCat(){setCats(function(prev){return prev.map(function(c){return c.id===editCatId?Object.assign({},editCatD):c;});});setEditCatId(null);setEditCatD({});logAudit('Editou','Tipos de Serviço','Categoria: '+editCatD.nome);notify('\u2705 Categoria atualizada!');sgssSave();}
+  function saveEditSub(){setSubs(function(prev){var n=Object.assign({},prev);n[editSubD.catId]=n[editSubD.catId].map(function(s){return s.id===editSubId?Object.assign({},editSubD):s;});return n;});setEditSubId(null);setEditSubD({});logAudit('Editou','Tipos de Serviço','Subcategoria: '+editSubD.nome);notify('\u2705 Subcategoria atualizada!');sgssSave();}
   if(catForm!==null)return ce('div',{className:'page'},ce(Toast,{msg:toast}),ce('div',{className:'page-header'},ce('h2',{className:'page-title'},catForm.id?'\u270f\ufe0f Editar Categoria':'\u2795 Nova Categoria'),ce('button',{className:'btn btn-s',onClick:function(){setCatForm(null);}},'\u2190 Voltar')),ce('div',{className:'card'},ce('div',{className:'form-grid'},ce('div',{className:'fg s2'},ce('label',null,'Nome do Servi\xe7o ',ce('span',{className:'req'},'*')),ce('input',{value:catForm.nome||'',onChange:function(e){setCatForm(function(f){return Object.assign({},f,{nome:e.target.value});});}})),
           ce('div',{className:'fg s2'},ce('label',null,'Subcategoria inicial ',ce('span',{style:{fontSize:11,color:'#94a3b8'}},'(opcional)')),ce('input',{value:catForm._subInicial||'',placeholder:'Ex: Em vias pavimentadas',onChange:function(e){setCatForm(function(f){return Object.assign({},f,{_subInicial:e.target.value});})}})),ce('div',{className:'fg'},ce('label',null,'Forma de Presta\xe7\xe3o ',ce('span',{className:'req'},'*')),ce('select',{value:catForm.fp||'',onChange:function(e){setCatForm(function(f){return Object.assign({},f,{fp:e.target.value});});}},ce('option',{value:''},'Selecione...'),ce('option',{value:'Gratuito'},'Gratuito'),ce('option',{value:'Pago'},'Pago')))),
           /* Campos condicionais para servico pago */
@@ -2823,12 +2823,12 @@ function Controle(p){
     if(e.status==='Concluído'&&!e.dtConclusao)e.dtConclusao=today();
     setAll(function(prev){return prev.map(function(r){return r.id===id?Object.assign({},r,e):r;});});
     INIT_REQS.forEach(function(r,i){if(r.id===id)INIT_REQS[i]=Object.assign({},INIT_REQS[i],e);});
-    cancelEdit(id);notify('\u2705 Atualizado!');sgssSave();
+    cancelEdit(id);logAudit('Editou','Controle','Protocolo: '+(items.find(function(x){return x.id===id;})||{}).prot);notify('\u2705 Atualizado!');sgssSave();
   }
   function handleEncerrar(){
     setAll(function(prev){return prev.map(function(r){return r.id===encItem.id?Object.assign({},r,{enc:1,status:'Conclu\u00eddo'}):r;});});
     INIT_REQS.forEach(function(r,i){if(r.id===encItem.id)INIT_REQS[i]=Object.assign({},INIT_REQS[i],{enc:1,status:'Conclu\u00eddo'});});
-    setEncItem(null);notify('\u2705 Encerrada!');sgssSave();
+    setEncItem(null);logAudit('Encerrou','Controle','Protocolo: '+(encItem?encItem.prot:''));notify('\u2705 Encerrada!');sgssSave();
   }
   /* TELA DE IMPRESSAO */
   
