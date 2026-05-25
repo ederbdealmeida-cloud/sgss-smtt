@@ -2333,14 +2333,11 @@ function imprimirComprovanteServico(r,allReqs){
     +[{l:'Solicitante',v:main.nom},{l:'Telefone',v:main.tel||'—'},{l:'Funcionário Resp.',v:main.func||'A designar'},{l:'Forma de Pagamento',v:main.fp||'A definir'}]
     .map(function(x){return '<div style="border-left:3px solid #2563eb;padding:6px 10px;background:#f8fafc;border-radius:0 4px 4px 0"><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">'+x.l+'</div><div style="font-size:12px;font-weight:600;color:#1e293b;margin-top:2px">'+(x.v||'—')+'</div></div>';}).join('')+'</div>';
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS
-    +'body{padding:20px;background:#f8fafc;font-family:'Segoe UI',Arial,sans-serif}.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:700px;margin:0 auto;box-shadow:0 2px 8px rgba(0,0,0,.1)}'
+    +'body{padding:20px;background:#f8fafc}.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:700px;margin:0 auto;box-shadow:0 2px 8px rgba(0,0,0,.1)}'
     +'.sg{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;padding-top:14px;border-top:1px solid #e2e8f0}'
     +'.sl{height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px}.slb{font-size:10px;color:#64748b;text-align:center;font-weight:600}'
     +'.btn-pr{display:block;margin:14px auto 0;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
-    +'@media print{.btn-pr{display:none!important}}
-* {font-family:'Segoe UI',Arial,sans-serif!important;letter-spacing:normal!important;}
-
-*,td,th,p,span,div{font-family:'Segoe UI',Arial,sans-serif!important;letter-spacing:normal!important;font-variant-numeric:normal!important;}</style></head><body><div class="wrap">'
+    +'@media print{.btn-pr{display:none!important}}</style></head><body><div class="wrap">'
     +buildHeader('&#128203; Comprovante de Solicita&ccedil;&atilde;o'+(parts.length>1?' &mdash; <span style="color:#1d4ed8">'+parts.length+' serviços</span>':''),'Emitido em: '+new Date().toLocaleDateString('pt-BR'))
     +'<div style="border-left:3px solid #1e3a5f;padding:8px 12px;background:#f1f5f9;border-radius:0 6px 6px 0;margin:8px 0">'
     +'<div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Solicitante</div>'
