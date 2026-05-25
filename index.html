@@ -2312,44 +2312,59 @@ function imprimirComprovanteServico(r,allReqs){
   var main=parts[0];
   var w=window.open('','_blank','width=820,height=750,scrollbars=yes');
   if(!w){alert('Permita pop-ups!');return;}
-  var dt=main.dt||new Date().toLocaleDateString('pt-BR');
-  function bst(s){return s==='É Concluído'||s==='Concluído'?'background:#dcfce7;color:#166534':s==='Em andamento'?'background:#dbeafe;color:#1e40af':'background:#fef9c3;color:#854d0e';}
-  function urg(u){return u==='Sim'?'<span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:800;margin-left:6px">⚠️ URGENTE</span>':'';}
-  var svcBlocks=parts.map(function(s,i){
-    var endStr=s.rua?(s.rua+(s.num?', '+s.num:'')+(s.bairro?' – '+s.bairro:'')):(s.bairro||'—');
-    return '<div style="border:2px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin:10px 0;background:#f8fafc">'
-      +(parts.length>1?'<div style="font-size:10px;font-weight:700;color:#1d4ed8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Serviço '+(i+1)+'</div>':'')
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px">'
-      +'<div><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Protocolo</div>'
-      +'<div style="font-size:20px;font-weight:900;color:#1e3a5f;letter-spacing:1px">'+(s.prot||'---')+'</div></div>'
-      +'<div style="text-align:right"><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Data</div>'
-      +'<div style="font-size:14px;font-weight:700;color:#1e293b">'+dt+'</div></div></div>'
-      +'<div style="font-size:14px;font-weight:700;color:#1e3a5f">'+(s.sn||'---')+urg(s.urg)+'</div>'
-      +(s.cn&&s.cn!==s.sn?'<div style="font-size:11px;color:#64748b;margin-top:2px">'+s.cn+'</div>':'')
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">'
-      +'<div style="border-left:3px solid #2563eb;padding:5px 8px;background:#fff;border-radius:0 4px 4px 0"><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Endereço</div><div style="font-size:12px;font-weight:600;color:#1e293b;margin-top:2px">'+endStr+'</div></div>'
-      +'<div style="border-left:3px solid #2563eb;padding:5px 8px;background:#fff;border-radius:0 4px 4px 0"><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Status</div><div style="margin-top:3px"><span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;'+bst(s.status)+';display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:800">'+(s.status||'Registrado')+'</span></div></div>'
-      +'</div>'+(s.obs?'<div style="margin-top:6px;padding:6px 8px;background:#fffbeb;border-left:3px solid #f59e0b;border-radius:0 4px 4px 0;font-size:11px"><b>Obs:</b> '+s.obs+'</div>':'')+'</div>';
+  var dt=main.dt?main.dt.split('-').reverse().join('/'):new Date().toLocaleDateString('pt-BR');
+  function card(title,color,rows){
+    return '<div style="border:1px solid '+color+';border-left:4px solid '+color+';border-radius:8px;padding:14px 16px;margin:10px 0;">'
+      +'<div style="font-size:10px;font-weight:700;color:'+color+';text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">'+title+'</div>'
+      +rows+'</div>';
+  }
+  function rw(l,v){
+    return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f1f5f9;">'
+      +'<span style="font-size:11px;color:#64748b">'+l+'</span>'
+      +'<span style="font-size:12px;color:#1e293b;font-weight:700">'+v+'</span></div>';
+  }
+  var svcCards=parts.map(function(s,i){
+    var sn=s.cn||s.sn||'-';
+    var st=s.status||'Pendente';
+    var sc=st==='Concluído'?'#16a34a':'#d97706';
+    return card('Solicitação'+(parts.length>1?' #'+(i+1):''),'#1d4ed8',
+      rw('Nº Protocolo','<b style="color:#1d4ed8;font-size:14px">'+(s.prot||'-')+'</b>')
+      +rw('Data',dt)
+      +rw('Tipo de Serviço',sn)
+      +(s.subSvc?rw('Subserviço',s.subSvc):'')
+      +rw('Status','<span style="color:'+sc+';font-weight:700">'+st+'</span>')
+      +(s.urg==='Sim'?rw('Urgência','<span style="color:#dc2626">URGENTE</span>'):'')
+    );
   }).join('');
-  var infoHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0">'
-    +[{l:'Solicitante',v:main.nom},{l:'Telefone',v:main.tel||'—'},{l:'Funcionário Resp.',v:main.func||'A designar'},{l:'Forma de Pagamento',v:main.fp||'A definir'}]
-    .map(function(x){return '<div style="border-left:3px solid #2563eb;padding:6px 10px;background:#f8fafc;border-radius:0 4px 4px 0"><div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">'+x.l+'</div><div style="font-size:12px;font-weight:600;color:#1e293b;margin-top:2px">'+(x.v||'—')+'</div></div>';}).join('')+'</div>';
-  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS
-    +'body{padding:20px;background:#f8fafc}.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:700px;margin:0 auto;box-shadow:0 2px 8px rgba(0,0,0,.1)}'
+  var endStr=(main.rua||'')+(main.num?', '+main.num:'')+(main.bairro?' - '+main.bairro:'');
+  var card2=card('Dados do Solicitante','#0891b2',
+    rw('Nome',main.nom||'-')
+    +rw('Endereço',endStr||'-')
+    +(main.tel?rw('Telefone',main.tel):'')
+    +(main.email?rw('E-mail',main.email):'')
+  );
+  var card3=card('Execução e Pagamento','#059669',
+    rw('Funcionário',main.func||'A designar')
+    +rw('Forma de Pagamento',main.fp||'A definir')
+    +(main.taxa?rw('Taxa','R$ '+parseFloat(main.taxa).toFixed(2).replace('.',',')):'')
+  );
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
+    +PRINT_CSS
+    +'body{padding:20px;background:#f8fafc}'
+    +'.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:680px;margin:0 auto;box-shadow:0 2px 8px rgba(0,0,0,.1)}'
     +'.sg{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;padding-top:14px;border-top:1px solid #e2e8f0}'
-    +'.sl{height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px}.slb{font-size:10px;color:#64748b;text-align:center;font-weight:600}'
+    +'.sl{height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px}'
+    +'.slb{font-size:10px;color:#64748b;text-align:center;font-weight:600}'
     +'.btn-pr{display:block;margin:14px auto 0;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
-    +'@media print{.btn-pr{display:none!important}}</style></head><body><div class="wrap">'
-    +buildHeader('&#128203; Comprovante de Solicita&ccedil;&atilde;o'+(parts.length>1?' &mdash; <span style="color:#1d4ed8">'+parts.length+' serviços</span>':''),'Emitido em: '+new Date().toLocaleDateString('pt-BR'))
-    +'<div style="border-left:3px solid #1e3a5f;padding:8px 12px;background:#f1f5f9;border-radius:0 6px 6px 0;margin:8px 0">'
-    +'<div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Solicitante</div>'
-    +'<div style="font-size:15px;font-weight:700;color:#1e3a5f">'+(main.nom||'—')+'</div>'
-    +(main.tel?'<div style="font-size:12px;color:#475569;margin-top:2px">Tel: '+main.tel+'</div>':'')
-    +'</div>'+svcBlocks+infoHtml
-    +'<div class="sg"><div><div class="sl"></div><div class="slb">Assinatura e Carimbo &mdash; SMTT</div></div>'
+    +'@media print{.btn-pr{display:none!important}}'
+    +'</style></head><body><div class="wrap">'
+    +buildHeader('Comprovante de Solicitação'+(parts.length>1?' - '+parts.length+' serviços':''),'Emitido em: '+new Date().toLocaleDateString('pt-BR'))
+    +svcCards+card2+card3
+    +'<div class="sg"><div><div class="sl"></div><div class="slb">Assinatura e Carimbo - SMTT</div></div>'
     +'<div><div class="sl"></div><div class="slb">Recebido pelo Solicitante</div></div></div>'
-    +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px;letter-spacing:.5px">SMTT CACEQUI &bull; SGSS &bull; PROTOCOLO EMITIDO ELETRONICAMENTE</div>'
-    +'</div><button class="btn-pr" onclick="window.print()">&#128424;&#65039; Imprimir Comprovante</button></body></html>');
+    +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px">SMTT CACEQUI - SGSS - PROTOCOLO EMITIDO ELETRONICAMENTE</div>'
+    +'</div><button class="btn-pr" onclick="window.print()">Imprimir / Salvar PDF</button></body></html>';
+  w.document.write(html);
   w.document.close();
 }
 
