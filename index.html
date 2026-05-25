@@ -3045,6 +3045,8 @@ function Controle(p){
             ce('td',null,e?ce(React.Fragment,null,
               ce('select',{value:e.status,onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{status:ev.target.value});setEd(n);},style:{marginBottom:2}},
                 ce('option',{value:'Pendente'},'Pendente'),
+                ce('option',{value:'Agendado'},'Agendado'),
+                ce('option',{value:'Em andamento'},'Em andamento'),
                 ce('option',{value:'Concluído'},'Concluído')
               ),
               e.status==='Concluído'?ce('input',{type:'date',value:e.dtConclusao||'',
@@ -4166,6 +4168,8 @@ function MapaSolicitacoes(){
         onChange:function(e){setFSt(e.target.value);}},
         ce('option',{value:''},'Todos os status'),
         ce('option',{value:'Pendente'},'Pendente'),
+        ce('option',{value:'Agendado'},'Agendado'),
+        ce('option',{value:'Em andamento'},'Em andamento'),
         ce('option',{value:'Concluído'},'Concluído')),
       ce('select',{className:'inp',style:{flex:1,minWidth:120},value:fUrg,
         onChange:function(e){setFUrg(e.target.value);}},
