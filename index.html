@@ -4742,7 +4742,7 @@ function Agenda(){
   });
   var agenda=agendaReqs.concat(agendaManual);
 
-  var filtAll=agenda.filter(function(r){
+  var filtAll=agendaManual.filter(function(r){
     if(ffunc&&r.func!==ffunc)return false;
     if(fst&&(r.status||'')!==fst)return false;
     return true;
@@ -5025,7 +5025,7 @@ function Agenda(){
 
   /* LISTA */
   var listaView=ce('div',null,
-    ce('div',{style:{display:'flex',gap:8,marginBottom:8}},
+    ce('div',{style:{display:'flex',justifyContent:'flex-end',marginBottom:8}},
       ce('button',{className:'btn',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
         onClick:prtAgendaLote},'\ud83d\udda8\ufe0f Imprimir Lote')
     ),
