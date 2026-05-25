@@ -2505,11 +2505,11 @@ function Solicitacoes(){
             onChange:function(e){
               var v=e.target.value;
               setField('fp',v);
-              setIsento(v==='Isento');
+              setIsento(v==='Isento'||v==='Gratuito');
               if(v==='Isento')setField('taxa',0);
             }},
             ce('option',{value:'Pago'},'Pago'),
-            ce('option',{value:'N\u00e3o Pago'},'N\u00e3o Pago'),
+            ce('option',{value:'Gratuito'},'Gratuito'),
             ce('option',{value:'Isento'},'Isento \u2014 hipossufici\u00eancia')
           ))),
         ce('button',{className:'btn btn-p',onClick:save},'\ud83d\udcbe Registrar Solicita\xe7\xe3o')
@@ -2547,7 +2547,7 @@ function Solicitacoes(){
           ce('td',{title:r.sn},r.cn.slice(0,20)+'\u2026'),ce('td',null,fmtTaxa(r)),
           isE?ce('td',null,ce('select',{value:editD.urg,onChange:function(e){setEditD(function(v){return Object.assign({},v,{urg:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11}},ce('option',{value:'Sim'},'\ud83d\udea8 Sim'),ce('option',{value:'N\u00e3o'},'N\u00e3o'))):ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
           isE?ce('td',null,ce('select',{value:editD.status,onChange:function(e){setEditD(function(v){return Object.assign({},v,{status:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11}},ce('option',{value:'N\u00e3o Conclu\u00eddo'},'Pendente'),ce('option',{value:'Conclu\u00eddo'},'Conclu\u00eddo'))):ce('td',
-          isE?ce('td',null,ce('select',{value:editD.fp||'',onChange:function(e){setEditD(function(v){return Object.assign({},v,{fp:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11}},ce('option',{value:'Pago'},'Pago'),ce('option',{value:'N\u00e3o Pago'},'N\u00e3o Pago'),ce('option',{value:'Isento'},'Isento'))):ce('td',null,r.fp||'-'),null,ce('span',{className:'badge '+(r.status==='Conclu\xeddo'?'b-gr':'b-or')},r.status)),
+          isE?ce('td',null,ce('select',{value:editD.fp||'',onChange:function(e){setEditD(function(v){return Object.assign({},v,{fp:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11}},ce('option',{value:'Pago'},'Pago'),ce('option',{value:'Gratuito'},'Gratuito'),ce('option',{value:'Isento'},'Isento'))):ce('td',null,r.fp||'-'),null,ce('span',{className:'badge '+(r.status==='Conclu\xeddo'?'b-gr':'b-or')},r.status)),
           ce('td',null,
             isE?ce(React.Fragment,null,
               ce('button',{className:'btn btn-p',style:{padding:'3px 7px',fontSize:11},onClick:saveEditSol},'\u2714 Salvar'),
