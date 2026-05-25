@@ -2499,19 +2499,7 @@ function Solicitacoes(){
       );}),
       ce('button',{style:{marginTop:8,marginBottom:4,width:'100%',padding:'8px',border:'2px dashed #93c5fd',borderRadius:8,background:'#eff6ff',color:'#1d4ed8',fontWeight:700,fontSize:13,cursor:'pointer'},onClick:function(){setExtras(function(p){return p.concat([Object.assign({},EMPTY_EXTRA,{rua:form.rua||'',num:form.num||'',bairro:form.bairro||'',ref:form.ref||''})]);});}},'+ Adicionar Serviço'),
       ce('div',{className:'form-actions'},ce('button',{className:'btn btn-s',onClick:function(){setForm(null);setSubcats([]);setSubInfo(null);setLocked(false);setSugs([]);setIsento(false);setMetros(1);setSolFilled({});}},'Cancelar'),
-        ce('div',{style:{display:'flex',flexDirection:'column',gap:4}},
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b'}},'Forma de Pagamento'),
-          ce('select',{className:'inp',value:form.fp||'Pago',
-            onChange:function(e){
-              var v=e.target.value;
-              setField('fp',v);
-              if(v==='Isento'||v==='Gratuito'){setField('taxa',0);setIsento(true);}
-              else{setIsento(false);}
-            }},
-            ce('option',{value:'Pago'},'Pago'),
-            ce('option',{value:'Gratuito'},'Gratuito'),
-            ce('option',{value:'Isento'},'Isento')
-          )),
+        
         ce('button',{className:'btn btn-p',onClick:save},'\ud83d\udcbe Registrar Solicita\xe7\xe3o')
       )
     )
