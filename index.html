@@ -4705,6 +4705,7 @@ function Comunicacao(){
 function Agenda(){
   var now=new Date();
   var sano=useState(now.getFullYear());var ano=sano[0];var setAno=sano[1];
+  var sChk=useState({});var chkAg=sChk[0];var setChkAg=sChk[1];
   var smes=useState(now.getMonth());var mes=smes[0];var setMes=smes[1];
   var sdia=useState(null);var selDia=sdia[0];var setSelDia=sdia[1];
   var sview=useState('list');var view=sview[0];var setView=sview[1];
@@ -5024,11 +5025,18 @@ function Agenda(){
 
   /* LISTA */
   var listaView=ce('div',null,
+    ce('div',{style:{display:'flex',gap:8,marginBottom:8}},
+      ce('button',{className:'btn',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
+        onClick:prtAgendaLote},'\ud83d\udda8\ufe0f Imprimir Lote')
+    ),
     ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl'},
-      ce('thead',null,ce('tr',null,['Data','Protocolo','Solicitante','Bairro','Servi\u00e7o','Funcion\u00e1rio','Taxa','Urg.','Status',''].map(function(c){return ce('th',{key:c},c);}))),
+      ce('thead',null,ce('tr',null,[ce('input',{type:'checkbox',onChange:function(e){var o={};listSlice.forEach(function(r){o[(r._src||'r')+r.id]=e.target.checked;});setChkAg(o);}}),'Data','Protocolo','Solicitante','Bairro','Servi\u00e7o','Funcion\u00e1rio','Taxa','Urg.','Status',''].map(function(c,i){return ce('th',{key:i},c);}))),
       ce('tbody',null,filtAll.length===0
-        ?ce('tr',null,ce('td',{colSpan:10,className:'empty'},'Nenhum servi\u00e7o encontrado.'))
+        ?ce('tr',null,ce('td',{colSpan:11,className:'empty'},'Nenhum servi\u00e7o encontrado.'))
         :listSlice.map(function(r){return ce('tr',{key:(r._src||'r')+r.id,className:r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':''},
+          ce('td',{style:{width:28}},ce('input',{type:'checkbox',
+            checked:!!chkAg[(r._src||'r')+r.id],
+            onChange:function(e){var k=(r._src||'r')+r.id;setChkAg(function(p){var o=Object.assign({},p);o[k]=e.target.checked;return o;});}})),
           ce('td',null,fmtD(r.dt||r.date)),
           ce('td',null,r.prot?ce('code',null,r.prot):ce('span',{style:{color:'#94a3b8',fontSize:10}},'\ud83d\udcc5')),
           ce('td',null,r.nom||r.nome),
@@ -5051,6 +5059,33 @@ function Agenda(){
   );
 
   /* RENDER PRINCIPAL */
+  function prtAgendaLote(){
+    var sel=listSlice.filter(function(r){return chkAg[(r._src||'r')+r.id];});
+    if(!sel.length){notify('Seleccione pelo menos um registo.');return;}
+    var w=window.open('','_blank','width=820,height=700,scrollbars=yes');
+    if(!w){notify('Permita popups!');return;}
+    function lv(l,v){return '<div style="padding:3px 0;border-bottom:1px solid #f1f5f9">'
+      +'<div style="font-size:10px;color:#64748b">'+l+'</div>'
+      +'<div style="font-size:12px;color:#1e293b;font-weight:700">'+(v||'--')+'</div></div>';}
+    var cards=sel.map(function(r){
+      var dt=(r.dt||r.date||'');var dtF=dt?dt.split('-').reverse().join('/'):'--';
+      return '<div style="border:1px solid #1d4ed8;border-left:4px solid #1d4ed8;border-radius:8px;padding:12px 14px;margin:8px 0;page-break-inside:avoid">'
+        +'<div style="font-size:10px;font-weight:700;color:#1d4ed8;text-transform:uppercase;margin-bottom:6px">Agendamento \u2014 '+dtF+'</div>'
+        +lv('Protocolo',r.prot)+lv('Solicitante',r.nom||r.nome)
+        +lv('Serviço',r.cn||r.sn)+lv('Funcionário',r.func)
+        +lv('Status',r.status||'Agendado')+(r.taxa>0?lv('Taxa',fmt(r.taxa)):'')
+        +'</div>';
+    }).join('');
+    w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
+      +PRINT_CSS+'body{padding:20px;background:#f8fafc}'
+      +'.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:680px;margin:0 auto}'
+      +'</style></head><body><div class="wrap">'
+      +buildHeader('Relatório de Agendamentos',sel.length+' registo(s) seleccionado(s)')
+      +cards
+      +'<button onclick="window.print()" style="display:block;margin:16px auto 0;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Imprimir / Salvar PDF</button>'
+      +'</div></body></html>');
+    w.document.close();
+  }
   function prtAgendaRow(r){
     var w=window.open('','_blank','width=820,height=650,scrollbars=yes');
     if(!w){notify('Permita popups!');return;}
