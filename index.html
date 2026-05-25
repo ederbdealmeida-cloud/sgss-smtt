@@ -2499,10 +2499,19 @@ function Solicitacoes(){
       );}),
       ce('button',{style:{marginTop:8,marginBottom:4,width:'100%',padding:'8px',border:'2px dashed #93c5fd',borderRadius:8,background:'#eff6ff',color:'#1d4ed8',fontWeight:700,fontSize:13,cursor:'pointer'},onClick:function(){setExtras(function(p){return p.concat([Object.assign({},EMPTY_EXTRA,{rua:form.rua||'',num:form.num||'',bairro:form.bairro||'',ref:form.ref||''})]);});}},'+ Adicionar Serviço'),
       ce('div',{className:'form-actions'},ce('button',{className:'btn btn-s',onClick:function(){setForm(null);setSubcats([]);setSubInfo(null);setLocked(false);setSugs([]);setIsento(false);setMetros(1);setSolFilled({});}},'Cancelar'),
-        ce('div',{style:{display:'flex',alignItems:'center',gap:8,background:'#fffbeb',border:'1px solid #fde68a',borderRadius:8,padding:'8px 12px'}},
-          ce('input',{type:'checkbox',id:'cb-isento',checked:isento,onChange:function(e){setIsento(e.target.checked);if(e.target.checked){setField('fp','Isento');setField('taxa',0);}else{setField('fp','N\u00e3o Pago');}}}),
-          ce('label',{htmlFor:'cb-isento',style:{cursor:'pointer',fontSize:12,color:'#92400e',fontWeight:500}},'\u26d4 Isento \u2014 hipossufici\u00eancia declarada')
-        ),
+        ce('div',{style:{display:'flex',flexDirection:'column',gap:4}},
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b'}},'Forma de Pagamento'),
+          ce('select',{className:'inp',value:form.fp||'',
+            onChange:function(e){
+              var v=e.target.value;
+              setField('fp',v);
+              setIsento(v==='Isento');
+              if(v==='Isento')setField('taxa',0);
+            }},
+            ce('option',{value:'Pago'},'Pago'),
+            ce('option',{value:'N\u00e3o Pago'},'N\u00e3o Pago'),
+            ce('option',{value:'Isento'},'Isento \u2014 hipossufici\u00eancia')
+          ))),
         ce('button',{className:'btn btn-p',onClick:save},'\ud83d\udcbe Registrar Solicita\xe7\xe3o')
       )
     )
