@@ -991,7 +991,7 @@ function showConfirm(opts){
   ov.onclick=function(e){if(e.target===ov)close(false);};
 }
 
-function fmt(v){return v!=null?Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):'R$ 0,00';}
+function fmt(v){var n=Number(v);return (!isNaN(n)&&n!=null)?n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):'R$ 0,00';}
 
 function fmtStatusLabel(r){if(r.status==='Concluído'&&r.dtConclusao)return 'Concluído em '+fmtD(r.dtConclusao);return r.status||'';}
 
