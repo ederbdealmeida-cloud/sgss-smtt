@@ -5061,28 +5061,40 @@ function Agenda(){
   /* RENDER PRINCIPAL */
   function prtAgendaLote(){
     var sel=listSlice.filter(function(r){return chkAg[(r._src||'r')+r.id];});
-    if(!sel.length){notify('Seleccione pelo menos um registo.');return;}
-    var w=window.open('','_blank','width=820,height=700,scrollbars=yes');
+    if(!sel.length){notify('Seleccione registos.');return;}
+    var w=window.open('','_blank','width=900,height=700,scrollbars=yes');
     if(!w){notify('Permita popups!');return;}
-    function lv(l,v){return '<div style="padding:3px 0;border-bottom:1px solid #f1f5f9">'
-      +'<div style="font-size:10px;color:#64748b">'+l+'</div>'
-      +'<div style="font-size:12px;color:#1e293b;font-weight:700">'+(v||'--')+'</div></div>';}
-    var cards=sel.map(function(r){
-      var dt=(r.dt||r.date||'');var dtF=dt?dt.split('-').reverse().join('/'):'--';
-      return '<div style="border:1px solid #1d4ed8;border-left:4px solid #1d4ed8;border-radius:8px;padding:12px 14px;margin:8px 0;page-break-inside:avoid">'
-        +'<div style="font-size:10px;font-weight:700;color:#1d4ed8;text-transform:uppercase;margin-bottom:6px">Agendamento \u2014 '+dtF+'</div>'
-        +lv('Protocolo',r.prot)+lv('Solicitante',r.nom||r.nome)
-        +lv('Serviço',r.cn||r.sn)+lv('Funcionário',r.func)
-        +lv('Status',r.status||'Agendado')+(r.taxa>0?lv('Taxa',fmt(r.taxa)):'')
-        +'</div>';
+    var rows=sel.map(function(r,i){
+      var dt=r.dt||r.date||'';var dtF=dt?dt.split('-').reverse().join('/'):'--';
+      var bg=i%2===0?'#f0fdf4':'#ffffff';
+      return '<tr style="background:'+bg+'">'
+        +'<td style="padding:6px 8px">'+dtF+'</td>'
+        +'<td style="padding:6px 8px"><b>'+(r.prot||'--')+'</b></td>'
+        +'<td style="padding:6px 8px">'+(r.nom||r.nome||'--')+'</td>'
+        +'<td style="padding:6px 8px">'+(r.cn||r.sn||'--')+'</td>'
+        +'<td style="padding:6px 8px">'+(r.func||'--')+'</td>'
+        +'<td style="padding:6px 8px">'+(r.status||'Agendado')+'</td>'
+        +'<td style="padding:6px 8px;text-align:right">'+(r.taxa>0?fmt(r.taxa):'--')+'</td>'
+        +'</tr>';
     }).join('');
+    var tbl='<table style="width:100%;border-collapse:collapse;font-size:11px;margin-top:10px">'
+      +'<thead><tr style="background:#166534;color:#fff">'
+      +'<th style="padding:7px 8px;text-align:left">Data</th>'
+      +'<th style="padding:7px 8px;text-align:left">Protocolo</th>'
+      +'<th style="padding:7px 8px;text-align:left">Solicitante</th>'
+      +'<th style="padding:7px 8px;text-align:left">Serviço</th>'
+      +'<th style="padding:7px 8px;text-align:left">Funcionário</th>'
+      +'<th style="padding:7px 8px;text-align:left">Status</th>'
+      +'<th style="padding:7px 8px;text-align:right">Taxa</th>'
+      +'</tr></thead><tbody>'+rows+'</tbody></table>';
     w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
       +PRINT_CSS+'body{padding:20px;background:#f8fafc}'
-      +'.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:680px;margin:0 auto}'
+      +'.wrap{max-width:900px;margin:0 auto;background:#fff;border-radius:12px;padding:24px 28px}'
+      +'td,th{border-bottom:1px solid #e2e8f0}'
       +'</style></head><body><div class="wrap">'
-      +buildHeader('Relatório de Agendamentos',sel.length+' registo(s) seleccionado(s)')
-      +cards
-      +'<button onclick="window.print()" style="display:block;margin:16px auto 0;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Imprimir / Salvar PDF</button>'
+      +buildHeader('Relatório de Agendamentos',sel.length+' registo(s)')
+      +tbl
+      +'<button onclick="window.print()" style="display:block;margin:16px auto 0;padding:9px 24px;background:#166534;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Imprimir / Salvar PDF</button>'
       +'</div></body></html>');
     w.document.close();
   }
