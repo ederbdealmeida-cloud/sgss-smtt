@@ -5804,4 +5804,27 @@ if(_cv!==APP_VER){
 })();
 </script>
 <script>window.addEventListener('load',function(){if(window.twemoji){twemoji.parse(document.body,{folder:'svg',ext:'.svg',base:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'});}});</script>
-
+<script>
+(function(){
+  var PAT=[
+    ['Não Concluído','Pendente'],
+    ['Não concluído','Pendente'],
+    ['Nao Concluido','Pendente']
+  ];
+  function fixDOM(){
+    document.querySelectorAll('*').forEach(function(el){
+      if(el.children.length>0)return;
+      var t=el.textContent,c=false;
+      PAT.forEach(function(p){
+        if(t.indexOf(p[0])>=0){t=t.split(p[0]).join(p[1]);c=true;}
+      });
+      if(c)el.textContent=t;
+    });
+  }
+  setInterval(fixDOM,500);
+  setTimeout(fixDOM,800);
+  setTimeout(fixDOM,2000);
+})();
+</script>
+</body>
+</html>
