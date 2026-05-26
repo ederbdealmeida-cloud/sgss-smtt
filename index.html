@@ -1609,7 +1609,7 @@ function PainelFuncionario(p){
           ce('td',null,r.bairro),
           ce('td',{title:r.cn},r.cn.slice(0,22)+'\u2026'),
           ce('td',{style:{fontWeight:600,textAlign:'right'}},fmt(r.taxa)),
-          ce('td',null,ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status))
+          ce('td',null,ce('span',{className:'badge '+(normSt(r.status)==='Concluído'?'b-gr':normSt(r.status)==='Em andamento'?'b-cy':normSt(r.status)==='Agendado'?'b-yw':'b-or')},normSt(r.status)))
         );})))
       ))
     )
@@ -3098,7 +3098,7 @@ function Controle(p){
                 title:'Data de conclusão',
                 onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{dtConclusao:ev.target.value});setEd(n);},
                 style:{display:'block',padding:'2px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11,width:'100%'}}):null
-            ):ce('span',{className:'badge '+(normSt(r.status)==='Concluído'?'b-gr':normSt(r.status)==='Em andamento'?'b-cy':r.status==='Agendado'?'b-yw':'b-or')},fmtStatusLabel(r))),
+            ):ce('span',{className:'badge '+(normSt(r.status)==='Concluído'?'b-gr':normSt(r.status)==='Em andamento'?'b-cy':r.status==='Agendado'?'b-yw':'b-or')},normSt(fmtStatusLabel(r))),
             ce('td',null,e?ce('select',{value:e.func||'',onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{func:ev.target.value});setEd(n);}},
               ce('option',{value:''},'\u2014 Nenhum'),
               FUNC_LIST.filter(function(f){return f.ativo;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);})):ce('span',null,r.func||'\u2013')),
@@ -3265,7 +3265,7 @@ function Historico(){
           ce('td',{title:r.cn},r.cn.slice(0,20)+'\u2026'),
           ce('td',{style:{textAlign:'left',fontWeight:600}},fmtTaxa(r)),
           ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
-          ce('td',null,ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status)),
+          ce('td',null,ce('span',{className:'badge '+(normSt(r.status)==='Concluído'?'b-gr':normSt(r.status)==='Em andamento'?'b-cy':normSt(r.status)==='Agendado'?'b-yw':'b-or')},normSt(r.status))),
           ce('td',null,r.func||'\u2013'),
           ce('td',{style:{textAlign:'right'}},
             ce('button',{className:'btn-icon',title:'Visualizar',onClick:function(){setDocItem(r);}},'\ud83d\udc41\ufe0f'),
@@ -3389,7 +3389,7 @@ function Relatorios(){
           ce('button',{className:'btn btn-s',onClick:function(){
             if(!filtered.length){notify('Sem resultados para exportar.');return;}
             var hdr='Protocolo;Data;Solicitante;Bairro;Servi\u00e7o;Taxa;Urg\u00eancia;Status;Funcion\u00e1rio\n';
-            var rows=filtered.map(function(r){return [r.prot,fmtD(r.dt),r.nom,r.bairro,r.cn,r.taxa,r.urg,r.status,r.func||''].join(';');}).join('\n');
+            var rows=filtered.map(function(r){return [r.prot,fmtD(r.dt),r.nom,r.bairro,r.cn,r.taxa,r.urg,normSt(r.status),r.func||''].join(';');}).join('\n');
             var blob=new Blob(['\uFEFF'+hdr+rows],{type:'text/csv;charset=utf-8'});
             var url=URL.createObjectURL(blob);
             var a=document.createElement('a');a.href=url;a.download='relatorio-smtt.csv';a.click();
@@ -3557,7 +3557,7 @@ function Relatorios(){
               ce('td',null,r.nom||'Não informado'),ce('td',null,r.bairro),ce('td',{title:r.cn||''},(r.cn||'').slice(0,22)+(r.cn&&r.cn.length>22?'\u2026':'')),
               ce('td',{style:{textAlign:'right',fontWeight:600}},fmtTaxa(r)),
               ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
-              ce('td',null,ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status)),
+              ce('td',null,ce('span',{className:'badge '+(normSt(r.status)==='Concluído'?'b-gr':normSt(r.status)==='Em andamento'?'b-cy':normSt(r.status)==='Agendado'?'b-yw':'b-or')},normSt(r.status))),
               ce('td',null,r.func||'\u2013'),
               ce('td',{className:'no-print'},
                 ce('button',{className:'btn-icon',title:'Visualizar',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd',marginRight:3},onClick:function(){
