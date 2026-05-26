@@ -5804,5 +5804,43 @@ if(_cv!==APP_VER){
 })();
 </script>
 <script>window.addEventListener('load',function(){if(window.twemoji){twemoji.parse(document.body,{folder:'svg',ext:'.svg',base:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'});}});</script>
+
+<script>
+(function(){
+  var STATUS_MAP = [
+    ['Não Concluído','Pendente'],
+    ['Não concluído','Pendente'],
+    ['Nao Concluido','Pendente'],
+    ['nao concluido','Pendente'],
+    ['N?o Conclu?do','Pendente'],
+    ['NAO CONCLUIDO','PENDENTE']
+  ];
+  function fixNode(node){
+    if(node.nodeType===3){
+      var t=node.textContent;
+      var orig=t;
+      for(var i=0;i<STATUS_MAP.length;i++){
+        while(t.indexOf(STATUS_MAP[i][0])>=0){
+          t=t.replace(STATUS_MAP[i][0],STATUS_MAP[i][1]);
+        }
+      }
+      if(t!==orig)node.textContent=t;
+    } else if(node.nodeType===1){
+      for(var c=node.firstChild;c;c=c.nextSibling)fixNode(c);
+    }
+  }
+  function fixAll(){fixNode(document.body);}
+  var obs=new MutationObserver(function(muts){
+    muts.forEach(function(m){
+      m.addedNodes.forEach(function(n){fixNode(n);});
+      if(m.type==='characterData')fixNode(m.target);
+    });
+  });
+  document.addEventListener('DOMContentLoaded',function(){
+    fixAll();
+    obs.observe(document.body,{childList:true,subtree:true,characterData:true});
+  });
+})();
+</script>
 </body>
 </html>
