@@ -5698,20 +5698,21 @@ function App(){
     ce('header',{className:'topbar',style:{background:'linear-gradient(90deg,#1c2e50 0%,#253d63 30%,#2a4170 60%,#1e3560 85%,#1c2e50 100%)'}},
       ce('button',{className:'topbar-ham',style:{marginRight:8},onClick:function(){setCollapsed(function(v){return !v;});setMobOpen(function(v){return !v;});}},'☰'),
       ce('span',{id:'fb-status',title:'Estado Firebase',style:{width:8,height:8,borderRadius:'50%',background:'#94a3b8',display:'inline-block',marginRight:4,flexShrink:0,transition:'background .4s'}}),
-      ce('div',{className:'topbar-left'},
-        
-        ce('span',{className:'topbar-sgss'},'SGSS'),
-      ),
       ce('div',{className:'topbar-center'},
-        /* Cabecalho padrao - igual aos relatorios */
-        ce('div',{style:{width:52,height:52,background:'#fff',border:'1.5px solid rgba(255,255,255,.3)',
+        ce('div',{style:{width:48,height:48,background:'#fff',border:'1.5px solid rgba(255,255,255,.25)',
           borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',
-          padding:4,flexShrink:0,boxShadow:'0 1px 6px rgba(0,0,0,.3)'}},
+          padding:3,flexShrink:0,boxShadow:'0 2px 8px rgba(0,0,0,.35)'}},
           ce('img',{src:_BRASAO,style:{width:'100%',height:'auto'}})
         ),
-        ce('div',{style:{display:'flex',flexDirection:'column',gap:1}},
-          ce('span',{style:{fontSize:15,fontWeight:800,color:'#e2e8f0',lineHeight:1.2,letterSpacing:.2}},'PREFEITURA MUNICIPAL DE CACEQUI – RS'),
-          ce('span',{style:{fontSize:11,fontWeight:600,color:'rgba(255,255,255,.9)',lineHeight:1.3}},'Secretaria Municipal de Transporte e Trânsito')
+        ce('div',{style:{display:'flex',flexDirection:'column',gap:2,overflow:'hidden'}},
+          ce('span',{style:{fontSize:13,fontWeight:800,color:'#fde68a',lineHeight:1.2,
+            letterSpacing:.3,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}},
+            'PREFEITURA MUNICIPAL DE CACEQUI – RS'),
+          ce('span',{style:{fontSize:10.5,fontWeight:600,color:'rgba(255,255,255,.85)',lineHeight:1.3}},
+            'Secretaria Municipal de Transporte e Trânsito'),
+          ce('span',{style:{fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,.45)',letterSpacing:.8,
+            textTransform:'uppercase',marginTop:1}},
+            'SGSS – Gestão de Solicitações de Serviços')
         )
       ),
       ce('div',{className:'topbar-right'},
