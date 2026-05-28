@@ -2112,6 +2112,37 @@ ce('div',{className:'stats-grid'},CARDS.map(function(c){return ce('div',{key:c.l
         ?ce('div',{className:'blist'},_bArr.map(function(b,i){return ce('div',{key:b.b,className:'brow'},ce('span',{className:'b-rk'},'#'+(i+1)),ce('span',{className:'b-nm'},b.b),ce('div',{className:'b-bw'},ce('div',{className:'b-br',style:{width:Math.round(b.n/_bMax*100)+'%'}})),ce('span',{className:'b-ct'},b.n));}))
         :ce('div',{style:{color:'#94a3b8',fontSize:13,padding:'8px 0'}},'Nenhum dado disponível');
     })())
+  ),
+  ce('div',{className:'card',style:{marginTop:14}},
+    ce('h3',null,'💰 Serviços Pagos por Mês'),
+    (function(){
+      var _pMap={};
+      INIT_REQS.forEach(function(r){
+        if(r.enc===1||!r.dt||r.fp!=='Pago')return;
+        var _pts=r.dt.split('-');if(_pts.length<2)return;
+        var _k=_pts[0]+'-'+_pts[1];
+        var _mn=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(_pts[1])-1]||_pts[1];
+        if(!_pMap[_k])_pMap[_k]={m:_mn+'/'+_pts[0].slice(2),n:0,val:0};
+        _pMap[_k].n++;
+        _pMap[_k].val+=parseTaxa(r.taxa);
+      });
+      var _pArr=Object.keys(_pMap).sort().reverse().slice(0,12).map(function(k){return _pMap[k];});
+      if(!_pArr.length)return ce('div',{style:{color:'#94a3b8',fontSize:13,padding:'8px 0'}},'Nenhum serviço pago registado.');
+      return ce('div',{style:{overflowX:'auto'}},
+        ce('table',{className:'tbl'},
+          ce('thead',null,ce('tr',null,
+            ce('th',null,'Mês'),
+            ce('th',{style:{textAlign:'center'}},'Qtd.'),
+            ce('th',{style:{textAlign:'right'}},'Total Arrecadado'))),
+          ce('tbody',null,_pArr.map(function(row,i){
+            return ce('tr',{key:i,style:{background:i%2===0?'#fff':'#f8fafc'}},
+              ce('td',{style:{fontWeight:600}},row.m),
+              ce('td',{style:{textAlign:'center',fontWeight:700}},row.n),
+              ce('td',{style:{textAlign:'right',fontWeight:700,color:'#16a34a'}},
+                'R$\u00a0'+row.val.toLocaleString('pt-BR',{minimumFractionDigits:2}))
+            );})))
+      );
+    })()
   )
   );
 }
