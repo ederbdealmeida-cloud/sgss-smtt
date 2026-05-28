@@ -1601,7 +1601,7 @@ function PainelFuncionario(p){
           }},'\u2b07\ufe0f Excel'),
           ce('button',{className:'btn btn-p',onClick:function(){
             /* Imprimir/PDF */
-            var b64=_BRASAO;var logo='<table style="width:100%;border-collapse:collapse;margin-bottom:14px;padding-bottom:12px;border-bottom:3px solid #1e3a5f"><tr>'+'<td style="vertical-align:middle;padding-right:10px;width:1%">'+'<div style="font-size:22px;font-weight:900;color:#1e3a5f;font-family:Arial Black,Arial,sans-serif">SGSS</div>'+'<div style="font-size:7px;color:#64748b;max-width:58px;margin-top:2px;line-height:1.3">Sistema de Gest\u00e3o de Solicita\u00e7\u00f5es de Servi\u00e7os</div>'+'</td><td style="width:2px;background:#1e3a5f;padding:0"></td>'+'<td style="text-align:center;vertical-align:middle;padding-left:10px">'+(b64?'<img src="'+b64+'" style="width:34px;height:auto;display:block;margin:0 auto 2px">':'')+'<div style="font-size:8.5px;font-weight:700;color:#1e3a5f">Prefeitura Municipal de Cacequi - RS</div>'+'<div style="font-size:7.5px;color:#64748b">Sec. Mun. de Transporte e Tr\u00e2nsito - SMTT</div>'+'</td><td style="text-align:right;vertical-align:bottom;padding-left:16px;font-size:10px;color:#64748b">'+'Emiss\u00e3o: '+new Date().toLocaleString('pt-BR')+'</td></tr></table>';            var cardsEl=document.getElementById('painel-cards');
+            var logo=buildHeader('👷 Painel do Funcionário – '+func.nome,'SMTT Cacequi – Emissão: '+new Date().toLocaleDateString('pt-BR'))            var cardsEl=document.getElementById('painel-cards');
             var tblEl=document.getElementById('painel-tbl');
             var cardsHtml=cardsEl?'<div class="cards-grid">'+cardsEl.innerHTML+'</div>':'';
             var tblHtml=tblEl?tblEl.outerHTML:'';
