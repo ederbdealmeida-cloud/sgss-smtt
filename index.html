@@ -1642,7 +1642,7 @@ function PainelFuncionario(p){
         ce('div',{style:{display:'flex',gap:4,alignItems:'center'}},
           ce('button',{className:'btn btn-s',style:{padding:'3px 10px',fontSize:11},disabled:pg===0,onClick:function(){setPg(function(v){return Math.max(0,v-1);});}},'\u2190 Anterior'),
           ce('span',{style:{padding:'0 8px',fontWeight:600}},(pg+1)+' / '+Math.max(1,Math.ceil(reqs.length/5))),
-          ce('button',{className:'btn btn-s',style:{padding:'3px 10px',fontSize:11},disabled:(pg+1)*5>=reqs.length,onClick:function(){setPg(function(v){return v+1;});}},\u2019Próximo \u2192')
+          ce('button',{className:'btn btn-s',style:{padding:'3px 10px',fontSize:11},disabled:(pg+1)*5>=reqs.length,onClick:function(){setPg(function(v){return v+1;});}},'\u2192 Próximo')
         )
       )
     )))
