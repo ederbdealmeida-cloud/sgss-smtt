@@ -2124,7 +2124,7 @@ function Solicitantes(){
   var sf=useState(null);var form=sf[0];var setForm=sf[1];
   var sids=useState([]);var selIds=sids[0];var setSelIds=sids[1];
   var EMPTY={nome:'',rua:'',numero:'',bairro:'',telefone:'',email:'',ref:''};
-  var t=useToast();var toast=t[0];var notify=t[1];
+  var t=useToast();var toast=t[0];var notify=t[1];window._notify=notify;
   var sEditId=useState(null);var editId=sEditId[0];var setEditId=sEditId[1];
   var sEditD=useState({});var editD=sEditD[0];var setEditD=sEditD[1];
   var filtered=all.filter(function(s){if(!srch)return true;var q=srch.toLowerCase();return s.nome.toLowerCase().indexOf(q)>=0||s.bairro.toLowerCase().indexOf(q)>=0;});
@@ -4303,9 +4303,9 @@ function MapaSolicitacoes(){
                   window._sgssMap.setZoom(16);
                   window.google.maps.event.trigger(mk,'click');
                 } else if(!r.rua){
-                  notify('📍 Sem logradouro cadastrado nesta solicitação.');
+                  (window._notify||alert)('📍 Sem logradouro cadastrado nesta solicitação.');
                 } else {
-                  notify('🔄 Aguarde... calculando posição no mapa.');
+                  (window._notify||alert)('🔄 Aguarde... posicionando no mapa...');setTimeout(function(){if(window._sgssMarkers&&window._sgssMarkers[r.id]){window._sgssMap.panTo(window._sgssMarkers[r.id].getPosition());window._sgssMap.setZoom(16);window.google.maps.event.trigger(window._sgssMarkers[r.id],'click');}},3000);;
                 }
               }},
               ce('div',{style:{fontWeight:700,color:c,marginBottom:1}},'#'+r.prot),
