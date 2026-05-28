@@ -4192,38 +4192,49 @@ function MapaSolicitacoes(){
         if((normSt(r.status)||'')==='Concluído')return '#16a34a';
         return '#2563eb';
       }
-      filtered.slice(0,30).forEach(function(r,i){
-        if(!r.rua)return;
+      /* Funcao para criar marcador com coordenadas */
+      function addMarker(r,lat,lng){
+        var c=markerColor(r);
+        var mk=new window.google.maps.Marker({
+          position:{lat:lat,lng:lng},map:map,
+          icon:{path:window.google.maps.SymbolPath.CIRCLE,scale:7,
+            fillColor:c,fillOpacity:1,strokeColor:'#fff',strokeWeight:2},
+          title:'#'+r.prot
+        });
+        window._sgssMarkers[r.id]=mk;
+        var svUrl='https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='+lat+','+lng+'&heading=34&pitch=0&fov=80';
+        mk.addListener('click',function(){
+          infoWin.setContent('<div style="font-size:13px;min-width:180px">'+
+            '<b>#'+r.prot+'</b><br/>'+(r.nom||'')+'<br/>'+
+            (r.rua||'')+(r.num?' nú'+r.num:'')+(r.bairro?', '+r.bairro:'')+'<br/>'+
+            '<span style="color:'+c+';font-weight:700">'+(normSt(r.status)||'')+'</span>'+
+            (r.urg==='Sim'?' 🚨':'')+
+            '<br/><a href="'+svUrl+'" target="_blank" style="color:#2563eb;font-size:11px">🚖 Ver Street View</a>'+
+            '</div>');
+          infoWin.open(map,mk);
+        });
+      }
+      /* Usa cache de lat/lng; so geocodifica novos registos */
+      var needGeo=[];
+      filtered.forEach(function(r){
+        if(!r.rua&&!(r.lat&&r.lng))return;
+        if(r.lat&&r.lng){addMarker(r,parseFloat(r.lat),parseFloat(r.lng));}
+        else{needGeo.push(r);}
+      });
+      needGeo.slice(0,30).forEach(function(r,i){
         var addr=(r.rua||'')+(r.num?' '+r.num:'')+', Cacequi, RS, Brasil';
         setTimeout(function(){
           geo.geocode({address:addr},function(res,status){
             if(status==='OK'&&res[0]){
-              var c=markerColor(r);
-              var mk=new window.google.maps.Marker({
-                position:res[0].geometry.location,map:map,
-                icon:{path:window.google.maps.SymbolPath.CIRCLE,scale:7,
-                  fillColor:c,fillOpacity:1,strokeColor:'#fff',strokeWeight:2},
-                title:'#'+r.prot
-              });
-              window._sgssMarkers[r.id]=mk;
               var lat=res[0].geometry.location.lat();
               var lng=res[0].geometry.location.lng();
-              var svUrl='https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='+lat+','+lng+'&heading=34&pitch=0&fov=80';
-              mk.addListener('click',function(){
-                infoWin.setContent(
-                  '<div style="font-size:13px;min-width:180px">'+
-                  '<b>#'+r.prot+'</b><br/>'+(r.nom||'')+'<br/>'+
-                  (r.rua||'')+(r.num?' nº'+r.num:'')+(r.bairro?', '+r.bairro:'')+'<br/>'+
-                  '<span style="color:'+c+';font-weight:700">'+(normSt(r.status)||'')+'</span>'+
-                  (r.urg==='Sim'?' 🚨':'')+
-                  '<br/><a href="'+svUrl+'" target="_blank" style="color:#2563eb;font-size:11px">🚖 Ver Street View</a>'+
-                  '</div>');
-                infoWin.open(map,mk);
-              });
+              addMarker(r,lat,lng);
+              var rec=INIT_REQS.filter(function(x){return x.id===r.id;})[0];
+              if(rec){rec.lat=lat;rec.lng=lng;setTimeout(sgssSave,1000);}
             }
           });
-        },i*300);
-      });
+        },i*350);
+      }););
     }
     if(window.google&&window.google.maps){initGMap();}
     else{
