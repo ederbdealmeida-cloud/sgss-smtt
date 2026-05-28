@@ -2012,6 +2012,27 @@ function imprimirDash(titulo,corpo,landscape){
       )
       :'');
 
+    +(function(){
+      var _pMap2={};
+      INIT_REQS.forEach(function(r){
+        if(r.enc===1||!r.dt||r.fp!=='Pago')return;
+        var _pts2=r.dt.split('-');if(_pts2.length<2)return;
+        var _k2=_pts2[0]+'-'+_pts2[1];
+        var _mn2=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(_pts2[1])-1]||_pts2[1];
+        if(!_pMap2[_k2])_pMap2[_k2]={m:_mn2+'/'+_pts2[0].slice(2),n:0,val:0};
+        _pMap2[_k2].n++;
+        _pMap2[_k2].val+=parseFloat(String(r.taxa||0).replace(',','.'))||0;
+      });
+      var _pArr2=Object.keys(_pMap2).sort().reverse().slice(0,12).map(function(k){return _pMap2[k];});
+      if(!_pArr2.length)return '';
+      return sec('💰','Serviços Pagos por Mês',C.green,
+        tbl('<tr>'+th('Mês')+th('Qtd.','center')+th('Total Arrecadado','right')+'</tr>',
+          _pArr2.map(function(row){
+            return ztr(td(row.m)+td(row.n,'center','700')
+              +td('R$&nbsp;'+row.val.toLocaleString('pt-BR',{minimumFractionDigits:2}),'right','700','#166534'));
+          }).join('')));
+    })()
+
     imprimirDash('Visão Geral – '+fmtD(_hj),html,false);
   }
 
