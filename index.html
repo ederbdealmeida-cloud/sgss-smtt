@@ -1536,6 +1536,38 @@ function Login(p){
   );
 }
 
+function emojiToTw(s){
+  /* Converte emoji em img Twemoji SVG para renderizar em qualquer browser */
+  var BASE='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/';
+  var IMG='<img src="'+BASE+'{CP}.svg" style="height:1em;width:1em;vertical-align:-.1em;" alt="{E}">';
+  /* Map dos emoji usados no app */
+  var M={
+    '\ud83d\udcbb':'1f4bb','\ud83d\udccb':'1f4cb','\ud83d\udcc8':'1f4c8','\ud83d\udcc5':'1f4c5',
+    '\ud83d\udcb0':'1f4b0','\ud83d\udcdd':'1f4dd','\ud83d\udce3':'1f4e3','\ud83d\udcb5':'1f4b5',
+    '\ud83d\udc65':'1f465','\ud83d\udc64':'1f464','\ud83d\ude28':'1f628',
+    '\ud83d\udea8':'1f6a8','\ud83d\udea7':'1f6a7','\ud83d\udccd':'1f4cd',
+    '\ud83d\udd0d':'1f50d','\ud83d\udd14':'1f514','\ud83d\udd34':'1f534',
+    '\ud83d\udc51':'1f451','\ud83d\udde3':'1f5e3','\ud83d\uddf3':'1f5f3',
+    '\ud83c\udfaf':'1f3af','\ud83c\udfc6':'1f3c6','\ud83c\udf89':'1f389',
+    '\ud83c\udf69':'1f369','\ud83c\udfd7':'1f3d7','\ud83d\uddfa':'1f5fa',
+    '\ud83e\udd47':'1f947','\ud83e\udd48':'1f948','\ud83e\udd49':'1f949',
+    '\ud83d\udce2':'1f4e2','\ud83d\udcf0':'1f4f0','\ud83d\udcc3':'1f4c3',
+    '\ud83d\udcca':'1f4ca','\ud83d\udcc4':'1f4c4','\ud83d\udc4d':'1f44d',
+    '\ud83d\udc77':'1f477','\ud83d\ude97':'1f697','\ud83d\udee0':'1f6e0',
+    '\ud83d\udcaf':'1f4af','\ud83d\udd12':'1f512','\ud83d\udd13':'1f513',
+    '\u2705':'2705','\u274c':'274c','\u26a0':'26a0','\u2714':'2714',
+    '\u23f3':'23f3','\u23f1':'23f1','\u23f0':'23f0','\u231b':'231b',
+    '\u2b07':'2b07','\u2b06':'2b06','\u27a1':'27a1','\u2139':'2139',
+    '\u2795':'2795','\u270f':'270f','\u270d':'270d','\u2728':'2728',
+    '\ud83c\udfe0':'1f3e0','\ud83c\udfe2':'1f3e2','\ud83c\udfe5':'1f3e5'
+  };
+  return s.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\u2B00-\u2BFF]/g,function(e){
+    var fe=e.replace(/\uFE0F/g,''); /* remove variation selector */
+    var cp=M[fe]||M[e];
+    if(!cp)return e;
+    return IMG.replace('{CP}',cp).replace('{E}',e);
+  });
+}
 function PainelFuncionario(p){
   var func=FUNC_LIST.find(function(f){return f.id===p.funcId;});
   if(!func)return ce('p',{style:{color:'#dc2626'}},'Funcion\u00e1rio n\u00e3o encontrado.');
@@ -1704,38 +1736,7 @@ function Dashboard(){
   ];
 
   var maxB=Math.max.apply(null,BARS.map(function(b){return b.v;}));
-  function emojiToTw(s){
-  /* Converte emoji em img Twemoji SVG para renderizar em qualquer browser */
-  var BASE='https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/';
-  var IMG='<img src="'+BASE+'{CP}.svg" style="height:1em;width:1em;vertical-align:-.1em;" alt="{E}">';
-  /* Map dos emoji usados no app */
-  var M={
-    '\ud83d\udcbb':'1f4bb','\ud83d\udccb':'1f4cb','\ud83d\udcc8':'1f4c8','\ud83d\udcc5':'1f4c5',
-    '\ud83d\udcb0':'1f4b0','\ud83d\udcdd':'1f4dd','\ud83d\udce3':'1f4e3','\ud83d\udcb5':'1f4b5',
-    '\ud83d\udc65':'1f465','\ud83d\udc64':'1f464','\ud83d\ude28':'1f628',
-    '\ud83d\udea8':'1f6a8','\ud83d\udea7':'1f6a7','\ud83d\udccd':'1f4cd',
-    '\ud83d\udd0d':'1f50d','\ud83d\udd14':'1f514','\ud83d\udd34':'1f534',
-    '\ud83d\udc51':'1f451','\ud83d\udde3':'1f5e3','\ud83d\uddf3':'1f5f3',
-    '\ud83c\udfaf':'1f3af','\ud83c\udfc6':'1f3c6','\ud83c\udf89':'1f389',
-    '\ud83c\udf69':'1f369','\ud83c\udfd7':'1f3d7','\ud83d\uddfa':'1f5fa',
-    '\ud83e\udd47':'1f947','\ud83e\udd48':'1f948','\ud83e\udd49':'1f949',
-    '\ud83d\udce2':'1f4e2','\ud83d\udcf0':'1f4f0','\ud83d\udcc3':'1f4c3',
-    '\ud83d\udcca':'1f4ca','\ud83d\udcc4':'1f4c4','\ud83d\udc4d':'1f44d',
-    '\ud83d\udc77':'1f477','\ud83d\ude97':'1f697','\ud83d\udee0':'1f6e0',
-    '\ud83d\udcaf':'1f4af','\ud83d\udd12':'1f512','\ud83d\udd13':'1f513',
-    '\u2705':'2705','\u274c':'274c','\u26a0':'26a0','\u2714':'2714',
-    '\u23f3':'23f3','\u23f1':'23f1','\u23f0':'23f0','\u231b':'231b',
-    '\u2b07':'2b07','\u2b06':'2b06','\u27a1':'27a1','\u2139':'2139',
-    '\u2795':'2795','\u270f':'270f','\u270d':'270d','\u2728':'2728',
-    '\ud83c\udfe0':'1f3e0','\ud83c\udfe2':'1f3e2','\ud83c\udfe5':'1f3e5'
-  };
-  return s.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\u2B00-\u2BFF]/g,function(e){
-    var fe=e.replace(/\uFE0F/g,''); /* remove variation selector */
-    var cp=M[fe]||M[e];
-    if(!cp)return e;
-    return IMG.replace('{CP}',cp).replace('{E}',e);
-  });
-}
+  
 function imprimirDash(titulo,corpo,landscape){
     var w=window.open('','_blank',landscape?'width=1100,height=700,scrollbars=yes':'width=820,height=650,scrollbars=yes');
     if(!w){alert('Permita pop-ups para imprimir.');return;}
