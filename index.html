@@ -1601,7 +1601,7 @@ function PainelFuncionario(p){
           }},'\u2b07\ufe0f Excel'),
           ce('button',{className:'btn btn-p',onClick:function(){
             /* Imprimir/PDF */
-            var logo=buildHeader('👷 Painel do Funcionário – '+func.nome,'SMTT Cacequi – Emissão: '+new Date().toLocaleDateString('pt-BR'))            var cardsEl=document.getElementById('painel-cards');
+            var logo=buildHeader('👷 Painel do Funcionário – '+func.nome,'SMTT Cacequi – Emissão: '+new Date().toLocaleDateString('pt-BR'));            var cardsEl=document.getElementById('painel-cards');
             var tblEl=document.getElementById('painel-tbl');
             var cardsHtml=cardsEl?'<div class="cards-grid">'+cardsEl.innerHTML+'</div>':'';
             var tblHtml=tblEl?tblEl.outerHTML:'';
