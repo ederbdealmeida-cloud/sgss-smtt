@@ -1570,6 +1570,7 @@ function emojiToTw(s){
 }
 function PainelFuncionario(p){
   var func=FUNC_LIST.find(function(f){return f.id===p.funcId;});
+  var sPg=useState(0);var pg=sPg[0];var setPg=sPg[1];
   if(!func)return ce('p',{style:{color:'#dc2626'}},'Funcion\u00e1rio n\u00e3o encontrado.');
   var reqs=INIT_REQS.filter(function(r){return r.func===func.nome;});
   var concl=reqs.filter(function(r){return r.status==='Conclu\u00eddo';});
