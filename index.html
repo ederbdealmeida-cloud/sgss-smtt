@@ -2010,8 +2010,7 @@ function imprimirDash(titulo,corpo,landscape){
             return ztr(td(r.prot,'','700',C.accent)+td(r.nom)+td(r.cn||'-')+td(r.bairro||'-')+'<td style="padding:6px 10px;text-align:center">'+badge(r.dias+'d',cor==='#f59e0b'?'#fef9c3':cor===C.orange?'#fff7ed':'#fef2f2',cor)+'</td>');
           }).join(''))
       )
-      :'');
-
+      :'')
     +(function(){
       var _pMap2={};
       INIT_REQS.forEach(function(r){
@@ -2031,7 +2030,7 @@ function imprimirDash(titulo,corpo,landscape){
             return ztr(td(row.m)+td(row.n,'center','700')
               +td('R$&nbsp;'+row.val.toLocaleString('pt-BR',{minimumFractionDigits:2}),'right','700','#166534'));
           }).join('')));
-    })()
+    })();
 
     imprimirDash('Visão Geral – '+fmtD(_hj),html,false);
   }
