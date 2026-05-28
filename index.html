@@ -4291,6 +4291,10 @@ function MapaSolicitacoes(){
                   window._sgssMap.panTo(mk.getPosition());
                   window._sgssMap.setZoom(16);
                   window.google.maps.event.trigger(mk,'click');
+                } else if(!r.rua){
+                  notify('📍 Sem logradouro cadastrado nesta solicitação.');
+                } else {
+                  notify('🔄 Aguarde... calculando posição no mapa.');
                 }
               }},
               ce('div',{style:{fontWeight:700,color:c,marginBottom:1}},'#'+r.prot),
