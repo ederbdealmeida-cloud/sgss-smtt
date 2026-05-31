@@ -4250,7 +4250,7 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
                           +'</td></tr>';
                       }).join('')
                       +'</tbody></table></div>':'')
-                  +(_nR>3?'<div class="no-print" style="margin-top:8px;text-align:right">'
+                  +(_nR>3?'<div class="screen-only" style="margin-top:8px;text-align:right">'
                     +'<button data-fname="'+_safeNome+'" onclick="showAll(this.dataset.fname)" '
                       +'style="background:#2563eb;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:10px;font-weight:700;cursor:pointer">🔍 Mostrar todos ('+_nR+')</button>'
                   +'</div>':'')
@@ -4297,7 +4297,7 @@ var rows=[];
                     +'<th>Protocolo</th><th>Data</th><th>Servi&ccedil;o</th>'
                     +'<th>Solicitante</th><th>Endere&ccedil;o</th><th>Status</th>'
                   +'</tr></thead><tbody id="modal-tbody"></tbody></table></div>'
-                  +'<div class="no-print" style="padding:10px 16px;border-top:1px solid #e2e8f0;text-align:right">'
+                  +'<div class="screen-only" style="padding:10px 16px;border-top:1px solid #e2e8f0;text-align:right">'
                     +'<button class="close-btn" onclick="document.getElementById(\x27modal-all\x27).classList.remove(\x27open\x27)">\u274c Fechar</button>'
                   +'</div></div></div>'
               +'<div class="doc-paper">'
