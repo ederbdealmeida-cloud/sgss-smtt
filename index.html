@@ -4321,8 +4321,17 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
           a.href=url;a.download='funcionarios-smtt.csv';a.click();
           setTimeout(function(){URL.revokeObjectURL(url);},1000);
         }},'\u2b07\ufe0f Excel'),
-        ce('button',{className:'btn btn-s',onClick:imprimirLote},
-          '\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+' sel.)':'')),
+        ce('button',{className:'btn btn-s',onClick:function(){
+          var _av=selIds.length>0?filtered.filter(function(fn){return selIds.includes(fn.id);}):filtered;
+          if(!_av.length){notify('Nenhum funcionário para imprimir.');return;}
+          var _init={};
+          _av.forEach(function(fn){_init[fn.id]=true;});
+          setPrintFrom('1');
+          setPrintTo(String(Math.ceil(_av.length/10)));
+          setPrintCards(_init);
+          setShowPrint(true);
+        }},
+        '\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+' sel.)':'')),
         ce('button',{className:'btn btn-p',onClick:function(){setForm(Object.assign({},EMPTY));}},'+ Novo Funcion\u00e1rio')
       )
     ),
