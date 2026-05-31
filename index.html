@@ -4065,6 +4065,17 @@ var DELETED_REQS=[];
 
 
 
+ce('button',{className:'btn btn-s',onClick:function(){
+          var _av=selIds.length>0?filtered.filter(function(fn){return selIds.includes(fn.id);}):filtered;
+          if(!_av.length){notify('Nenhum funcionário para imprimir.');return;}
+          var _init={};
+          _av.forEach(function(fn){_init[fn.id]=true;});
+          setPrintFrom('1');
+          setPrintTo(String(Math.ceil(_av.length/10)));
+          setPrintCards(_init);
+          setShowPrint(true);
+        }},
+        '\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+' sel.)':'')),
 function Funcionarios(){
   var _initFuncs=(function(){
   var _si={};var _sn={};
