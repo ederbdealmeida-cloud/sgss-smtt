@@ -4250,10 +4250,10 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
                           +'</td></tr>';
                       }).join('')
                       +'</tbody></table></div>':'')
-                  +'<div class="no-print" style="margin-top:8px;text-align:right">'
+                  +(_nR>3?'<div class="no-print" style="margin-top:8px;text-align:right">'
                     +'<button data-fname="'+_safeNome+'" onclick="showAll(this.dataset.fname)" '
                       +'style="background:#2563eb;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:10px;font-weight:700;cursor:pointer">🔍 Mostrar todos ('+_nR+')</button>'
-                  +'</div>'
+                  +'</div>':'')
                 +'</div>'
               +'</div>';
             };
