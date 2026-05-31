@@ -2257,7 +2257,7 @@ function Solicitantes(){
             for(var _i=0;_i<sel.length;_i+=2){
               rows.push('<tr>'
                 +'<td style="width:50%;padding:5px;vertical-align:top">'
-              (function(s,i){
+              +(function(s,i){
                 var _sReqs=INIT_REQS.filter(function(r){return r.nom===s.nome&&r.enc!==1;});
                 var _last3=_sReqs.slice(0,3);
                 var _nR=_sReqs.length;
@@ -2313,7 +2313,7 @@ function Solicitantes(){
               })(sel[_i],_i)
                 +'</td>'
                 +(sel[_i+1]?'<td style="width:50%;padding:5px;vertical-align:top">'
-              (function(s,i){
+              +(function(s,i){
                 var _sReqs=INIT_REQS.filter(function(r){return r.nom===s.nome&&r.enc!==1;});
                 var _last3=_sReqs.slice(0,3);
                 var _nR=_sReqs.length;
