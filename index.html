@@ -4206,12 +4206,11 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
               var _fReqs=INIT_REQS.filter(function(r){return r.func===fn.nome&&r.enc!==1;});
               var _last3=_fReqs.slice(0,3);
               var _nR=_fReqs.length;
-              var _fid='fn'+fn.id;
+              var _safeNome=fn.nome.replace(/"/g,'&quot;');
               return '<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;border:1.5px solid #cbd5e1;border-radius:10px;overflow:hidden;background:#fff;break-inside:avoid;page-break-inside:avoid">'
                 +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;display:flex;align-items:center;gap:8px;padding:7px 11px;border-bottom:2px solid #1e3a5f;background:#fff">'
                   +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;width:34px;height:34px;background:#fff;border:1.5px solid #cbd5e1;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:3px;box-shadow:0 1px 3px rgba(0,0,0,.08);flex-shrink:0"><img src="'+_BRASAO+'" style="width:100%;height:auto"></div>'
-                  +'<div>'
-                    +'<div style="font-size:7.5px;font-weight:800;color:#1e3a5f;text-transform:uppercase">Prefeitura Municipal de Cacequi &ndash; RS</div>'
+                  +'<div><div style="font-size:7.5px;font-weight:800;color:#1e3a5f;text-transform:uppercase">Prefeitura Municipal de Cacequi &ndash; RS</div>'
                     +'<div style="font-size:7px;color:#475569">Sec. Mun. de Transporte e Tr&acirc;nsito</div>'
                     +'<div style="font-size:9px;font-weight:700;color:#1e293b;margin-top:1px">&#128100; Funcionários</div>'
                   +'</div></div>'
@@ -4227,31 +4226,34 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
                       +'<span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:2px 8px;border-radius:999px;font-size:9px;font-weight:700;'
                         +(fn.ativo?'background:#dcfce7;color:#166534':'background:#fee2e2;color:#991b1b')+'">'
                         +(fn.ativo?'Ativo':'Inativo')+'</span></td></tr>'
-                    +'<tr><td style="color:#64748b;font-weight:600;padding:2px 6px 2px 0">Serviços</td><td><b style="color:#1e3a5f;font-size:12px">'+_nR+'</b></td></tr>'
+                    +'<tr><td style="color:#64748b;font-weight:600;padding:2px 6px 2px 0">Serviços</td>'
+                      +'<td><b style="color:#1e3a5f;font-size:12px">'+_nR+'</b></td></tr>'
                   +'</table>'
-                  +(_last3.length?'──────────────────────────────':'<div style="font-size:10px;color:#94a3b8;padding:4px 0">Nenhum serviço registado.</div>')
-                  +(_last3.length?'<div style="margin-top:6px">'
+                  +(_last3.length?'<div style="margin-top:8px;border-top:1px solid #e2e8f0;padding-top:6px">'
                     +'<div style="font-size:9.5px;font-weight:700;color:#1e3a5f;margin-bottom:4px">📋 Últimos serviços</div>'
-                    +'<table style="width:100%;border-collapse:collapse;font-size:9.5px">'
+                    +'<table style="width:100%;border-collapse:collapse;font-size:9px">'
                       +'<thead><tr>'
-                        +'<th style="background:#f1f5f9;color:#475569;padding:3px 5px;text-align:left;font-size:8.5px">Serviço</th>'
-                        +'<th style="background:#f1f5f9;color:#475569;padding:3px 5px;text-align:left;font-size:8.5px">Solicitante</th>'
-                        +'<th style="background:#f1f5f9;color:#475569;padding:3px 5px;text-align:left;font-size:8.5px">Endereço</th>'
-                        +'<th style="background:#f1f5f9;color:#475569;padding:3px 5px;font-size:8.5px">Status</th>'
-                      +'</tr></thead>'
-                      +'<tbody>'+_last3.map(function(r){
-                        var st=r.status==='Concluído'?'background:#dcfce7;color:#166534':r.status==='Em andamento'?'background:#e0f2fe;color:#0369a1':r.status==='Agendado'?'background:#fef9c3;color:#854d0e':'background:#fef9c3;color:#854d0e';
+                        +'<th style="background:#f1f5f9;color:#475569;padding:3px 5px;text-align:left">Serviço</th>'
+                        +'<th style="background:#f1f5f9;color:#475569;padding:3px 5px;text-align:left">Solicitante</th>'
+                        +'<th style="background:#f1f5f9;color:#475569;padding:3px 5px;text-align:left">Endereço</th>'
+                        +'<th style="background:#f1f5f9;color:#475569;padding:3px 5px;text-align:center">Status</th>'
+                      +'</tr></thead><tbody>'
+                      +_last3.map(function(r){
+                        var _st=r.status==='Concluído'?'background:#dcfce7;color:#166534':r.status==='Em andamento'?'background:#e0f2fe;color:#0369a1':'background:#fef9c3;color:#854d0e';
+                        var _addr=((r.rua?(r.rua+(r.num?' nº '+r.num:'')):r.bairro||'—').slice(0,16));
                         return '<tr>'
-                          +'<td style="padding:3px 5px;border-bottom:1px solid #f1f5f9">'+((r.cn||'').slice(0,18)+(r.cn&&r.cn.length>18?'&hellip;':''))+'</td>'
-                          +'<td style="padding:3px 5px;border-bottom:1px solid #f1f5f9">'+((r.nom||'').split(' ')[0])+'</td>'
-                          +'<td style="padding:3px 5px;border-bottom:1px solid #f1f5f9">'+((r.rua||r.bairro||'—').slice(0,14))+'</td>'
-                          +'<td style="padding:3px 5px;border-bottom:1px solid #f1f5f9;text-align:center"><span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;'+st+';padding:1px 5px;border-radius:999px;font-size:7.5px;font-weight:700">'+(r.status||'')+'</span></td>'
-                        +'</tr>';
-                      }).join('')+'</tbody></table>'
-                    +'</div>':'')  
-                  +(_nR>0?'<div class="no-print" style="margin-top:8px;text-align:right">'
-                    +'<button onclick="showAll(\'' +_fid+ '\',\'' +fn.nome.replace(/'/g,'')+ '\')" style="background:#2563eb;color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:10px;font-weight:700;cursor:pointer">🔍 Mostrar todas ('+_nR+')</button>'
-                  +'</div>':'')
+                          +'<td style="padding:3px 5px;border-bottom:1px solid #f1f5f9">'+(r.cn||'').slice(0,20)+'</td>'
+                          +'<td style="padding:3px 5px;border-bottom:1px solid #f1f5f9">'+(r.nom||'').split(' ')[0]+'</td>'
+                          +'<td style="padding:3px 5px;border-bottom:1px solid #f1f5f9">'+_addr+'</td>'
+                          +'<td style="padding:3px 5px;border-bottom:1px solid #f1f5f9;text-align:center">'
+                            +'<span style="-webkit-print-color-adjust:exact;print-color-adjust:exact;'+_st+';padding:1px 5px;border-radius:999px;font-size:7px;font-weight:700">'+(r.status||'')+'</span>'
+                          +'</td></tr>';
+                      }).join('')
+                      +'</tbody></table></div>':'')
+                  +'<div class="no-print" style="margin-top:8px;text-align:right">'
+                    +'<button data-fname="'+_safeNome+'" onclick="showAll(this.dataset.fname)" '
+                      +'style="background:#2563eb;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:10px;font-weight:700;cursor:pointer">🔍 Mostrar todas ('+_nR+')</button>'
+                  +'</div>'
                 +'</div>'
               +'</div>';
             };
@@ -4269,7 +4271,7 @@ var rows=[];
             var _reqsData={};
             sel.forEach(function(fn){
               _reqsData[fn.nome]=INIT_REQS.filter(function(r){return r.func===fn.nome&&r.enc!==1;}).map(function(r){
-                return {prot:r.prot||'',cn:(r.cn||'').slice(0,30),nom:r.nom||'',rua:r.rua||'',bairro:r.bairro||'',status:r.status||'',dt:r.dt||''};
+                return {prot:r.prot||'',cn:(r.cn||'').slice(0,30),nom:r.nom||'',rua:r.rua||'',num:r.num||'',bairro:r.bairro||'',status:r.status||'',dt:r.dt||''};
               });
             });
             var _rdJSON=JSON.stringify(_reqsData);
