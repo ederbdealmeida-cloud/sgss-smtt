@@ -4065,17 +4065,6 @@ var DELETED_REQS=[];
 
 
 
-ce('button',{className:'btn btn-s',onClick:function(){
-          var _av=selIds.length>0?filtered.filter(function(fn){return selIds.includes(fn.id);}):filtered;
-          if(!_av.length){notify('Nenhum funcionário para imprimir.');return;}
-          var _init={};
-          _av.forEach(function(fn){_init[fn.id]=true;});
-          setPrintFrom('1');
-          setPrintTo(String(Math.ceil(_av.length/10)));
-          setPrintCards(_init);
-          setShowPrint(true);
-        }},
-        '\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+' sel.)':'')),
 function Funcionarios(){
   var _initFuncs=(function(){
   var _si={};var _sn={};
@@ -4102,6 +4091,17 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
   var EMPTY={nome:'',cargo:'',matricula:'',tel:'',ativo:1};
   function toggleSel(id){setSelIds(function(prev){return prev.includes(id)?prev.filter(function(x){return x!==id;}):prev.concat([id]);});}
   function toggleAll(){setSelIds(function(prev){return prev.length===filtered.length?[]:filtered.map(function(f){return f.id;});});}
+  function imprimirLote(){
+    var alvo=selIds.length>0?filtered.filter(function(fn){return selIds.includes(fn.id);}):filtered;
+    if(!alvo.length){notify('Nenhum funcionário para imprimir.');return;}
+    var init={};
+    alvo.forEach(function(fn){init[fn.id]=true;});
+    setPrintFrom('1');
+    setPrintTo(String(Math.ceil(alvo.length/10)));
+    setPrintCards(init);
+    setShowPrint(true);
+  }
+
   var filtered=funcs.filter(function(f){
     var q=srch.toLowerCase();
     var ms=!srch||f.nome.toLowerCase().indexOf(q)>=0||(f.cargo||'').toLowerCase().indexOf(q)>=0;
@@ -4321,17 +4321,8 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
           a.href=url;a.download='funcionarios-smtt.csv';a.click();
           setTimeout(function(){URL.revokeObjectURL(url);},1000);
         }},'\u2b07\ufe0f Excel'),
-        ce('button',{className:'btn btn-s',onClick:function(){
-          var _av=selIds.length>0?filtered.filter(function(fn){return selIds.includes(fn.id);}):filtered;
-          if(!_av.length){notify('Nenhum funcionário para imprimir.');return;}
-          var _init={};
-          _av.forEach(function(fn){_init[fn.id]=true;});
-          setPrintFrom('1');
-          setPrintTo(String(Math.ceil(_av.length/10)));
-          setPrintCards(_init);
-          setShowPrint(true);
-        }},
-        '\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+' sel.)':'')),
+        ce('button',{className:'btn btn-s',onClick:imprimirLote},
+          '\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+' sel.)':'')),
         ce('button',{className:'btn btn-p',onClick:function(){setForm(Object.assign({},EMPTY));}},'+ Novo Funcion\u00e1rio')
       )
     ),
