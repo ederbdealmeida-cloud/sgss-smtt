@@ -2234,32 +2234,33 @@ function Solicitantes(){
           var alvo=selItems.length>0?selItems:filtered;
           if(!alvo.length){notify('Nenhum solicitante para imprimir.');return;}
           var cards=alvo.map(function(s,i){
-            return '<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;'
-              +'border:1.5px solid #cbd5e1;border-radius:10px;overflow:hidden;'
-              +'background:#fff;break-inside:avoid;page-break-inside:avoid">'
-              +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;'
-                +'display:flex;align-items:center;gap:8px;padding:7px 11px;'
-                +'border-bottom:2px solid #1e3a5f;background:#fff">'
-                +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;'
-                  +'width:34px;height:34px;background:#fff;border:1.5px solid #cbd5e1;'
-                  +'border-radius:7px;display:flex;align-items:center;justify-content:center;'
-                  +'padding:3px;box-shadow:0 1px 3px rgba(0,0,0,.08);flex-shrink:0">'
-                  +'<img src="'+_BRASAO+'" style="width:100%;height:auto"></div>'
+            var nReqs=INIT_REQS.filter(function(r){return r.nom===s.nome&&r.enc!==1;}).length;
+            return '<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;border:1.5px solid #cbd5e1;border-radius:10px;overflow:hidden;background:#fff;break-inside:avoid;page-break-inside:avoid">'
+              +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;display:flex;align-items:center;gap:8px;padding:7px 11px;border-bottom:2px solid #1e3a5f;background:#fff">'
+                +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;width:34px;height:34px;background:#fff;border:1.5px solid #cbd5e1;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:3px;box-shadow:0 1px 3px rgba(0,0,0,.08);flex-shrink:0"><img src="'+_BRASAO+'" style="width:100%;height:auto"></div>'
                 +'<div>'
                   +'<div style="font-size:7.5px;font-weight:800;color:#1e3a5f;text-transform:uppercase">Prefeitura Municipal de Cacequi &ndash; RS</div>'
                   +'<div style="font-size:7px;color:#475569">Sec. Mun. de Transporte e Tr&acirc;nsito</div>'
-                  +'<div style="font-size:9px;font-weight:700;color:#1e293b;margin-top:1px">&#128101; Solicitantes</div>'
+                  +'<div style="font-size:9px;font-weight:700;color:#1e293b;margin-top:1px">&#128101; Cadastro de Solicitantes</div>'
                 +'</div></div>'
-              +'<div style="padding:9px 11px">'
-                +'<div style="font-weight:700;font-size:11.5px;color:#1e3a5f;margin-bottom:4px">'+(i+1)+'. '+s.nome+'</div>'
-                +'<div style="font-size:10.5px;color:#475569;margin-bottom:2px">'
-                  +'\ud83d\udccd '+(s.rua?s.rua+(s.numero?', '+s.numero:''):'\u2014')+' \u2014 '+s.bairro
-                +'</div>'
-                +(s.telefone?'<div style="font-size:10.5px;color:#475569;margin-bottom:2px">\ud83d\udcde '+s.telefone+'</div>':'')
-                +(s.email?'<div style="font-size:10.5px;color:#475569">\u2709\ufe0f '+s.email+'</div>':'')
+              +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#1e3a5f;color:#fff;padding:6px 11px;display:flex;justify-content:space-between;align-items:center">'
+                +'<b style="font-size:11px;letter-spacing:.3px">'+(i+1)+'. '+s.nome+'</b>'
+                +'<span style="font-size:9px;opacity:.8">ID: '+s.id+'</span>'
+              +'</div>'
+              +'<div style="padding:8px 11px">'
+                +'<table style="width:100%;border-collapse:collapse;font-size:10px">'
+                  +'<tr><td style="color:#64748b;font-weight:600;width:80px;padding:2px 6px 2px 0">Endere&ccedil;o</td>'
+                    +'<td>'+(s.rua?s.rua+(s.numero?' nº '+s.numero:''):'—')+'</td></tr>'
+                  +'<tr><td style="color:#64748b;font-weight:600;padding:2px 6px 2px 0">Bairro</td>'
+                    +'<td>'+(s.bairro||'—')+'</td></tr>'
+                  +(s.telefone?'<tr><td style="color:#64748b;font-weight:600;padding:2px 6px 2px 0">Telefone</td><td>'+s.telefone+'</td></tr>':'')
+                  +(s.email?'<tr><td style="color:#64748b;font-weight:600;padding:2px 6px 2px 0">E-mail</td><td>'+s.email+'</td></tr>':'')
+                  +'<tr><td style="color:#64748b;font-weight:600;padding:2px 6px 2px 0">Solicita&ccedil;&otilde;es</td>'
+                    +'<td><b style="color:#1e3a5f">'+nReqs+'</b></td></tr>'
+                +'</table>'
               +'</div>'
             +'</div>';
-          }).join('');
+          }).join('');;
           var pw=960,ph=700;
           var pl=Math.round((screen.width-pw)/2);
           var pt=Math.round((screen.height-ph)/2);
