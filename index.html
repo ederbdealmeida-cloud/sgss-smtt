@@ -3676,10 +3676,8 @@ function Relatorios(){
                 +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#16a34a;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">'+concl+'</div><div style="font-size:10px;margin-top:2px">Concluído</div></div>'
                 +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#1e3a5f;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">'+pct+'%</div><div style="font-size:10px;margin-top:2px">Conclusão</div></div>'
                 +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#0891b2;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">R$ '+receita.toLocaleString('pt-BR',{minimumFractionDigits:2})+'</div><div style="font-size:10px;margin-top:2px">Receita</div></div>'
-              +'</div>';
-              var _pw=1020,_ph=750,_pl=Math.round((screen.width-_pw)/2),_pt=Math.round((screen.height-_ph)/2);var w=window.open('','_blank','width='+_pw+',height='+_ph+',left='+_pl+',top='+_pt+',scrollbars=yes');
-              if(!w){notify('Permita pop-ups!');return;}
-              w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
+              _popW(
+'<!DOCTYPE html><html><head><meta charset="UTF-8">'
                 +'<style>'+PRINT_CSS
                 +'.tbl-r{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:12px}'
                 +'.tbl-r th{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#1e3a5f;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700}'
@@ -3696,8 +3694,8 @@ function Relatorios(){
                 +'<th>Status</th><th>Urgente</th><th>Pagamento</th><th>Taxa</th><th>Funcion&aacute;rio</th>'
                 +'</tr></thead><tbody>'+rows+'</tbody></table>'
                 +'<button class="btn-pr" onclick="window.print()">&#128424;&#65039; Imprimir / Salvar PDF</button>'
-                +'</div></body></html>');
-              w.document.close();
+                +'</div></body></html>'
+              );
             })();
           }},'\ud83d\udda8\ufe0f Imprimir Lotes'+(selIds.length>0?' ('+selIds.length+' sel.)':filtered.length?' ('+filtered.length+')':''))
         )
