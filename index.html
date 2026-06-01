@@ -6033,6 +6033,15 @@ function Anotacoes(){
 
 function App(){
   var su=useState(null);var user=su[0];var setUser=su[1];
+  React.useEffect(function(){
+    var _t=setTimeout(function(){
+      if(window.twemoji)window.twemoji.parse(document.body,{
+        folder:'svg',ext:'.svg',
+        base:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
+      });
+    },80);
+    return function(){clearTimeout(_t);};
+  });
   var shlid=useState(null);var hlId=shlid[0];var setHlId=shlid[1];
   var sdark=useState(localStorage.getItem('SGSS_DARK')==='1');
   var darkMode=sdark[0];var setDarkMode=sdark[1];
