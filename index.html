@@ -6202,7 +6202,7 @@ function App(){
         ce('nav',{className:'sb-nav'},renderNav()),
         ce('div',{className:'sb-footer'},
           collapsed?null:ce('div',{className:'sb-user'},
-            ce('span',{className:'sb-uname'},'👤 '+user.nome),
+            ce('span',{className:'sb-uname'},_tw('👤 '),user.nome),
             ce('span',{className:'sb-urole'},user.role==='admin'?'Administrador':'Usuário')
           ),
           null
@@ -6256,7 +6256,7 @@ if(window._sgssLoaded){_mountApp();} else {
 </script>
 <script>
 /* Limpa todos os service workers e caches antigos */
-var APP_VER="2026.05.24.v17";
+var APP_VER="2026.05.24.v18";
 /* Auto-reload quando SW actualiza */
 
 }
