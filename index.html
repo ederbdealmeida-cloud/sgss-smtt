@@ -691,11 +691,6 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-.1em;displa
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script>
 "use strict";
-
-  /* Twemoji helper: renders emoji string as React span with dangerouslySetInnerHTML */
-  function _tw(s,style){
-    return ce('span',{dangerouslySetInnerHTML:{__html:emojiToTw(s)},style:style||{}});
-  }
 var AGENDA_LIST=[];
 var AGENDA_NEXT_ID=1;
 var COMUNICADOS_LIST=[];var COM_NEXT_ID=1;
@@ -1288,7 +1283,7 @@ function Login(p){
         ce('div',{style:{width:'100%',marginBottom:14}},
           ce('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:8,
             color:'#374151',fontWeight:600,fontSize:13}},
-            ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f464.svg',style:{width:16,height:16,verticalAlign:'middle',display:'inline-block'}}),' Usuário'),
+            '\ud83d\udc64 Usu\xe1rio'),
           ce('input',{value:u,
             onChange:function(e){setU(e.target.value);setErr('');},
             onKeyDown:onKey,autoFocus:true,autoComplete:'username',
@@ -1297,7 +1292,7 @@ function Login(p){
         ce('div',{style:{width:'100%',marginBottom:14}},
           ce('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:8,
             color:'#374151',fontWeight:600,fontSize:13}},
-            ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f512.svg',style:{width:16,height:16,verticalAlign:'middle',display:'inline-block'}}),' Senha'),
+            '\ud83d\udd12 Senha'),
           ce('div',{style:{position:'relative',width:'100%'}},
             ce('input',{type:showPw?'text':'password',value:pw,
               onChange:function(e){setPw(e.target.value);setErr('');},
@@ -1307,7 +1302,7 @@ function Login(p){
               style:{position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',
                 background:'none',border:'none',cursor:'pointer',color:'#9ca3af',
                 fontSize:18,padding:0,lineHeight:1}},
-              showPw?ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f648.svg',style:{width:18,height:18,verticalAlign:'middle',display:'inline-block'}}):ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f441.svg',style:{width:18,height:18,verticalAlign:'middle',display:'inline-block'}}))
+              showPw?'\ud83d\ude48':'\ud83d\udc41\ufe0f')
           )
         ),
         ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:22,
@@ -1330,7 +1325,7 @@ function Login(p){
           background:'none',border:'none',color:'#2563eb',fontSize:13,
           cursor:'pointer',fontFamily:'inherit',fontWeight:600,
           display:'flex',alignItems:'center',gap:6
-        }},ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f511.svg',style:{width:16,height:16,verticalAlign:'middle',display:'inline-block'}}),' Esqueceu sua senha?')
+        }},'\ud83d\udd11 Esqueceu sua senha?')
       )
     )
   );
@@ -1442,7 +1437,7 @@ function Login(p){
         ce('div',{style:{width:'100%',marginBottom:14}},
           ce('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:8,
             color:'#374151',fontWeight:600,fontSize:13}},
-            ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f464.svg',style:{width:16,height:16,verticalAlign:'middle',display:'inline-block'}}),' Usuário'),
+            '\ud83d\udc64 Usu\xe1rio'),
           ce('input',{value:u,
             onChange:function(e){setU(e.target.value);setErr('');},
             onKeyDown:onKey,autoFocus:true,autoComplete:'username',
@@ -1451,7 +1446,7 @@ function Login(p){
         ce('div',{style:{width:'100%',marginBottom:14}},
           ce('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:8,
             color:'#374151',fontWeight:600,fontSize:13}},
-            ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f512.svg',style:{width:16,height:16,verticalAlign:'middle',display:'inline-block'}}),' Senha'),
+            '\ud83d\udd12 Senha'),
           ce('div',{style:{position:'relative',width:'100%'}},
             ce('input',{type:showPw?'text':'password',value:pw,
               onChange:function(e){setPw(e.target.value);setErr('');},
@@ -1461,7 +1456,7 @@ function Login(p){
               style:{position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',
                 background:'none',border:'none',cursor:'pointer',color:'#9ca3af',
                 fontSize:18,padding:0,lineHeight:1}},
-              showPw?ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f648.svg',style:{width:18,height:18,verticalAlign:'middle',display:'inline-block'}}):ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f441.svg',style:{width:18,height:18,verticalAlign:'middle',display:'inline-block'}}))
+              showPw?'\ud83d\ude48':'\ud83d\udc41\ufe0f')
           )
         ),
         ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:22,
@@ -1484,16 +1479,16 @@ function Login(p){
           background:'none',border:'none',color:'#2563eb',fontSize:13,
           cursor:'pointer',fontFamily:'inherit',fontWeight:600,
           display:'flex',alignItems:'center',gap:6
-        }},ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f511.svg',style:{width:16,height:16,verticalAlign:'middle',display:'inline-block'}}),' Esqueceu sua senha?'),
+        }},'\ud83d\udd11 Esqueceu sua senha?'),
         showForgot?ce('div',{style:{position:'fixed',inset:0,background:'rgba(0,0,0,.6)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}},
           ce('div',{style:{background:'#fff',borderRadius:16,padding:'28px 26px',width:380,maxWidth:'92vw',boxShadow:'0 8px 40px rgba(0,0,0,.3)'}},
             ce('div',{style:{display:'flex',gap:0,marginBottom:18,borderBottom:'2px solid #f1f5f9',paddingBottom:12}},
               ce('button',{onClick:function(){setForgotMode('pw');setForgotResult(null);setForgotNome('');},
                 style:{flex:1,padding:'7px',borderRadius:'8px 0 0 8px',fontWeight:700,fontSize:12.5,cursor:'pointer',fontFamily:'inherit',border:'1.5px solid #2563eb',background:forgotMode==='pw'?'#2563eb':'#fff',color:forgotMode==='pw'?'#fff':'#2563eb'}},
-                ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f512.svg',style:{width:16,height:16,verticalAlign:'middle',display:'inline-block'}}),' Esqueceu a senha'),
+                '\ud83d\udd12 Esqueceu a senha'),
               ce('button',{onClick:function(){setForgotMode('user');setForgotResult(null);setForgotUser('');},
                 style:{flex:1,padding:'7px',borderRadius:'0 8px 8px 0',fontWeight:700,fontSize:12.5,cursor:'pointer',fontFamily:'inherit',border:'1.5px solid #2563eb',borderLeft:'none',background:forgotMode==='user'?'#2563eb':'#fff',color:forgotMode==='user'?'#fff':'#2563eb'}},
-                ce('img',{src:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f464.svg',style:{width:16,height:16,verticalAlign:'middle',display:'inline-block'}}),' Esqueceu o usuário')
+                '\ud83d\udc64 Esqueceu o usu\u00e1rio')
             ),
             forgotMode==='pw'
             ?ce('div',null,
@@ -1604,7 +1599,7 @@ function PainelFuncionario(p){
             var a=document.createElement('a');a.href=url;
             a.download='func-'+func.nome.replace(/ /g,'-')+'.csv';a.click();
             setTimeout(function(){URL.revokeObjectURL(url);},1000);
-          }},_tw('\u2b07\ufe0f Excel')),
+          }},'\u2b07\ufe0f Excel'),
           ce('button',{className:'btn btn-p',onClick:function(){
             /* Imprimir/PDF */
             var logo=buildHeader('👷 Painel do Funcionário – '+func.nome,'SMTT Cacequi – Emissão: '+new Date().toLocaleDateString('pt-BR'));            var cardsEl=document.getElementById('painel-cards');
@@ -1615,7 +1610,7 @@ function PainelFuncionario(p){
             if(!w)return;
             var _twHtml=emojiToTw;
     w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'+'<style>'+PRINT_CSS+'@page{size:A4 portrait;margin:12mm}.btn-pr{display:block;margin:16px auto;padding:8px 20px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}@media print{.btn-pr{display:none}}.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}.stat{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 10px;text-align:center}.stat-ico{font-size:22px;margin-bottom:4px}.stat-val{font-size:22px;font-weight:900;color:#1e3a5f}.stat-lbl{font-size:10px;color:#64748b;margin-top:2px}table{width:100%;border-collapse:collapse;font-size:11.5px}th{background:#1e3a5f;color:#fff;padding:7px 10px;text-align:left;font-size:10.5px}td{padding:6px 10px;border-bottom:1px solid #f1f5f9}tr:nth-child(even) td{background:#f8fafc}</style></head><body>'+'<div style="max-width:860px;margin:0 auto;padding:20px">'+buildHeader('👷 Painel do Funcionário – '+func.nome,'SMTT Cacequi – Emissão: '+new Date().toLocaleDateString('pt-BR'))+cardsHtml+tblHtml+'<div style="text-align:center;margin-top:20px">'+'<button class="btn-pr" onclick="window.print()">\ud83d\udda8\ufe0f Imprimir / Salvar PDF</button>'+'</div></div></body></html>');w.document.close();
-          }},_tw('\ud83d\udda8\ufe0f Imprimir / PDF'))
+          }},'\ud83d\udda8\ufe0f Imprimir / PDF')
         )
       ),
       ce('div',{id:'painel-cards',style:{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10}},
@@ -2049,8 +2044,8 @@ function imprimirDash(titulo,corpo,landscape){
   var pctAno=Math.min(100,Math.round(concluiAno/META_ANO*100));
   return ce('div',{className:'page'},
     ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',width:'100%'}},
-      ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udcca Dashboard',
-      ce('span',{style:{fontSize:10,color:'#94a3b8',fontWeight:400,marginLeft:8}},'v534a90c')}})),
+      ce('h2',{className:'page-title'},'\ud83d\udcca Dashboard',
+      ce('span',{style:{fontSize:10,color:'#94a3b8',fontWeight:400,marginLeft:8}},'v534a90c')),
       !funcSel?ce('button',{className:'btn btn-s',onClick:imprimirVisaoGeral},'\ud83d\udda8\ufe0f Imprimir Vis\u00e3o Geral'):null
     ),
     ce('div',{style:{display:'flex',alignItems:'center',gap:8}},
@@ -2497,9 +2492,9 @@ function Solicitantes(){
         })()
       )
     ):null,
-    ce('div',{className:'page-header'},ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udc65 Solicitantes')}}),
+    ce('div',{className:'page-header'},ce('h2',{className:'page-title'},'\ud83d\udc65 Solicitantes'),
       ce('div',{style:{display:'flex',gap:8}},
-        ce('button',{className:'btn btn-s',onClick:function(){var hdr='Nome;Endere\u00e7o;Bairro;Telefone\n';var rows=filtered.map(function(r){return[r.nome||'',r.end||'',r.bairro||'',r.tel||''].join(';');}).join('\n');var blob=new Blob(['\uFEFF'+hdr+rows],{type:'text/csv;charset=utf-8'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='solicitantes.csv';a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);}},_tw('\u2b07\ufe0f Excel')),
+        ce('button',{className:'btn btn-s',onClick:function(){var hdr='Nome;Endere\u00e7o;Bairro;Telefone\n';var rows=filtered.map(function(r){return[r.nome||'',r.end||'',r.bairro||'',r.tel||''].join(';');}).join('\n');var blob=new Blob(['\uFEFF'+hdr+rows],{type:'text/csv;charset=utf-8'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='solicitantes.csv';a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);}},'\u2b07\ufe0f Excel'),
         ce('button',{className:'btn btn-s',onClick:function(){
           var SOL_PER=10;
           var _alvo=selItems.length>0?selItems:filtered;
@@ -2612,7 +2607,7 @@ function TiposServico(){
         ce('div',{className:'form-actions'},ce('button',{className:'btn btn-s',onClick:function(){setSubForm(null);}},'Cancelar'),ce('button',{className:'btn btn-p',onClick:saveSub},'\ud83d\udcbe Salvar'))));
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
-    ce('div',{className:'page-header'},ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udd27 Tipos de Servi\xe7o')}}),ce('button',{className:'btn btn-p',onClick:function(){setCatForm({nome:'',fp:'Pago'});}},'\u2795 Nova Categoria')),
+    ce('div',{className:'page-header'},ce('h2',{className:'page-title'},'\ud83d\udd27 Tipos de Servi\xe7o'),ce('button',{className:'btn btn-p',onClick:function(){setCatForm({nome:'',fp:'Pago'});}},'\u2795 Nova Categoria')),
     ce('div',{className:'card'},
       items.map(function(cat){var csubs=subs[cat.id]||[];return ce('div',{key:cat.id,className:'acc'},ce('div',{className:'acc-head',onClick:function(){setExp(exp===cat.id?null:cat.id);}},ce('div',{style:{display:'flex',alignItems:'center',gap:8}},ce('strong',null,cat.nome),ce('span',{className:'badge b-bl'},cat.fp)),ce('div',{style:{display:'flex',alignItems:'center',gap:8}},editCatId===cat.id?ce(React.Fragment,null,ce('input',{value:editCatD.nome||'',onClick:function(e){e.stopPropagation();},onChange:function(e){setEditCatD(function(v){return Object.assign({},v,{nome:e.target.value});});},style:{padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12,width:140,marginRight:4}}),ce('select',{value:editCatD.fp||'Pago',onClick:function(e){e.stopPropagation();},onChange:function(e){setEditCatD(function(v){return Object.assign({},v,{fp:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11,marginRight:4}},ce('option',{value:'Pago'},'Pago'),ce('option',{value:'Gratuito'},'Gratuito')),
           ce('input',{placeholder:'Taxa R$',value:editCatD.taxa||'',onClick:function(e){e.stopPropagation();},
@@ -2852,7 +2847,7 @@ function Solicitacoes(){
   if(docItem)return ce(Documentos2,{item:docItem,onClose:function(){setDocItem(null);}});
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
-    ce('div',{className:'page-header'},ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udcdd Solicita\xe7\xf5es de Servi\xe7o')}}),ce('button',{className:'btn btn-p',onClick:function(){setForm(Object.assign({},EMPTY));}},'\u2795 Nova Solicita\xe7\xe3o')),
+    ce('div',{className:'page-header'},ce('h2',{className:'page-title'},'\ud83d\udcdd Solicita\xe7\xf5es de Servi\xe7o'),ce('button',{className:'btn btn-p',onClick:function(){setForm(Object.assign({},EMPTY));}},'\u2795 Nova Solicita\xe7\xe3o')),
     ce('div',{className:'card'},
       ce('input',{className:'srch',placeholder:'\ud83d\udd0d Buscar por nome, protocolo, bairro, servi\u00e7o ou data...',value:srch,onChange:function(e){
           setLoading(true);
@@ -2927,7 +2922,7 @@ function Documentos2(p){
   function FI(fp){return ce('div',{className:'doc-field'},ce('span',{className:'doc-lbl'},fp.label+':'),ce('span',{className:'doc-val'},fp.value||'\u2013'));}
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
-    ce('div',{className:'page-header'},ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udda8\ufe0f Documentos \u2013 '+d.prot)}}),ce('button',{className:'btn btn-s',onClick:p.onClose},'\u2190 Voltar')),
+    ce('div',{className:'page-header'},ce('h2',{className:'page-title'},'\ud83d\udda8\ufe0f Documentos \u2013 '+d.prot),ce('button',{className:'btn btn-s',onClick:p.onClose},'\u2190 Voltar')),
     ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}},
       ce('div',{className:'tabs',style:{marginBottom:0}},
         ce('button',{className:'tab-btn '+(doc==='comp'?'active':''),onClick:function(){setDoc('comp');}},'\ud83d\udcc4 Comprovante (Funcion\xe1rio)'),
@@ -2951,7 +2946,7 @@ function Documentos2(p){
             +'<button class="btn-pr" onclick="window.print()">\ud83d\udda8\ufe0f Imprimir / Salvar PDF</button>'
             +'</body></html>');
           w.document.close();
-        }},_tw('\ud83d\udda8\ufe0f Imprimir'))
+        }},'\ud83d\udda8\ufe0f Imprimir')
       )
     ),
     doc==='comp'?ce('div',{className:'doc-paper'},
@@ -3291,7 +3286,7 @@ function Controle(p){
     ):null,
     encItem?ce(EncerrarModal,{item:encItem,onConfirm:handleEncerrar,onCancel:function(){setEncItem(null);}}):null,
     ce('div',{className:'page-header'},
-      ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83c\udf9b\ufe0f Controle de Solicita\u00e7\u00f5es')}}),
+      ce('h2',{className:'page-title'},'\ud83c\udf9b\ufe0f Controle de Solicita\u00e7\u00f5es'),
       ce('div',{style:{display:'flex',gap:6}},
         ce('button',{className:'btn btn-s',onClick:function(){
           var alvo=selIds.length>0?selItems:sorted;
@@ -3302,7 +3297,7 @@ function Controle(p){
           var url=URL.createObjectURL(blob);var a=document.createElement('a');
           a.href=url;a.download='controle-smtt.csv';a.click();
           setTimeout(function(){URL.revokeObjectURL(url);},1000);
-        }},_tw('\u2b07\ufe0f Excel')),
+        }},'\u2b07\ufe0f Excel'),
         ce('button',{className:'btn btn-s',onClick:function(){
           setShowPrint(true);var _init={};(selIds.length>0?selItems:sorted).forEach(function(r){_init[r.id]=true;});setPrintCards(_init);return;var target=selItems.length>0?selItems:sorted;
           if(!target.length){notify('Sem itens para imprimir.');return;}
@@ -3325,7 +3320,7 @@ function Controle(p){
             +'<button class="btn-pr" onclick="window.print()">&#128424;&#65039; Imprimir / Salvar PDF</button>'
             +'</div></body></html>');
           w.document.close();
-        }},_tw('\ud83d\udda8\ufe0f Imprimir Lote')+(selIds.length>0?' ('+selIds.length+')':sorted.length?' ('+sorted.length+')':''))
+        }},'\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+')':sorted.length?' ('+sorted.length+')':''))
       )
     ),
     ce('div',{className:'card'},
@@ -3507,10 +3502,10 @@ function Historico(){
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
     ce('div',{className:'page-header'},
-      ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udcdc Hist\u00f3rico de Solicita\u00e7\u00f5es')}}),
+      ce('h2',{className:'page-title'},'\ud83d\udcdc Hist\u00f3rico de Solicita\u00e7\u00f5es'),
       ce('div',{style:{display:'flex',gap:6}},
         ce('button',{className:'btn btn-p',onClick:imprimirLote},
-          _tw('\ud83d\udda8\ufe0f Imprimir Lote')+(selIds.length>0?' ('+selIds.length+' sel.)':filtered.length?' ('+filtered.length+')':'')),
+          '\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+' sel.)':filtered.length?' ('+filtered.length+')':'')),
         DELETED_REQS.length>0?ce('button',{
           className:'btn btn-s',style:{fontSize:11,background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
           onClick:function(){var rec=DELETED_REQS.pop();INIT_REQS.push(rec);notify('\u21a9\ufe0f '+rec.prot+' recuperado!');logAudit('Recuperou','Histórico','Protocolo recuperado');sgssSave();}
@@ -3522,7 +3517,7 @@ function Historico(){
           var url=URL.createObjectURL(blob);var a=document.createElement('a');
           a.href=url;a.download='historico.csv';a.click();
           setTimeout(function(){URL.revokeObjectURL(url);},1000);
-        }},_tw('\u2b07\ufe0f Excel'))
+        }},'\u2b07\ufe0f Excel')
       )
     ),
     ce('div',{className:'card'},
@@ -3603,7 +3598,7 @@ function Relatorios(){
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
     ce('div',{className:'page-header'},
-    ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udccb Relat\u00f3rios e Consultas')}}),
+    ce('h2',{className:'page-title'},'\ud83d\udccb Relat\u00f3rios e Consultas'),
     ce('div',{style:{display:'flex',gap:8}},
       ce('button',{className:'btn btn-s',onClick:function(){setFdt('');setFdtDe('');setFdtAte('');setFst('');setFurg('');setFcat('');setFb('');setFsol('');setFfunc('');setFfp('');setFprot('');setDone(false);setSelIds([]);}},
         '\u21ba Limpar Filtros'),
@@ -3676,7 +3671,7 @@ function Relatorios(){
             var url=URL.createObjectURL(blob);
             var a=document.createElement('a');a.href=url;a.download='relatorio-smtt.csv';a.click();
             setTimeout(function(){URL.revokeObjectURL(url);},1000);
-          }},_tw('\u2b07\ufe0f Excel')),
+          }},'\u2b07\ufe0f Excel'),
           ce('button',{className:'btn btn-p',onClick:function(){
             var alvo=selIds.length>0?filtered.filter(function(r){return selIds.includes(r.id);}):filtered;
             if(!alvo.length){notify('Sem resultados para imprimir.');return;}
@@ -4071,7 +4066,7 @@ function Configuracoes(){
         ce('button',{className:'btn btn-s',style:{color:'#dc2626',border:'1px solid #fca5a5'},onClick:sgssClearConfirm},'\ud83d\uddd1\ufe0f Limpar dados')
       )
     ),
-ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\u2699\ufe0f Configura\xe7\xf5es')}}),
+ce('h2',{className:'page-title'},'\u2699\ufe0f Configura\xe7\xf5es'),
     ce('div',{className:'tabs'},
       TABS.map(function(t){
         return ce('button',{key:t.id,className:'tab-btn '+(tab===t.id?'active':''),onClick:function(){setTab(t.id);}},t.l);
@@ -4269,7 +4264,7 @@ var sf=useState(_initFuncs);var funcs=sf[0];var setFuncs=sf[1];
   if(form!==null)return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
     ce('div',{className:'page-header'},
-      ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udc64 '+(form.id?'Editar':'Novo')}})+' Funcion\u00e1rio'),
+      ce('h2',{className:'page-title'},'\ud83d\udc64 '+(form.id?'Editar':'Novo')+' Funcion\u00e1rio'),
       ce('button',{className:'btn btn-s',onClick:function(){setForm(null);}},'\u2190 Voltar')
     ),
     ce('div',{className:'card'},
@@ -4527,7 +4522,7 @@ var rows=[];
         })()
       )
     ):null,    ce('div',{className:'page-header'},
-      ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udc64 Funcion\u00e1rios')}}),
+      ce('h2',{className:'page-title'},'\ud83d\udc64 Funcion\u00e1rios'),
       ce('div',{style:{display:'flex',gap:6}},
         ce('button',{className:'btn btn-s',onClick:function(){
           var alvo=selIds.length>0?filtered.filter(function(f){return selIds.includes(f.id);}):filtered;
@@ -4538,9 +4533,9 @@ var rows=[];
           var url=URL.createObjectURL(blob);var a=document.createElement('a');
           a.href=url;a.download='funcionarios-smtt.csv';a.click();
           setTimeout(function(){URL.revokeObjectURL(url);},1000);
-        }},_tw('\u2b07\ufe0f Excel')),
+        }},'\u2b07\ufe0f Excel'),
         ce('button',{className:'btn btn-s',onClick:imprimirLote},
-          _tw('\ud83d\udda8\ufe0f Imprimir Lote')+(selIds.length>0?' ('+selIds.length+' sel.)':'')),
+          '\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+' sel.)':'')),
         ce('button',{className:'btn btn-p',onClick:function(){setForm(Object.assign({},EMPTY));}},'+ Novo Funcion\u00e1rio')
       )
     ),
@@ -4953,7 +4948,7 @@ function RelatoriosPersonalizados(){
       ce('span',{style:{fontSize:13,color:'#64748b'}},filtered.length+' resultado(s)'),
       ce('div',{style:{display:'flex',gap:8}},
         ce('button',{className:'btn',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac'},onClick:expCSV},'\ud83d\udcc4 CSV'),
-        ce('button',{className:'btn',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},onClick:prtLote},_tw('\ud83d\udda8\ufe0f Imprimir Lote'))
+        ce('button',{className:'btn',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},onClick:prtLote},'\ud83d\udda8\ufe0f Imprimir Lote')
       )
     ),
     /* Container tabela */
@@ -5246,7 +5241,7 @@ function Comunicacao(){
               }
               setModal(null);
             }},modal.tipo==='whatsapp'?'\ud83d\udcac Abrir WhatsApp':'\ud83d\udce7 Abrir E-mail')))):null,
-    ce('div',{className:'page-header'},ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udce1 Comunica\xe7\xe3o com Solicitantes')}})),
+    ce('div',{className:'page-header'},ce('h2',{className:'page-title'},'\ud83d\udce1 Comunica\xe7\xe3o com Solicitantes')),
     ce('div',{style:{display:'flex',gap:24,fontSize:13,color:'#475569',background:'linear-gradient(135deg,#eff6ff,#f0fdf4)',border:'1px solid #dbeafe',borderRadius:10,padding:'14px 18px',marginBottom:14}},ce('div',null,'\ud83d\udcac ',ce('strong',null,'WhatsApp'),' \u2014 dispon\xedvel quando o solicitante informou telefone'),ce('div',null,'\ud83d\udce7 ',ce('strong',null,'E-mail'),' \u2014 dispon\xedvel quando o solicitante informou e-mail')),
     ce('div',{className:'card'},
       ce('input',{className:'srch',placeholder:'\ud83d\udd0d Buscar por nome ou bairro...',value:srch,onChange:function(e){setSrch(e.target.value);setPg(1);}}),
@@ -5405,7 +5400,7 @@ function Agenda(){
   if(agForm!==null)return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
     ce('div',{className:'page-header'},
-      ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udcc5 Novo Agendamento \u2014 '+(agForm.date?agForm.date.split('-')}}).reverse().join('/'):'')  ),
+      ce('h2',{className:'page-title'},'\ud83d\udcc5 Novo Agendamento \u2014 '+(agForm.date?agForm.date.split('-').reverse().join('/'):'')  ),
       ce('button',{className:'btn btn-s',onClick:function(){setAgForm(null);setSubcats([]);setSubInfo(null);setSugs([]);setLocked(false);setIsento(false);}},'\u2190 Voltar')
     ),
     ce('div',{className:'card'},
@@ -5584,7 +5579,7 @@ function Agenda(){
   var listaView=ce('div',null,
     ce('div',{style:{display:'flex',justifyContent:'flex-end',marginBottom:8}},
       ce('button',{className:'btn',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
-        onClick:prtAgendaLote},_tw('\ud83d\udda8\ufe0f Imprimir Lote'))
+        onClick:prtAgendaLote},'\ud83d\udda8\ufe0f Imprimir Lote')
     ),
     ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl'},
       ce('thead',null,ce('tr',null,[ce('input',{type:'checkbox',onChange:function(e){var o={};listSlice.forEach(function(r){o[(r._src||'r')+r.id]=e.target.checked;});setChkAg(o);}}),'Data','Protocolo','Solicitante','Bairro','Servi\u00e7o','Funcion\u00e1rio','Taxa','Urg.','Status',''].map(function(c,i){return ce('th',{key:i},c);}))),
@@ -5683,7 +5678,7 @@ function Agenda(){
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
     ce('div',{className:'page-header'},
-      ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udcc5 Agenda')}}),
+      ce('h2',{className:'page-title'},'\ud83d\udcc5 Agenda'),
       ce('div',{style:{display:'flex',gap:8}},
         ce('button',{className:'btn btn-s',onClick:goHoje},'\ud83d\udcc6 Hoje'),
         ce('button',{className:'btn '+(view==='cal'?'btn-p':'btn-s'),onClick:function(){setView('cal');}},'\ud83d\uddd3\ufe0f Calend\u00e1rio'),
@@ -6013,7 +6008,7 @@ function Anotacoes(){
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
     ce('div',{className:'page-header'},
-      ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udcdd Anota\u00e7\u00f5es')}}),
+      ce('h2',{className:'page-title'},'\ud83d\udcdd Anota\u00e7\u00f5es'),
       ce('button',{className:'btn btn-p',
         onClick:function(){
           if(form===null){setForm(Object.assign({},EMPTY));setEditId(null);setSolVinc(null);setPsugs([]);}
@@ -6084,7 +6079,7 @@ function App(){
           className:'nav-item'+(page===m.id?' active':''),
           title:collapsed?m.l:'',
           onClick:function(){setPageClose(m.id);}},
-          ce('span',{className:'nav-icon',dangerouslySetInnerHTML:{__html:emojiToTw(m.i)}}),
+          ce('span',{className:'nav-icon'},m.i),
           collapsed?null:ce('span',{className:'nav-label'},m.l)
         ));
       });
@@ -6202,7 +6197,7 @@ function App(){
         ce('nav',{className:'sb-nav'},renderNav()),
         ce('div',{className:'sb-footer'},
           collapsed?null:ce('div',{className:'sb-user'},
-            ce('span',{className:'sb-uname'},_tw('👤 '),user.nome),
+            ce('span',{className:'sb-uname'},'👤 '+user.nome),
             ce('span',{className:'sb-urole'},user.role==='admin'?'Administrador':'Usuário')
           ),
           null
@@ -6256,7 +6251,7 @@ if(window._sgssLoaded){_mountApp();} else {
 </script>
 <script>
 /* Limpa todos os service workers e caches antigos */
-var APP_VER="2026.05.24.v19";
+var APP_VER="2026.05.24.v15";
 /* Auto-reload quando SW actualiza */
 
 }
