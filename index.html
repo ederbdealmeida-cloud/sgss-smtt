@@ -3418,9 +3418,8 @@ function Historico(){
         +'<td style="padding:5px 0 5px 8px;vertical-align:top;text-align:right">'+fmtTaxa(r)+'</td>'
       +'</tr>';
     }).join('');
-    var _pw=960,_ph=750,_pl=Math.round((screen.width-_pw)/2),_pt=Math.round((screen.height-_ph)/2);var w=window.open('','_blank','width='+_pw+',height='+_ph+',left='+_pl+',top='+_pt+',scrollbars=yes');
-    if(!w){notify('Permita pop-ups!');return;}
-    w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    _popW(
+'<!DOCTYPE html><html><head><meta charset="UTF-8">'
       +'<style>'+PRINT_CSS
       +'body{font-family:Courier New,Courier,monospace}'
       +'.pdv-hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact;'
@@ -3448,8 +3447,8 @@ function Historico(){
         +'</tr></tfoot>'
       +'</table>'
       +'<button class="btn-pr" onclick="window.print()">&#128424;&#65039; Imprimir / Salvar PDF</button>'
-      +'</div></body></html>');
-    w.document.close();
+      +'</div></body></html>'
+    );
   }
   if(docItem)return ce(Documentos2,{item:docItem,onClose:function(){setDocItem(null);}});
   return ce('div',{className:'page'},
