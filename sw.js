@@ -1,6 +1,6 @@
-/* SW v15 - AGRESSIVO: nunca serve HTML do cache */
-const CACHE = 'sgss-v15';
-const EXPECTED = 'sgss-v15';
+/* SW v16 - AGRESSIVO: nunca serve HTML do cache */
+const CACHE = 'sgss-v16';
+const EXPECTED = 'sgss-v16';
 
 self.addEventListener('install', e => {
   e.waitUntil(
