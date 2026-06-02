@@ -2822,7 +2822,7 @@ function Solicitacoes(){
               (SUBS[it.catId]||[]).map(function(s){return ce('option',{key:s.id,value:s.id},s.nome);})
             )
           ):null,
-t.subId&&(function(){var s=(SUBS[it.catId]||[]).find(function(s){return s.id===it.subId;});return s&&s.h;})()?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:8}},
+          it.subId&&(function(){var s=(SUBS[it.catId]||[]).find(function(s){return s.id===it.subId;});return s&&s.h;})()?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:8}},
             ce('label',{style:Object.assign({},nL,{margin:0,whiteSpace:'nowrap'})},'\u23f1\ufe0f Horas:'),
             ce('button',{style:{padding:'4px 10px',border:'1px solid #cbd5e1',borderRadius:6,background:'#f1f5f9',cursor:'pointer',fontWeight:700},
               onClick:function(){nmUpd(it._k,'horas',Math.max(1,(it.horas||1)-1));setTimeout(function(){nmRecalc(it._k);},0);}},'-'),
