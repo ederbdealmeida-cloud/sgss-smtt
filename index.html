@@ -2660,10 +2660,26 @@ function Solicitacoes(){
     saveSession();logAudit('Eliminou','Solicitações','Protocolo '+r.prot);
     notify('Solicita\xe7\xe3o exclu\xedda!');sgssSave();
     }});}
-  function nmEmpty(base){return {_k:uid(),cn:'',catId:'',rua:base?base.rua:'',num:base?base.num:'',bairro:base?base.bairro:'',tel:base?base.tel:'',ref:base?base.ref:'',obs:'',urg:'Não',taxa:0,fp:'Pendente',sn:'',subId:null};}
-  function nmLastSrv(solId){var m=INIT_REQS.filter(function(r){return r.solId===solId&&!r.enc;});if(!m.length)return null;m.sort(function(a,b){return (b.dt||'').localeCompare(a.dt||'');});return m[0];}
+  function nmEmpty(base){return {_k:uid(),cn:'',catId:'',
+    rua:base?(base.rua||''):'',
+    num:base?(base.num||base.numero||''):'',
+    bairro:base?(base.bairro||''):'',
+    tel:base?(base.tel||base.telefone||''):'',
+    ref:base?(base.ref||''):'',
+    obs:'',urg:'Não',taxa:0,fp:'Pendente',sn:'',subId:null};}
+  function nmLastSrv(sol){
+    /* 1. Por solId (loose equality cobre number vs string) */
+    var m=INIT_REQS.filter(function(r){return r.solId==sol.id&&!r.enc;});
+    /* 2. Fallback: pelo nome exacto */
+    if(!m.length)m=INIT_REQS.filter(function(r){return r.nom===sol.nome&&!r.enc;});
+    if(m.length){m.sort(function(a,b){return (b.dt||'').localeCompare(a.dt||'');});return m[0];}
+    /* 3. Fallback: dados cadastrais do proprio solicitante */
+    if(sol.rua||sol.bairro||sol.telefone)
+      return {rua:sol.rua||'',num:sol.numero||'',bairro:sol.bairro||'',tel:sol.telefone||'',ref:sol.ref||''};
+    return null;
+  }
   function nmBusca(q){if(!q||q.length<2){setNSug([]);return;}var ql=q.toLowerCase();setNSug(INIT_SOLS.filter(function(s){return s.nome.toLowerCase().indexOf(ql)>=0;}).slice(0,8));}
-  function nmEscolher(sol){setNSol(sol);setNSq(sol.nome);setNSug([]);setNIt([nmEmpty(nmLastSrv(sol.id))]);}
+  function nmEscolher(sol){setNSol(sol);setNSq(sol.nome);setNSug([]);setNIt([nmEmpty(nmLastSrv(sol))]);}
   function nmAdd(){setNIt(function(p){var l=p[p.length-1];return p.concat([nmEmpty(l)]);});}
   function nmUpd(k,fld,val){setNIt(function(p){return p.map(function(it){if(it._k!==k)return it;var n=Object.assign({},it);n[fld]=val;return n;});});}
   function nmRem(k){setNIt(function(p){return p.filter(function(it){return it._k!==k;});});}
