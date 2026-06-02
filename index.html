@@ -2553,7 +2553,10 @@ function imprimirComprovanteServico(r,allReqs){
       +(s.subSvc?rw('Subserviço',s.subSvc):'')
       +rw('Status','<span style="color:'+sc+';font-weight:700">'+st+'</span>')
       +(s.urg==='Sim'?rw('Urgência','<span style="color:#dc2626">URGENTE</span>'):'')
-    );
+    )
+    +(s.descricao?'<div style="margin:6px 0 2px;padding:8px 10px;background:#f8fafc;border-left:3px solid #1d4ed8;border-radius:0 6px 6px 0;font-size:11px;color:#374151">'+s.descricao+'</div>':'')
+    +(s.foto?'<div style="margin:8px 0 2px"><img src="'+s.foto+'" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #e2e8f0;display:block"></div>':'')
+    +'</div>';
   }).join('');
   var endStr=(main.rua||'')+(main.num?', '+main.num:'')+(main.bairro?' - '+main.bairro:'');
   var card2=card('Dados do Solicitante','#0891b2',
@@ -2868,21 +2871,22 @@ function Solicitacoes(){
             ce('label',{style:nL},'Ponto de Refer\u00eancia'),ce('input',{style:nI,value:it.ref,onChange:function(e){nmUpd(it._k,'ref',e.target.value);}})  
           ),
           ce('div',null,ce('label',{style:nL},'Observa\u00e7\u00e3o'),ce('input',{style:nI,value:it.obs,onChange:function(e){nmUpd(it._k,'obs',e.target.value);}})),
-          ce('div',{style:{marginTop:8}},
-            ce('label',{style:nL},'Descri\u00e7\u00e3o'),
-            ce('textarea',{style:Object.assign({},nI,{height:68,resize:'none',fontFamily:'inherit'}),placeholder:'Descreva o problema...',
-              value:it.descricao||'',onChange:function(e){nmUpd(it._k,'descricao',e.target.value);}})
-          ),
-          ce('div',{style:{marginTop:8}},
-            ce('label',{style:nL},'📷 Foto (opcional)'),
-            it.foto
-              ?ce('div',{style:{position:'relative',display:'inline-block',marginBottom:4}},
-                  ce('img',{src:it.foto,style:{maxWidth:'100%',maxHeight:160,borderRadius:8,border:'1px solid #e2e8f0',display:'block'}}),
-                  ce('button',{style:{position:'absolute',top:4,right:4,background:'rgba(0,0,0,.55)',color:'#fff',border:'none',borderRadius:4,padding:'2px 8px',cursor:'pointer',fontSize:12},
-                    onClick:function(){nmUpd(it._k,'foto',null);}},'×')
-                )
-              :ce('input',{type:'file',accept:'image/*',style:{fontSize:12,width:'100%'},
-                  onChange:function(e){nmHandleFoto(it._k,e.target.files[0]);e.target.value='';}})
+          ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginTop:10}},
+            ce('div',null,ce('label',{style:nL},'📷 Foto (opcional)'),
+              it.foto
+                ?ce('div',{style:{position:'relative'}},
+                    ce('img',{src:it.foto,style:{width:'100%',height:140,objectFit:'cover',borderRadius:8,border:'1px solid #e2e8f0',display:'block'}}),
+                    ce('button',{style:{position:'absolute',top:4,right:4,background:'rgba(0,0,0,.55)',color:'#fff',border:'none',borderRadius:4,padding:'2px 8px',cursor:'pointer',fontSize:12},onClick:function(){nmUpd(it._k,'foto',null);}},'×'))
+                :ce('label',{style:{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:140,border:'2px dashed #cbd5e1',borderRadius:8,cursor:'pointer',background:'#f8fafc',color:'#94a3b8',fontSize:12,fontWeight:600,gap:6}},
+                    ce('span',{style:{fontSize:28}},'📷'),'Clique para selecionar',
+                    ce('input',{type:'file',accept:'image/*',style:{display:'none'},onChange:function(e){nmHandleFoto(it._k,e.target.files[0]);e.target.value='';}})
+                  )
+            ),
+            ce('div',null,ce('label',{style:nL},'Descrição'),
+              ce('textarea',{style:Object.assign({},nI,{height:140,resize:'none',fontFamily:'inherit'}),
+                placeholder:'Descreva o problema com detalhes...',
+                value:it.descricao||'',onChange:function(e){nmUpd(it._k,'descricao',e.target.value);}})
+            )
           )
         );
       }),
