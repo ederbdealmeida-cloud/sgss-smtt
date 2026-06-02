@@ -2847,7 +2847,7 @@ function Solicitacoes(){
               it.fp==='Isento'?'Isento':'R$ '+(Number(it.taxa)||0).toFixed(2))
           ):null,
           ce('div',{style:{display:'grid',gridTemplateColumns:'2fr 80px 1fr',gap:8,marginBottom:8}},
-            ce('div',null,ce('label',{style:nL},'Rua / Av.'),ce('input',{style:nI,value:it.rua,onChange:function(e){nmUpd(it._k,'rua',e.target.value);}})),
+            ce('div',null,ce('label',{style:nL},'Logradouro'),ce('input',{style:nI,value:it.rua,onChange:function(e){nmUpd(it._k,'rua',e.target.value);}})),
             ce('div',null,ce('label',{style:nL},'N\u00ba'),ce('input',{style:nI,value:it.num,onChange:function(e){nmUpd(it._k,'num',e.target.value);}})),
             ce('div',null,ce('label',{style:nL},'Bairro'),ce('input',{style:nI,value:it.bairro,onChange:function(e){nmUpd(it._k,'bairro',e.target.value);}}))
           ),
