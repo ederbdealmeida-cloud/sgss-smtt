@@ -1919,8 +1919,10 @@ function imprimirDash(titulo,corpo,landscape){
       :'')
     +(function(){
       var _pMap2={};
+      var _pfn=funcSel?(FUNC_LIST.find(function(f){return f.id===parseInt(funcSel);})||{}).nome||'':'';
       INIT_REQS.forEach(function(r){
         if(r.enc===1||!r.dt||r.fp!=='Pago')return;
+        if(_pfn&&r.func!==_pfn)return;
         var _pts2=r.dt.split('-');if(_pts2.length<2)return;
         var _k2=_pts2[0]+'-'+_pts2[1];
         var _mn2=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(_pts2[1])-1]||_pts2[1];
@@ -2042,9 +2044,11 @@ ce('div',{className:'stats-grid'},CARDS.map(function(c){return ce('div',{key:c.l
   ce('div',{className:'card',style:{marginTop:14}},
     ce('h3',null,'💰 Serviços Pagos por Mês'),
     (function(){
+      var _pfn2=funcSel?(FUNC_LIST.find(function(f){return f.id===parseInt(funcSel);})||{}).nome||'':'';
       var _pMap={};
       INIT_REQS.forEach(function(r){
         if(r.enc===1||!r.dt||r.fp!=='Pago')return;
+        if(_pfn2&&r.func!==_pfn2)return;
         var _pts=r.dt.split('-');if(_pts.length<2)return;
         var _k=_pts[0]+'-'+_pts[1];
         var _mn=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(_pts[1])-1]||_pts[1];
