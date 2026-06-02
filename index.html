@@ -3441,7 +3441,7 @@ function Controle(p){
             +'<button class="btn-pr" onclick="window.print()">&#128424;&#65039; Imprimir / Salvar PDF</button>'
             +'</div></body></html>');
           w.document.close();
-        }},_tw('\ud83d\udda8\ufe0f Imprimir Lote')+(selIds.length>0?' ('+selIds.length+')':sorted.length?' ('+sorted.length+')':''))
+        }},_tw('\ud83d\udda8\ufe0f Imprimir Lote'),(selIds.length>0?' ('+selIds.length+')':sorted.length?' ('+sorted.length+')':''))
       )
     ),
     ce('div',{className:'card'},
@@ -3626,7 +3626,7 @@ function Historico(){
       ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udcdc Hist\u00f3rico de Solicita\u00e7\u00f5es')}}),
       ce('div',{style:{display:'flex',gap:6}},
         ce('button',{className:'btn btn-p',onClick:imprimirLote},
-          _tw('\ud83d\udda8\ufe0f Imprimir Lote')+(selIds.length>0?' ('+selIds.length+' sel.)':filtered.length?' ('+filtered.length+')':'')),
+          _tw('\ud83d\udda8\ufe0f Imprimir Lote'),(selIds.length>0?' ('+selIds.length+' sel.)':filtered.length?' ('+filtered.length+')':'')),
         DELETED_REQS.length>0?ce('button',{
           className:'btn btn-s',style:{fontSize:11,background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
           onClick:function(){var rec=DELETED_REQS.pop();INIT_REQS.push(rec);notify('\u21a9\ufe0f '+rec.prot+' recuperado!');logAudit('Recuperou','Histórico','Protocolo recuperado');sgssSave();}
@@ -4656,7 +4656,7 @@ var rows=[];
           setTimeout(function(){URL.revokeObjectURL(url);},1000);
         }},_tw('\u2b07\ufe0f Excel')),
         ce('button',{className:'btn btn-s',onClick:imprimirLote},
-          _tw('\ud83d\udda8\ufe0f Imprimir Lote')+(selIds.length>0?' ('+selIds.length+' sel.)':'')),
+          _tw('\ud83d\udda8\ufe0f Imprimir Lote'),(selIds.length>0?' ('+selIds.length+' sel.)':'')),
         ce('button',{className:'btn btn-p',onClick:function(){setForm(Object.assign({},EMPTY));}},'+ Novo Funcion\u00e1rio')
       )
     ),
