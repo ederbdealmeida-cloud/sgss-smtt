@@ -2701,7 +2701,7 @@ function Solicitacoes(){
     var dTaxa=cat&&cat.taxa&&parseFloat(cat.taxa)>0?parseFloat(cat.taxa):0;
     setNIt(function(p){return p.map(function(it){
       if(it._k!==k)return it;
-      return Object.assign({},it,{catId:cid,cn:cat?cat.nome:'',fp:cat?cat.fp:'Pendente',subId:null,sn:'',taxa:dTaxa,horas:1,metros:1});
+      var afp=cat&&cat.fp==='Pago'?'Pago':'Gratuito';return Object.assign({},it,{catId:cid,cn:cat?cat.nome:'',fp:afp,subId:null,sn:'',taxa:afp==='Pago'?dTaxa:0,horas:1,metros:1});
     });});
   }
   function nmHandleSub(k,subId,it){
@@ -2711,8 +2711,8 @@ function Solicitacoes(){
     setNIt(function(p){return p.map(function(item){
       if(item._k!==k)return item;
       var h=item.horas||1;var ml=item.metros||1;
-      var taxa=sub?(sub.h?sub.taxa*h:sub.ml?sub.taxa*ml:sub.taxa):0;
-      if(item.fp==='Isento')taxa=0;
+      var rt=sub?(sub.h?sub.taxa*h:sub.ml?sub.taxa*ml:sub.taxa):0;
+      var taxa=item.fp==='Gratuito'?0:rt;
       return Object.assign({},item,{subId:sub?sub.id:null,sn:sub?sub.nome:'',taxa:taxa});
     });});
   }
@@ -2723,8 +2723,8 @@ function Solicitacoes(){
       var sub=subs.find(function(s){return s.id===it.subId;});
       if(sub&&sub.m&&!sub.ml)sub=Object.assign({},sub,{ml:sub.m});
       if(!sub)return it;
-      var taxa=sub.h?sub.taxa*(it.horas||1):sub.ml?sub.taxa*(it.metros||1):sub.taxa;
-      if(it.fp==='Isento')taxa=0;
+      var rt=sub.h?sub.taxa*(it.horas||1):sub.ml?sub.taxa*(it.metros||1):sub.taxa;
+      var taxa=it.fp==='Gratuito'?0:rt;
       return Object.assign({},it,{taxa:taxa});
     });});
   }
@@ -2815,27 +2815,14 @@ function Solicitacoes(){
               ce('input',{type:'checkbox',checked:it.urg==='Sim',onChange:function(e){nmUpd(it._k,'urg',e.target.checked?'Sim':'N\u00e3o');}}),'\ud83d\udea8 Urgente')
           ),
           /* Subcategoria + taxa */
-          it.catId&&(SUBS[it.catId]||[]).length?ce('div',{style:{display:'grid',gridTemplateColumns:'1fr auto',gap:8,marginBottom:8,alignItems:'end'}},
-            ce('div',null,
-              ce('label',{style:nL},'Modalidade / Subcategoria'),
-              ce('select',{style:nI,value:it.subId||'',onChange:function(e){nmHandleSub(it._k,e.target.value,it);}},
-                ce('option',{value:''},'Selecione...'),
-                (SUBS[it.catId]||[]).map(function(s){return ce('option',{key:s.id,value:s.id},s.nome);})
-              )
-            ),
-            /* Taxa / Isento */
-            ce('div',null,
-              ce('label',{style:nL},'Pagamento'),
-              ce('select',{style:Object.assign({},nI,{width:110}),value:it.fp||'Pendente',
-                onChange:function(e){nmUpd(it._k,'fp',e.target.value);setTimeout(function(){nmRecalc(it._k);},0);}},
-                ce('option',{value:'Pendente'},'Pendente'),
-                ce('option',{value:'Pago'},'Pago'),
-                ce('option',{value:'Isento'},'Isento')
-              )
+          it.catId&&(SUBS[it.catId]||[]).length?ce('div',{style:{marginBottom:8}},
+            ce('label',{style:nL},'Modalidade / Subcategoria'),
+            ce('select',{style:nI,value:it.subId||'',onChange:function(e){nmHandleSub(it._k,e.target.value,it);}},
+              ce('option',{value:''},'Selecione...'),
+              (SUBS[it.catId]||[]).map(function(s){return ce('option',{key:s.id,value:s.id},s.nome);})
             )
           ):null,
-          /* Contador horas */
-          it.subId&&(function(){var s=(SUBS[it.catId]||[]).find(function(s){return s.id===it.subId;});return s&&s.h;})()?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:8}},
+t.subId&&(function(){var s=(SUBS[it.catId]||[]).find(function(s){return s.id===it.subId;});return s&&s.h;})()?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:8}},
             ce('label',{style:Object.assign({},nL,{margin:0,whiteSpace:'nowrap'})},'\u23f1\ufe0f Horas:'),
             ce('button',{style:{padding:'4px 10px',border:'1px solid #cbd5e1',borderRadius:6,background:'#f1f5f9',cursor:'pointer',fontWeight:700},
               onClick:function(){nmUpd(it._k,'horas',Math.max(1,(it.horas||1)-1));setTimeout(function(){nmRecalc(it._k);},0);}},'-'),
@@ -2853,10 +2840,9 @@ function Solicitacoes(){
               onClick:function(){nmUpd(it._k,'metros',(it.metros||1)+1);setTimeout(function(){nmRecalc(it._k);},0);}},'+')
           ):null,
           /* Taxa display */
-          it.catId?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:8,padding:'8px 12px',background:it.fp==='Isento'?'#f0fdf4':'#eff6ff',borderRadius:8}},
+          it.catId&&it.fp==='Pago'?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:8,padding:'8px 12px',background:'#eff6ff',borderRadius:8}},
             ce('span',{style:{fontSize:12,fontWeight:600,color:'#475569'}},'Taxa:'),
-            ce('span',{style:{fontSize:16,fontWeight:800,color:it.fp==='Isento'?'#16a34a':'#1d4ed8'}},
-              it.fp==='Isento'?'Isento':'R$ '+(Number(it.taxa)||0).toFixed(2))
+            ce('span',{style:{fontSize:16,fontWeight:800,color:'#1d4ed8'}},'R$ '+(Number(it.taxa)||0).toFixed(2))
           ):null,
           ce('div',{style:{display:'grid',gridTemplateColumns:'2fr 80px 1fr',gap:8,marginBottom:8}},
             ce('div',null,ce('label',{style:nL},'Logradouro'),ce('input',{style:nI,value:it.rua,onChange:function(e){nmUpd(it._k,'rua',e.target.value);}})),
@@ -2896,7 +2882,7 @@ function Solicitacoes(){
         ce('label',{style:{display:'flex',alignItems:'center',gap:7,cursor:'pointer',background:'#fefce8',border:'1px solid #fde047',borderRadius:8,padding:'7px 14px',fontSize:13,fontWeight:700,color:'#854d0e'}},
           ce('input',{type:'checkbox',onChange:function(e){
             var isen=e.target.checked;
-            setNIt(function(p){return p.map(function(it){return Object.assign({},it,{fp:isen?'Isento':it.fp==='Isento'?'Pendente':it.fp,taxa:isen?0:it.taxa});});});
+            setNIt(function(p){return p.map(function(it){return Object.assign({},it,{fp:isen?'Isento':it.fp==='Isento'?(it.catId&&(CATS.find(function(c){return c.id===it.catId;})||{}).fp==='Pago'?'Pago':'Gratuito'):it.fp,taxa:isen?0:it.taxa});});});
           }}),'\u2b50 Isen\u00e7\u00e3o'
         ),
         ce('button',{className:'btn btn-s',onClick:function(){setNM(false);}},'\u00d7 Cancelar')
