@@ -2555,7 +2555,7 @@ function imprimirComprovanteServico(r,allReqs){
       +(s.urg==='Sim'?rw('Urgência','<span style="color:#dc2626">URGENTE</span>'):'')
     )
     +(s.descricao?'<div style="margin:6px 0 2px;padding:8px 10px;background:#f8fafc;border-left:3px solid #1d4ed8;border-radius:0 6px 6px 0;font-size:11px;color:#374151">'+s.descricao+'</div>':'')
-    +(s.foto?'<div style="margin:8px 0 2px"><img src="'+s.foto+'" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #e2e8f0;display:block"></div>':'')
+    +(s.foto?'<div style="margin:10px 0 4px"><img src="'+s.foto+'" style="max-width:100%;height:auto;border-radius:8px;border:1px solid #e2e8f0;display:block"></div>':'')
     +'</div>';
   }).join('');
   var endStr=(main.rua||'')+(main.num?', '+main.num:'')+(main.bairro?' - '+main.bairro:'');
