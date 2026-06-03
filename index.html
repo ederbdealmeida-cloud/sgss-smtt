@@ -2687,12 +2687,13 @@ function Solicitacoes(){
   }
   function nmBusca(q){if(!q||q.length<2){setNSug([]);return;}var ql=q.toLowerCase();setNSug(INIT_SOLS.filter(function(s){return s.nome.toLowerCase().indexOf(ql)>=0;}).slice(0,8));}
   function nmEscolher(sol){
-    setNSol(sol);setNSq(sol.nome);setNSug([]);
-    setNTel(sol.telefone||'');setNEmail(sol.email||'');
-    var last=nmLastSrv(sol);
+    var fresh=INIT_SOLS.find(function(s){return s.id===sol.id;})||sol;
+    setNSol(fresh);setNSq(fresh.nome);setNSug([]);
+    setNTel(fresh.telefone||'');setNEmail(fresh.email||'');
+    var last=nmLastSrv(fresh);
     var ob=last&&(last.rua||last.bairro)
-      ?{rua:last.rua||'',num:last.num||'',bairro:last.bairro||'',ref:last.ref||'',tel:sol.telefone||'',email:sol.email||''}
-      :{tel:sol.telefone||'',email:sol.email||''};
+      ?{rua:last.rua||'',num:last.num||'',bairro:last.bairro||'',ref:last.ref||'',tel:fresh.telefone||'',email:fresh.email||''}
+      :{rua:fresh.rua||'',num:fresh.numero||'',bairro:fresh.bairro||'',ref:fresh.ref||'',tel:fresh.telefone||'',email:fresh.email||''};
     setNIt([nmEmpty(ob)]);
   }
   function nmHandleCat(k,catId){
