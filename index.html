@@ -5753,23 +5753,24 @@ function Agenda(){
         )
       ),
       ce('div',{className:'form-section'},
-        ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,alignItems:'start'}},
-          ce('div',null,
+        ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,alignItems:'stretch'}},
+          ce('div',{style:{display:'flex',flexDirection:'column'}},
+            ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:4}},'📷 Foto'),
+            ce('label',{style:{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',border:'2px dashed #cbd5e1',borderRadius:8,cursor:'pointer',background:'#f8fafc',overflow:'hidden',minHeight:140,position:'relative'}},
+              agForm.foto
+                ?ce('img',{src:agForm.foto,style:{width:'100%',height:'100%',objectFit:'contain',position:'absolute',top:0,left:0}})
+                :ce('span',{style:{fontSize:12,color:'#94a3b8',textAlign:'center',padding:8}},'📷 Clique para adicionar foto'),
+              ce('input',{type:'file',accept:'image/*',style:{display:'none'},onChange:handleFotoAg})
+            ),
+            agForm.foto?ce('button',{type:'button',style:{marginTop:4,fontSize:11,color:'#dc2626',background:'none',border:'none',cursor:'pointer'},
+              onClick:function(){setFld('foto',null);}},'× Remover foto'):null
+          ),
+          ce('div',{style:{display:'flex',flexDirection:'column'}},
             ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:4}},'📝 Descrição'),
-            ce('textarea',{style:{width:'100%',padding:'8px 10px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:13,resize:'none',height:120,outline:'none',fontFamily:'inherit',boxSizing:'border-box'},
+            ce('textarea',{style:{flex:1,width:'100%',padding:'8px 10px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:13,resize:'none',outline:'none',fontFamily:'inherit',boxSizing:'border-box',minHeight:140},
               placeholder:'Descreva o problema com detalhes...',
               value:agForm.descricao||'',onChange:function(e){setFld('descricao',e.target.value);}}
             )
-          ),
-          ce('div',null,
-            ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:4}},'📷 Foto'),
-            ce('label',{style:{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',border:'2px dashed #cbd5e1',borderRadius:8,padding:'12px',cursor:'pointer',background:'#f8fafc',minHeight:80,textAlign:'center'}},
-              agForm.foto?ce('img',{src:agForm.foto,style:{maxWidth:'100%',maxHeight:100,borderRadius:6,objectFit:'contain'}})
-                :ce('span',{style:{fontSize:12,color:'#94a3b8'}},'📷 Clique para adicionar foto'),
-              ce('input',{type:'file',accept:'image/*',style:{display:'none'},onChange:handleFotoAg})
-            ),
-            agForm.foto?ce('button',{type:'button',style:{marginTop:6,fontSize:11,color:'#dc2626',background:'none',border:'none',cursor:'pointer'},
-              onClick:function(){setFld('foto',null);}},'× Remover foto'):null
           )
         )
       ),
