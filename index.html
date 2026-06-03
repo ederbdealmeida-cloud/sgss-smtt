@@ -1,3 +1,11 @@
+s.ml||s.m;})()?ce('div',{style:{marginBottom:8}},
+            ce('label',{style:Object.assign({},nL,{marginBottom:6})},'📰 Metros Lineares'),
+            ce('div',{className:'hora-calc'},
+              ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'metros',Math.max(1,(it.metros||1)-1));setTimeout(function(){nmRecalc(it._k);},0);}},'−'),
+              ce('span',{className:'hora-val'},(it.metros||1)+'m'),
+              ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'metros',(it.metros||1)+1);setTimeout(function(){nmRecalc(it._k);},0);}},'+'
+            ))
+          ):null,
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -2850,22 +2858,22 @@ function Solicitacoes(){
               (SUBS[it.catId]||[]).map(function(s){return ce('option',{key:s.id,value:s.id},s.nome);})
             )
           ):null,
-          it.subId&&(function(){var s=(SUBS[it.catId]||[]).find(function(s){return s.id===it.subId;});return s&&s.h;})()?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:8}},
-            ce('label',{style:Object.assign({},nL,{margin:0,whiteSpace:'nowrap'})},'\u23f1\ufe0f Horas:'),
-            ce('button',{style:{padding:'4px 10px',border:'1px solid #cbd5e1',borderRadius:6,background:'#f1f5f9',cursor:'pointer',fontWeight:700},
-              onClick:function(){nmUpd(it._k,'horas',Math.max(1,(it.horas||1)-1));setTimeout(function(){nmRecalc(it._k);},0);}},'-'),
-            ce('span',{style:{minWidth:30,textAlign:'center',fontWeight:700,fontSize:15}},it.horas||1),
-            ce('button',{style:{padding:'4px 10px',border:'1px solid #cbd5e1',borderRadius:6,background:'#f1f5f9',cursor:'pointer',fontWeight:700},
-              onClick:function(){nmUpd(it._k,'horas',(it.horas||1)+1);setTimeout(function(){nmRecalc(it._k);},0);}},'+')
+          it.subId&&(function(){var s=(SUBS[it.catId]||[]).find(function(s){return s.id===it.subId;});return s&&s.h;})()?ce('div',{style:{marginBottom:8}},
+            ce('label',{style:Object.assign({},nL,{marginBottom:6})},'⏱️ Quantidade de Horas'),
+            ce('div',{className:'hora-calc'},
+              ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'horas',Math.max(1,(it.horas||1)-1));setTimeout(function(){nmRecalc(it._k);},0);}},'−'),
+              ce('span',{className:'hora-val'},(it.horas||1)+'h'),
+              ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'horas',(it.horas||1)+1);setTimeout(function(){nmRecalc(it._k);},0);}},'+'
+            ))
           ):null,
           /* Contador metros lineares */
-          it.subId&&(function(){var s=(SUBS[it.catId]||[]).find(function(s){return s.id===it.subId;});return s&&(s.ml||s.m);})()?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:8}},
-            ce('label',{style:Object.assign({},nL,{margin:0,whiteSpace:'nowrap'})},'\ud83d\udcd0 Metros lineares:'),
-            ce('button',{style:{padding:'4px 10px',border:'1px solid #cbd5e1',borderRadius:6,background:'#f1f5f9',cursor:'pointer',fontWeight:700},
-              onClick:function(){nmUpd(it._k,'metros',Math.max(1,(it.metros||1)-1));setTimeout(function(){nmRecalc(it._k);},0);}},'-'),
-            ce('span',{style:{minWidth:40,textAlign:'center',fontWeight:700,fontSize:15}},it.metros||1),
-            ce('button',{style:{padding:'4px 10px',border:'1px solid #cbd5e1',borderRadius:6,background:'#f1f5f9',cursor:'pointer',fontWeight:700},
-              onClick:function(){nmUpd(it._k,'metros',(it.metros||1)+1);setTimeout(function(){nmRecalc(it._k);},0);}},'+')
+          it.subId&&(function(){var s=(SUBS[it.catId]||[]).find(function(s){return s.id===it.subId;});return s&&(s.ml||s.m);})()?ce('div',{style:{marginBottom:8}},
+            ce('label',{style:Object.assign({},nL,{marginBottom:6})},'📰 Metros Lineares'),
+            ce('div',{className:'hora-calc'},
+              ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'metros',Math.max(1,(it.metros||1)-1));setTimeout(function(){nmRecalc(it._k);},0);}},'−'),
+              ce('span',{className:'hora-val'},(it.metros||1)+'m'),
+              ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'metros',(it.metros||1)+1);setTimeout(function(){nmRecalc(it._k);},0);}},'+'
+            ))
           ):null,
           /* Taxa display */
           it.catId&&it.fp==='Pago'?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:8,padding:'8px 12px',background:'#eff6ff',borderRadius:8}},
