@@ -1463,7 +1463,12 @@ function emojiToTw(s){
     '\u23f3':'23f3','\u23f1':'23f1','\u23f0':'23f0','\u231b':'231b',
     '\u2b07':'2b07','\u2b06':'2b06','\u27a1':'27a1','\u2139':'2139',
     '\u2795':'2795','\u270f':'270f','\u270d':'270d','\u2728':'2728',
-    '\ud83c\udfe0':'1f3e0','\ud83c\udfe2':'1f3e2','\ud83c\udfe5':'1f3e5'
+    '\ud83c\udfe0':'1f3e0','\ud83c\udfe2':'1f3e2','\ud83c\udfe5':'1f3e5',
+    '\ud83d\udccc':'1f4cc','\ud83d\uddc2':'1f5c2','\ud83d\udcac':'1f4ac',
+    '\ud83d\udd27':'1f527','\u2699':'2699','\ud83d\udcf7':'1f4f7',
+    '\ud83d\udcbe':'1f4be','\ud83d\udcef':'1f4ef','\ud83d\udd04':'1f504',
+    '\ud83d\udc68':'1f468','\ud83d\udc69':'1f469','\ud83d\udda8':'1f5a8',
+    '\ud83c\udfc3':'1f3c3','\ud83d\udcc6':'1f4c6','\ud83d\udce8':'1f4e8'
   };
   return s.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\u2B00-\u2BFF]/g,function(e){
     var fe=e.replace(/\uFE0F/g,''); /* remove variation selector */
@@ -6596,12 +6601,18 @@ window._HTML_TEMPLATE=(function(){
 })();
 
 function _mountApp(){ReactDOM.createRoot(document.getElementById('root')).render(ce(App,null));
-  // Twemoji: parse emoji as SVG after each React update
   var _twEl=document.getElementById('root');
-  function _twParse(){if(window.twemoji)twemoji.parse(_twEl,{folder:'svg',ext:'.svg'});}
-  // Parse on load and on each navigation (via hash change or click)
-  setTimeout(_twParse,800);
-  setInterval(_twParse,2000);
+  var _twTO=null;
+  var _twBase='https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/';
+  function _twParse(){if(!window.twemoji)return;twemoji.parse(_twEl,{base:_twBase,folder:'svg',ext:'.svg'});}
+  var _twObs=new MutationObserver(function(muts){
+    var skip=muts.every(function(m){return Array.prototype.every.call(m.addedNodes,function(n){return n.nodeName==='IMG'&&n.className==='emoji';});});
+    if(skip)return;
+    clearTimeout(_twTO);
+    _twTO=setTimeout(_twParse,80);
+  });
+  _twObs.observe(_twEl,{childList:true,subtree:true});
+  setTimeout(_twParse,200);
 }
 if(window._sgssLoaded){_mountApp();} else {
   document.getElementById('root').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#eef2f7;gap:16px">'
