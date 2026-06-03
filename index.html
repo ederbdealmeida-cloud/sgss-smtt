@@ -5679,16 +5679,16 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
           ce('label',null,'Data'),
           ce('input',{type:'date',value:agForm.date||'',readOnly:true,className:'readonly'})
         ),
-        ce('div',{className:'fg'},
-          ce('label',null,'Urg\u00eancia'),
-          ce('select',{value:agForm.urg||'N\u00e3o',onChange:function(e){setFld('urg',e.target.value);}},
-            ce('option',{value:'N\u00e3o'},'N\u00e3o'),ce('option',{value:'Sim'},'Sim'))
-        ),
         ce('div',{className:'fg s2'},
-          ce('label',null,'Tipo de Servi\u00e7o ',ce('span',{className:'req'},'*')),
-          ce('select',{value:agForm.catId||'',onChange:function(e){handleCatAg(e.target.value);}},
-            ce('option',{value:''},'Selecione o servi\u00e7o...'),
-            CATS.map(function(c){return ce('option',{key:c.id,value:c.id},c.nome+' ('+c.fp+')');}))
+          ce('label',null,'Tipo de Serviço ',ce('span',{className:'req'},'*')),
+          ce('div',{style:{display:'flex',alignItems:'center',gap:10}},
+            ce('select',{style:{flex:1},value:agForm.catId||'',onChange:function(e){handleCatAg(e.target.value);}},
+              ce('option',{value:''},'Selecione o serviço...'),
+              CATS.map(function(c){return ce('option',{key:c.id,value:c.id},c.nome+' ('+c.fp+')');})),
+            ce('label',{style:{display:'flex',alignItems:'center',gap:5,cursor:'pointer',whiteSpace:'nowrap',fontSize:13,fontWeight:600,color:agForm.urg==='Sim'?'#dc2626':'#64748b',padding:'6px 10px',background:agForm.urg==='Sim'?'#fef2f2':'#f8fafc',border:'1px solid '+(agForm.urg==='Sim'?'#fca5a5':'#e2e8f0'),borderRadius:6}},
+              ce('input',{type:'checkbox',checked:agForm.urg==='Sim',onChange:function(e){setFld('urg',e.target.checked?'Sim':'Não');}}),
+              '🚨 Urgente')
+          )
         ),
         subcats.length>0?ce('div',{className:'fg s2'},
           ce('label',null,'Subcategoria de Servi\u00e7o'),
@@ -5709,11 +5709,12 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
         subInfo&&subInfo.ml?ce('div',{className:'fg s2'},
           ce('label',null,'\ud83d\udccf Metros Lineares ',ce('span',{style:{fontSize:11,color:'#64748b'}},'('+(subInfo.ml===1?'Asf\u00e1ltico':'Pedras Irregulares')+')')),
           ce('div',{className:'hora-calc'},
-            ce('button',{className:'btn-hora',style:{fontSize:18,fontWeight:700,width:32,height:32},onClick:function(){setMetros(function(v){return Math.max(1,v-1);})}},'\u2212'),
-            ce('span',{style:{display:'inline-block',minWidth:48,textAlign:'center',fontSize:18,fontWeight:700,color:'#1e3a5f'}},metros+'m'),
-            ce('button',{className:'btn-hora',style:{fontSize:18,fontWeight:700,width:32,height:32},onClick:function(){setMetros(function(v){return v+1;})}},'+')
-          ),
-          ce('div',{style:{marginTop:6,fontSize:13,color:'#64748b'}},metros+' m \u00d7 '+fmt(subInfo.taxa)+'/m = ',ce('strong',{style:{fontSize:16,color:'#1e3a5f',marginLeft:4}},fmt(subInfo.taxa*metros)))
+            ce('button',{className:'btn-hora',onClick:function(){setMetros(function(v){return Math.max(1,v-1);});}},'−'),
+            ce('span',{className:'hora-val'},metros+'m'),
+            ce('button',{className:'btn-hora',onClick:function(){setMetros(function(v){return v+1;});}},'+'),
+            ce('span',{style:{color:'#64748b',fontSize:12,marginLeft:4}},'× R$ '+Number(subInfo.taxa).toFixed(2).replace('.',',')+'/m = '),
+            ce('strong',{style:{fontSize:13,color:'#1e3a5f'}},fmt(subInfo.taxa*metros))
+          )
         ):null,
         subInfo?ce('div',{className:'fg'},
           ce('label',null,'Taxa Total'),
