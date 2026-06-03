@@ -2623,6 +2623,8 @@ function Solicitacoes(){
   var sNIt=useState([]);var nIt=sNIt[0];var setNIt=sNIt[1];
   var sNTel=useState('');var nTel=sNTel[0];var setNTel=sNTel[1];
   var sNEmail=useState('');var nEmail=sNEmail[0];var setNEmail=sNEmail[1];
+  var sNReg=useState(false);var nReg=sNReg[0];var setNReg=sNReg[1];
+  var sNRegD=useState({rua:'',numero:'',bairro:'',ref:''});var nRegD=sNRegD[0];var setNRegD=sNRegD[1];
   var filtered=all.filter(function(r){if(!srch)return true;var q=srch.toLowerCase();
   return r.nom.toLowerCase().indexOf(q)>=0
     ||r.prot.toLowerCase().indexOf(q)>=0
@@ -2737,6 +2739,18 @@ function Solicitacoes(){
       nmUpd(k,'foto',cv.toDataURL('image/jpeg',0.75));};
     img.src=ev.target.result;};rd.readAsDataURL(file);
   }
+  function nmCadastrarNovo(){
+    if(!nSq.trim()){notify('Informe o nome do solicitante.');return;}
+    var novo={id:uid(),nome:nSq.trim(),rua:nRegD.rua||'',numero:nRegD.numero||'',
+      bairro:nRegD.bairro||'',ref:nRegD.ref||'',telefone:nTel||'',email:nEmail||''};
+    INIT_SOLS.push(novo);
+    sgssSave();
+    setNSol(novo);setNSug([]);
+    setNReg(false);setNRegD({rua:'',numero:'',bairro:'',ref:''});
+    var ob={rua:novo.rua,num:novo.numero,bairro:novo.bairro,ref:novo.ref,tel:novo.telefone,email:novo.email};
+    setNIt([nmEmpty(ob)]);
+    notify('\u2705 Solicitante cadastrado com ID '+novo.id);
+  }
   function nmSameAddr(k,chk){
     setNIt(function(p){return p.map(function(it){
       if(it._k!==k)return it;
@@ -2768,7 +2782,7 @@ function Solicitacoes(){
     saveSession();
     sgssSave();
     setAll(INIT_REQS.map(function(x){return Object.assign({},x);}));
-    setNM(false);setNSol(null);setNSq('');setNTel('');setNEmail('');setNIt([]);
+    setNM(false);setNSol(null);setNSq('');setNTel('');setNEmail('');setNReg(false);setNRegD({rua:'',numero:'',bairro:'',ref:''});setNIt([]);
     notify('\u2705 '+nIt.length+' serviço(s) registado(s)! Protocolo: '+firstProt);
   }
   var EMPTY={nom:'',dt:today(),solId:null,bairro:'',rua:'',num:'',ref:'',tel:'',email:'',catId:'',cn:'',fp:'',subId:null,sn:'',taxa:0,urg:'N\xe3o',foto:null,descricao:''};
@@ -2794,7 +2808,37 @@ function Solicitacoes(){
             ce('input',{style:nI,placeholder:'Digite para buscar...',value:nSq,
               onChange:function(e){setNSq(e.target.value);nmBusca(e.target.value);if(nSol&&e.target.value!==nSol.nome)setNSol(null);}}),
             nSol?ce('div',{style:{fontSize:11,color:'#16a34a',marginTop:3}},'\u2713 ID '+nSol.id+' \u2014 '+nSol.bairro):
-              (nSq.trim()&&!nSol?ce('div',{style:{fontSize:11,color:'#d97706',marginTop:3}},'\u2b50 Novo solicitante ser\u00e1 cadastrado'):null),
+              nSq.trim()&&!nSol?ce('div',{style:{marginTop:6}},
+              ce('div',{style:{display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}},
+                ce('span',{style:{fontSize:11,color:'#d97706',fontWeight:600}},'\u2b50 Solicitante n\u00e3o encontrado'),
+                ce('button',{type:'button',style:{fontSize:11,padding:'3px 10px',background:nReg?'#1d4ed8':'#f1f5f9',color:nReg?'#fff':'#374151',border:'1px solid #cbd5e1',borderRadius:5,cursor:'pointer',fontWeight:600},
+                  onClick:function(){setNReg(function(v){return !v;});}},nReg?'\u2715 Fechar':'\ud83d\udcdd Cadastrar Primeiro'),
+                ce('span',{style:{fontSize:10,color:'#94a3b8'}},'ou prossiga e os dados ser\u00e3o salvos ao gravar')
+              ),
+              nReg?ce('div',{style:{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:8,padding:'12px',marginTop:8}},
+                ce('div',{style:{fontSize:12,fontWeight:700,color:'#1e3a5f',marginBottom:8}},'\ud83d\udc64 Dados Cadastrais'),
+                ce('div',{style:{display:'grid',gridTemplateColumns:'2fr 80px 1fr',gap:8,marginBottom:8}},
+                  ce('div',null,ce('label',{style:{fontSize:11,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'Logradouro'),
+                    ce('input',{style:{width:'100%',padding:'6px 9px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:12,outline:'none',boxSizing:'border-box'},
+                      value:nRegD.rua,onChange:function(e){setNRegD(function(p){return Object.assign({},p,{rua:e.target.value});})}})),
+                  ce('div',null,ce('label',{style:{fontSize:11,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'N\u00ba'),
+                    ce('input',{style:{width:'100%',padding:'6px 9px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:12,outline:'none',boxSizing:'border-box'},
+                      value:nRegD.numero,onChange:function(e){setNRegD(function(p){return Object.assign({},p,{numero:e.target.value});})}})),
+                  ce('div',null,ce('label',{style:{fontSize:11,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'Bairro'),
+                    ce('input',{style:{width:'100%',padding:'6px 9px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:12,outline:'none',boxSizing:'border-box'},
+                      value:nRegD.bairro,onChange:function(e){setNRegD(function(p){return Object.assign({},p,{bairro:e.target.value});})}}))  
+                ),
+                ce('div',{style:{marginBottom:8}},
+                  ce('label',{style:{fontSize:11,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'Ponto de Refer\u00eancia'),
+                  ce('input',{style:{width:'100%',padding:'6px 9px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:12,outline:'none',boxSizing:'border-box'},
+                    value:nRegD.ref,onChange:function(e){setNRegD(function(p){return Object.assign({},p,{ref:e.target.value});})}}
+                  )
+                ),
+                ce('div',{style:{fontSize:10,color:'#94a3b8',marginBottom:8}},'Telefone e e-mail ser\u00e3o preenchidos dos campos abaixo'),
+                ce('button',{type:'button',style:{background:'#16a34a',color:'#fff',border:'none',borderRadius:6,padding:'7px 16px',cursor:'pointer',fontSize:12,fontWeight:700},
+                  onClick:nmCadastrarNovo},'\u2705 Confirmar Cadastro e Selecionar')
+              ):null
+            ):null,
             nSug.length?ce('div',{style:{position:'absolute',top:'100%',left:0,right:0,background:'#fff',border:'1px solid #cbd5e1',borderRadius:8,boxShadow:'0 4px 16px rgba(0,0,0,.14)',zIndex:200,maxHeight:220,overflowY:'auto'}},
               nSug.map(function(s){return ce('div',{key:s.id,style:{padding:'9px 13px',cursor:'pointer',borderBottom:'1px solid #f1f5f9',fontSize:13},
                 onMouseDown:function(e){e.preventDefault();nmEscolher(s);}},
