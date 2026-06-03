@@ -6421,6 +6421,7 @@ function Graficos(){
   var sSt=useState('');var fSt=sSt[0];var setFSt=sSt[1];
   var sCI=useState(null);var chartInst=sCI[0];var setChartInst=sCI[1];
   var sMsg=useState('');var msg=sMsg[0];var setMsg=sMsg[1];
+  var sRK=useState(0);var resetKey=sRK[0];var setResetKey=sRK[1];
   var canvasRef=useRef(null);
   useEffect(function(){if(!msg)return;var t=setTimeout(function(){setMsg('');},3000);return function(){clearTimeout(t);};},[msg]);
   function filtrar(){
@@ -6487,7 +6488,7 @@ function Graficos(){
     setChartInst(nc);
   }
   function exportPNG(){if(!canvasRef.current)return;var a=document.createElement('a');a.href=canvasRef.current.toDataURL('image/png');a.download='grafico-sgss-'+new Date().toISOString().slice(0,10)+'.png';a.click();}
-  function limpar(){setDtDe('');setDtAte('');setFFunc('');setFCat('');setFSt('');}
+  function limpar(){setDtDe('');setDtAte('');setFFunc('');setFCat('');setFSt('');if(chartInst){chartInst.destroy();setChartInst(null);}setResetKey(function(k){return k+1;});}
   var nI={width:'100%',padding:'8px 10px',border:'1.5px solid #cbd5e1',borderRadius:6,fontSize:13,fontFamily:"'Inter',sans-serif",background:'#fff',outline:'none',boxSizing:'border-box'};
   var nL={fontSize:11,fontWeight:700,color:'#475569',display:'block',marginBottom:4,textTransform:'uppercase',letterSpacing:'.4px'};
   return ce('div',{className:'page'},
@@ -6511,7 +6512,7 @@ function Graficos(){
           ce('select',{style:nI,value:tipo,onChange:function(e){setTipo(e.target.value);}},
             TIPOS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);})))
       ),
-      ce('div',{style:{borderTop:'1px solid #f1f5f9',paddingTop:12}},
+      ce('div',{key:'fg-'+resetKey,style:{borderTop:'1px solid #f1f5f9',paddingTop:12}},
         ce('p',{style:{fontSize:11,fontWeight:700,color:'#94a3b8',marginBottom:10,textTransform:'uppercase',letterSpacing:'.4px'}},'\uD83D\uDD0D Filtros opcionais'),
         ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12}},
           ce('div',null,ce('label',{style:nL},'De'),ce('input',{type:'date',style:nI,value:dtDe,onChange:function(e){setDtDe(e.target.value);}})),
