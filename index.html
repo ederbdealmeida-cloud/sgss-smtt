@@ -2766,7 +2766,11 @@ function Solicitacoes(){
     if(!nSol&&!nSq.trim()){notify('Informe o solicitante.');return;}
     if(!nIt.length||!nIt[0].cn){notify('Informe pelo menos 1 serviço.');return;}
     var sol=nSol;
-    if(!sol){sol={id:uid(),nome:nSq.trim(),rua:'',numero:'',bairro:'',telefone:nTel||'',email:nEmail||'',ref:''};INIT_SOLS.push(sol);}
+    if(!sol){
+      sol={id:uid(),nome:nSq.trim(),rua:nRegD.rua||'',numero:nRegD.numero||'',
+        bairro:nRegD.bairro||'',ref:nRegD.ref||'',telefone:nTel||'',email:nEmail||''};
+      INIT_SOLS.push(sol);
+    }
     var grp=uid();
     var firstProt='';
     nIt.forEach(function(it,ix){
