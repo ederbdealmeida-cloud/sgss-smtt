@@ -2690,10 +2690,8 @@ function Solicitacoes(){
     var fresh=INIT_SOLS.find(function(s){return s.id===sol.id;})||sol;
     setNSol(fresh);setNSq(fresh.nome);setNSug([]);
     setNTel(fresh.telefone||'');setNEmail(fresh.email||'');
-    var last=nmLastSrv(fresh);
-    var ob=last&&(last.rua||last.bairro)
-      ?{rua:last.rua||'',num:last.num||'',bairro:last.bairro||'',ref:last.ref||'',tel:fresh.telefone||'',email:fresh.email||''}
-      :{rua:fresh.rua||'',num:fresh.numero||'',bairro:fresh.bairro||'',ref:fresh.ref||'',tel:fresh.telefone||'',email:fresh.email||''};
+    var ob={rua:fresh.rua||'',num:fresh.numero||'',bairro:fresh.bairro||'',
+      ref:fresh.ref||'',tel:fresh.telefone||'',email:fresh.email||''};
     setNIt([nmEmpty(ob)]);
   }
   function nmHandleCat(k,catId){
