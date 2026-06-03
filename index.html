@@ -20,7 +20,7 @@ if('serviceWorker' in navigator){
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&family=Rubik:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&family=Rubik:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e3a5f">
@@ -131,7 +131,11 @@ body{height:100%;font-family:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif
 
 /* ── TABLES ── */
 .tbl-wrap{overflow-x:auto;border-radius:var(--r-md);border:1px solid var(--c-border)}
-.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:600px;font-family:'Inter',sans-serif}
+.tbl td,.tbl th{font-family:'Inter',sans-serif}
+.tbl code,code{font-family:'DM Mono','Courier New',monospace;font-size:12px;letter-spacing:.03em}
+.tbl td[style*='right']{font-family:'DM Mono','Courier New',monospace;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.tbl td:first-child{font-family:'DM Mono','Courier New',monospace;font-size:12px;color:#64748b}
 .tbl th{background:#1e3a5f;color:#e2e8f0;font-weight:700;padding:11px 13px;text-align:left;border-bottom:none;white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
 .tbl td{padding:10px 12px;border-bottom:1px solid #f8fafc;vertical-align:middle}
 .tbl tbody tr:nth-child(even) td{background:#fafbfc}
@@ -523,7 +527,7 @@ td[title]:hover::after{content:attr(title);position:fixed;background:#1e293b;
 .cfdlg-ok.green{background:#16a34a}.cfdlg-ok.green:hover{background:#15803d}
 
 /* ── Primeira coluna travada nas tabelas CRUD ── */
-.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;font-family:'Inter',sans-serif}
 .tbl{min-width:600px}
 .tbl thead th:first-child,
 .tbl tbody td:first-child{
