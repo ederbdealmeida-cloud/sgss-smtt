@@ -5494,6 +5494,8 @@ function Agenda(){
   var sSolRef=useState(null);var solRef=sSolRef[0];var setSolRef=sSolRef[1];
   var sisen=useState(false);var isento=sisen[0];var setIsento=sisen[1];
   var sDelAg=useState(null);var delAgId=sDelAg[0];var setDelAgId=sDelAg[1];
+  var sAgReg=useState(false);var agReg=sAgReg[0];var setAgReg=sAgReg[1];
+  var sAgRegD=useState({nome:'',rua:'',numero:'',bairro:'',ref:'',tel:'',email:''});var agRegD=sAgRegD[0];var setAgRegD=sAgRegD[1];
   var sEdAgId=useState(null);var editAgId=sEdAgId[0];var setEditAgId=sEdAgId[1];
   var sdpg=useState(1);var dayPg=sdpg[0];var setDayPg=sdpg[1];
   var slpg=useState(1);var listPg=slpg[0];var setListPg=slpg[1];
@@ -5597,6 +5599,13 @@ function Agenda(){
       rua:fresh.rua||'',num:fresh.numero||'',bairro:fresh.bairro||'',ref:fresh.ref||''});});
   }
 
+  function cadastrarNovoAg(){
+    if(!agRegD.nome.trim()){notify('Informe o nome.');return;}
+    var novo={id:uid(),nome:agRegD.nome.trim(),rua:agRegD.rua||'',numero:agRegD.numero||'',bairro:agRegD.bairro||'',ref:agRegD.ref||'',telefone:agRegD.tel||agForm.tel||'',email:agRegD.email||agForm.email||''};
+    INIT_SOLS.push(novo);sgssSave();selectSolAg(novo);
+    setAgReg(false);setAgRegD({nome:'',rua:'',numero:'',bairro:'',ref:'',tel:'',email:''});
+    notify('\u2705 Solicitante cadastrado!');
+  }
   function handleMesmoEndAg(chk){
     setMesmoEnd(chk);
     if(chk&&solRef)setAgForm(function(f){return Object.assign({},f,{
@@ -5613,7 +5622,7 @@ function Agenda(){
     var novo=Object.assign({},agForm,{id:AGENDA_NEXT_ID++,status:'Agendado',taxa:taxaFinal,fp:fpFinal,isento:isento});
     AGENDA_LIST.push(novo);
     setAgItems(AGENDA_LIST.slice());
-    setAgForm(null);setSubcats([]);setSubInfo(null);setSugs([]);setLocked(false);setMesmoEnd(false);setSolRef(null);setIsento(false);
+    setAgForm(null);setSubcats([]);setSubInfo(null);setSugs([]);setLocked(false);setMesmoEnd(false);setSolRef(null);setIsento(false);setAgReg(false);setAgRegD({nome:'',rua:'',numero:'',bairro:'',ref:'',tel:'',email:''});
     sgssSave();
     notify('\u2705 Agendamento salvo!');
   }
@@ -5706,7 +5715,12 @@ function Agenda(){
           ce('label',null,'Nome do Solicitante ',ce('span',{className:'req'},'*')),
           ce('input',{value:agForm.nome||'',onChange:function(e){handleSolInputAg(e.target.value);},placeholder:'Digite o nome para buscar...'}),
           sugs.length>0?ce('div',{className:'ac-list'},sugs.map(function(s){return ce('div',{key:s.id,className:'ac-item',onClick:function(){selectSolAg(s);}},ce('strong',null,s.nome),' \u2014 '+s.rua+', '+s.numero+' \u2013 '+s.bairro);})):null,
-          locked?ce('span',{className:'lock-badge'},'\ud83d\udd12 Dados carregados do cadastro'):null
+          locked?ce('span',{className:'lock-badge'},'\ud83d\udd12 Dados carregados do cadastro'):null,
+          !locked&&agForm.nome&&agForm.nome.length>=2&&sugs.length===0?ce('div',{style:{display:'flex',alignItems:'center',gap:8,marginTop:4}},
+            ce('span',{style:{fontSize:11,color:'#d97706',fontWeight:600}},'\u2b50 N\u00e3o encontrado'),
+            ce('button',{type:'button',style:{fontSize:11,padding:'3px 10px',background:'#2563eb',color:'#fff',border:'none',borderRadius:5,cursor:'pointer',fontWeight:600},
+              onClick:function(){setAgRegD(function(p){return Object.assign({},p,{nome:agForm.nome,tel:agForm.tel||'',email:agForm.email||''});});setAgReg(true);}},'\ud83d\udcdd Cadastrar Primeiro')
+          ):null
         ),
         solRef&&(solRef.rua||solRef.bairro)?ce('div',{style:{gridColumn:'1/-1',padding:'7px 10px',background:'#f0f9ff',borderRadius:6,fontSize:11,color:'#0369a1',fontWeight:600,marginBottom:4}},
           '🏠 Residência: '+(solRef.rua||'')+(solRef.numero?' nº '+solRef.numero:'')+(solRef.bairro?' — '+solRef.bairro:'')):null,
@@ -5734,7 +5748,43 @@ function Agenda(){
           ce('label',{htmlFor:'ag-isento',style:{cursor:'pointer',fontSize:12,color:'#92400e',fontWeight:500}},'\u26d4 Hipossuficiente / Isento \u2014 Isentar taxa')
         ),
         ce('button',{className:'btn btn-s',onClick:function(){setAgForm(null);setSubcats([]);setSubInfo(null);setSugs([]);setLocked(false);setIsento(false);}},'\u2715 Cancelar'),
-        ce('button',{className:'btn btn-p',ononClick:salvarAg},editAgId?'\u2714 Atualizar':'💾 Salvar Agendamento') )
+        agReg?ce('div',{style:{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.6)',zIndex:900,display:'flex',alignItems:'center',justifyContent:'center'}},
+          ce('div',{style:{background:'#fff',borderRadius:12,width:'min(96vw,460px)',overflow:'hidden',boxShadow:'0 20px 60px rgba(0,0,0,.35)'}},
+            ce('div',{style:{background:'#1e3a5f',color:'#fff',padding:'13px 16px',display:'flex',justifyContent:'space-between',alignItems:'center'}},
+              ce('b',null,'👤 Cadastrar Solicitante'),
+              ce('button',{onClick:function(){setAgReg(false);},style:{background:'rgba(255,255,255,.18)',color:'#fff',border:'none',borderRadius:6,padding:'3px 10px',cursor:'pointer',fontSize:16}},'×')
+            ),
+            ce('div',{style:{padding:'16px'}},
+              ce('div',{style:{marginBottom:10}},ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'Nome *'),
+                ce('input',{style:{width:'100%',padding:'7px 10px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:13,outline:'none',boxSizing:'border-box'},value:agRegD.nome,onChange:function(e){var v=e.target.value;setAgRegD(function(p){return Object.assign({},p,{nome:v});})}})
+              ),
+              ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}},
+                ce('div',null,ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'Telefone'),
+                  ce('input',{style:{width:'100%',padding:'7px 10px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:13,outline:'none',boxSizing:'border-box'},value:agRegD.tel,onChange:function(e){var v=e.target.value;setAgRegD(function(p){return Object.assign({},p,{tel:v});})}}
+                )),ce('div',null,ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'E-mail'),
+                  ce('input',{type:'email',style:{width:'100%',padding:'7px 10px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:13,outline:'none',boxSizing:'border-box'},value:agRegD.email,onChange:function(e){var v=e.target.value;setAgRegD(function(p){return Object.assign({},p,{email:v});})}}
+                ))
+              ),
+              ce('div',{style:{display:'grid',gridTemplateColumns:'2fr 80px 1fr',gap:8,marginBottom:10}},
+                ce('div',null,ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'Logradouro'),
+                  ce('input',{style:{width:'100%',padding:'7px 10px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:13,outline:'none',boxSizing:'border-box'},value:agRegD.rua,onChange:function(e){var v=e.target.value;setAgRegD(function(p){return Object.assign({},p,{rua:v});})}}
+                )),ce('div',null,ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'Nº'),
+                  ce('input',{style:{width:'100%',padding:'7px 10px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:13,outline:'none',boxSizing:'border-box'},value:agRegD.numero,onChange:function(e){var v=e.target.value;setAgRegD(function(p){return Object.assign({},p,{numero:v});})}}
+                )),ce('div',null,ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'Bairro'),
+                  ce('input',{style:{width:'100%',padding:'7px 10px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:13,outline:'none',boxSizing:'border-box'},value:agRegD.bairro,onChange:function(e){var v=e.target.value;setAgRegD(function(p){return Object.assign({},p,{bairro:v});})}}
+                ))
+              ),
+              ce('div',{style:{marginBottom:14}},ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:3}},'Ponto de Referência'),
+                ce('input',{style:{width:'100%',padding:'7px 10px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:13,outline:'none',boxSizing:'border-box'},value:agRegD.ref,onChange:function(e){var v=e.target.value;setAgRegD(function(p){return Object.assign({},p,{ref:v});})}}
+              )),
+              ce('div',{style:{display:'flex',gap:10}},
+                ce('button',{className:'btn btn-p',onClick:cadastrarNovoAg},'\u2705 Salvar e Selecionar'),
+                ce('button',{className:'btn btn-s',onClick:function(){setAgReg(false);}},'× Cancelar')
+              )
+            )
+          )
+        ):null,
+        ce('button',{className:'btn btn-p',onClick:salvarAg},editAgId?'\u2714 Atualizar':'💾 Salvar Agendamento') )
     )
   );
 
