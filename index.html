@@ -5493,6 +5493,8 @@ function Agenda(){
   var smsEnd=useState(false);var mesmoEnd=smsEnd[0];var setMesmoEnd=smsEnd[1];
   var sSolRef=useState(null);var solRef=sSolRef[0];var setSolRef=sSolRef[1];
   var sisen=useState(false);var isento=sisen[0];var setIsento=sisen[1];
+  var sDelAg=useState(null);var delAgId=sDelAg[0];var setDelAgId=sDelAg[1];
+  var sEdAgId=useState(null);var editAgId=sEdAgId[0];var setEditAgId=sEdAgId[1];
   var sdpg=useState(1);var dayPg=sdpg[0];var setDayPg=sdpg[1];
   var slpg=useState(1);var listPg=slpg[0];var setListPg=slpg[1];
   var t=useToast();var toast=t[0];var notify=t[1];
@@ -5607,6 +5609,7 @@ function Agenda(){
     if(!agForm.func){notify('Selecione o funcion\u00e1rio.');return;}
     var taxaFinal=isento?0:(subInfo?(subInfo.h?subInfo.taxa*horas:subInfo.ml?subInfo.taxa*metros:subInfo.taxa):(agForm.taxa||0));
     var fpFinal=isento?'Isento':(agForm.fp||'N\u00e3o Pago');
+    if(editAgId){saveEditAg();return;}
     var novo=Object.assign({},agForm,{id:AGENDA_NEXT_ID++,status:'Agendado',taxa:taxaFinal,fp:fpFinal,isento:isento});
     AGENDA_LIST.push(novo);
     setAgItems(AGENDA_LIST.slice());
@@ -5615,6 +5618,20 @@ function Agenda(){
     notify('\u2705 Agendamento salvo!');
   }
 
+  function startEditAg(r){
+    setEditAgId(r.id);setSolRef(r.solId?INIT_SOLS.find(function(s){return s.id===r.solId;})||null:null);
+    setMesmoEnd(false);setAgForm(Object.assign({},r));window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function saveEditAg(){
+    var taxaFinal=isento?0:(subInfo?(subInfo.h?subInfo.taxa*horas:subInfo.ml?subInfo.taxa*metros:subInfo.taxa):(agForm.taxa||0));
+    var fpFinal=isento?'Isento':(agForm.fp||'Não Pago');
+    var updated=Object.assign({},agForm,{taxa:taxaFinal,fp:fpFinal,isento:isento});
+    var ix=AGENDA_LIST.findIndex(function(a){return a.id===editAgId;});
+    if(ix>=0){AGENDA_LIST[ix]=updated;setAgItems(AGENDA_LIST.slice());}
+    setAgForm(null);setSubcats([]);setSubInfo(null);setSugs([]);setLocked(false);
+    setMesmoEnd(false);setSolRef(null);setIsento(false);setEditAgId(null);
+    sgssSave();notify('\u2705 Agendamento atualizado!');
+  }
   function excluirAg(id){
     var idx=AGENDA_LIST.findIndex(function(a){return a.id===id;});
     if(idx>=0){AGENDA_LIST.splice(idx,1);setAgItems(AGENDA_LIST.slice());sgssSave();notify('Agendamento removido.');}
@@ -5717,8 +5734,7 @@ function Agenda(){
           ce('label',{htmlFor:'ag-isento',style:{cursor:'pointer',fontSize:12,color:'#92400e',fontWeight:500}},'\u26d4 Hipossuficiente / Isento \u2014 Isentar taxa')
         ),
         ce('button',{className:'btn btn-s',onClick:function(){setAgForm(null);setSubcats([]);setSubInfo(null);setSugs([]);setLocked(false);setIsento(false);}},'\u2715 Cancelar'),
-        ce('button',{className:'btn btn-p',onClick:salvarAg},'\ud83d\udcbe Salvar Agendamento')
-      )
+        ce('button',{className:'btn btn-p',ononClick:salvarAg},editAgId?'\u2714 Atualizar':'💾 Salvar Agendamento') )
     )
   );
 
@@ -5820,7 +5836,7 @@ function Agenda(){
         onClick:prtAgendaLote},_tw('\ud83d\udda8\ufe0f Imprimir Lote'))
     ),
     ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl'},
-      ce('thead',null,ce('tr',null,[ce('input',{type:'checkbox',onChange:function(e){var o={};listSlice.forEach(function(r){o[(r._src||'r')+r.id]=e.target.checked;});setChkAg(o);}}),'Data','Protocolo','Solicitante','Bairro','Servi\u00e7o','Funcion\u00e1rio','Taxa','Urg.','Status',''].map(function(c,i){return ce('th',{key:i},c);}))),
+      ce('thead',null,ce('tr',null,[ce('input',{type:'checkbox',onChange:function(e){var o={};listSlice.forEach(function(r){o[(r._src||'r')+r.id]=e.target.checked;});setChkAg(o);}}),'Data','Protocolo','Solicitante','Bairro','Serviço','Funcionário','Taxa','Urg.','Status','Ação'].map(function(c,i){return ce('th',{key:i},c);}))),
       ce('tbody',null,filtAll.length===0
         ?ce('tr',null,ce('td',{colSpan:11,className:'empty'},'Nenhum servi\u00e7o encontrado.'))
         :listSlice.map(function(r){return ce('tr',{key:(r._src||'r')+r.id,className:r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':''},
@@ -5836,11 +5852,26 @@ function Agenda(){
           ce('td',{style:{textAlign:'right',fontWeight:600}},r.taxa>0?fmt(r.taxa):'\u2013'),
           ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
           ce('td',null,r.status?ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status):ce('span',{className:'badge',style:{background:'#e0f2fe',color:'#0369a1'}},'Agendado')),
-          ce('td',null,ce('button',{className:'btn-icon',title:'Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
-            onClick:function(){prtAgendaRow(r);}},'\ud83d\udda8\ufe0f'))
+          ce('td',null,ce('div',{style:{display:'flex',gap:4}},
+            ce('button',{className:'btn-icon',title:'Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},onClick:function(){prtAgendaRow(r);}},'\ud83d\udda8\ufe0f'),
+            r._src==='m'?ce('button',{className:'btn-icon',title:'Editar',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac'},onClick:function(){startEditAg(r);}},'\u270f\ufe0f'):null,
+            r._src==='m'?ce('button',{className:'btn-icon',title:'Excluir',style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},onClick:function(){setDelAgId(r.id);}},'\ud83d\uddd1\ufe0f'):null
+          ))
         );})
       )
     )),
+    delAgId!==null?ce('div',{style:{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.55)',zIndex:900,display:'flex',alignItems:'center',justifyContent:'center'}},
+      ce('div',{style:{background:'#fff',borderRadius:10,width:'min(94vw,360px)',overflow:'hidden',boxShadow:'0 16px 48px rgba(0,0,0,.3)'}},
+        ce('div',{style:{background:'#dc2626',color:'#fff',padding:'12px 16px',fontWeight:700,fontSize:14}},'\ud83d\uddd1\ufe0f Confirmar Exclus\u00e3o'),
+        ce('div',{style:{padding:'16px'}},
+          ce('p',{style:{margin:'0 0 16px',fontSize:13,color:'#374151'}},'Deseja excluir este agendamento? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.'),
+          ce('div',{style:{display:'flex',gap:10,justifyContent:'flex-end'}},
+            ce('button',{className:'btn btn-s',onClick:function(){setDelAgId(null);}},'\u2715 Cancelar'),
+            ce('button',{className:'btn',style:{background:'#dc2626',color:'#fff'},onClick:function(){excluirAg(delAgId);setDelAgId(null);}},'\ud83d\uddd1\ufe0f Excluir')
+          )
+        )
+      )
+    ):null,
     listTotalPages>1?ce('div',{style:{display:'flex',justifyContent:'center',alignItems:'center',gap:8,marginTop:10}},
       ce('button',{className:'btn btn-s',style:{padding:'4px 12px'},disabled:listPg<=1,onClick:function(){setListPg(function(p){return p-1;});}},'‹ Anterior'),
       ce('span',{style:{fontSize:12,color:'#64748b'}},listPg+' de '+listTotalPages+' páginas (• '+filtAll.length+' registros)'),
