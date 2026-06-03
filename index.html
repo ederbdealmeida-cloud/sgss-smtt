@@ -5563,6 +5563,16 @@ function Agenda(){
   var EMPTY_AG={nome:'',rua:'',num:'',bairro:'',ref:'',tel:'',email:'',catId:'',cn:'',subId:null,sn:'',urg:'N\u00e3o',func:'',taxa:0,fp:'N\u00e3o Pago'};
 
   function setFld(k,v){setAgForm(function(f){var o=Object.assign({},f);o[k]=v;return o;});}
+  function handleFotoAg(e){
+    var file=e.target.files[0];if(!file)return;e.target.value='';
+    var rd=new FileReader();
+    rd.onload=function(ev){var img=new Image();img.onload=function(){
+      var cv=document.createElement('canvas'),MAX=800,w=img.width,h=img.height;
+      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+      cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);
+      setFld('foto',cv.toDataURL('image/jpeg',0.75));};img.src=ev.target.result;};
+    rd.readAsDataURL(file);
+  }
 
   function abrirForm(d){
     var dateStr=ano+'-'+('0'+(mes+1)).slice(-2)+'-'+('0'+d).slice(-2);
@@ -5740,6 +5750,27 @@ function Agenda(){
           ce('label',null,'Funcion\u00e1rio Respons\u00e1vel ',ce('span',{className:'req'},'*')),
           ce('select',{value:agForm.func||'',onChange:function(e){setFld('func',e.target.value);}},
             ce('option',{value:''},'-- Selecione --'),funcOpts)
+        )
+      ),
+      ce('div',{className:'form-section'},
+        ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,alignItems:'start'}},
+          ce('div',null,
+            ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:4}},'📝 Descrição'),
+            ce('textarea',{style:{width:'100%',padding:'8px 10px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:13,resize:'none',height:120,outline:'none',fontFamily:'inherit',boxSizing:'border-box'},
+              placeholder:'Descreva o problema com detalhes...',
+              value:agForm.descricao||'',onChange:function(e){setFld('descricao',e.target.value);}}
+            )
+          ),
+          ce('div',null,
+            ce('label',{style:{fontSize:12,fontWeight:600,color:'#475569',display:'block',marginBottom:4}},'📷 Foto'),
+            ce('label',{style:{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',border:'2px dashed #cbd5e1',borderRadius:8,padding:'12px',cursor:'pointer',background:'#f8fafc',minHeight:80,textAlign:'center'}},
+              agForm.foto?ce('img',{src:agForm.foto,style:{maxWidth:'100%',maxHeight:100,borderRadius:6,objectFit:'contain'}})
+                :ce('span',{style:{fontSize:12,color:'#94a3b8'}},'📷 Clique para adicionar foto'),
+              ce('input',{type:'file',accept:'image/*',style:{display:'none'},onChange:handleFotoAg})
+            ),
+            agForm.foto?ce('button',{type:'button',style:{marginTop:6,fontSize:11,color:'#dc2626',background:'none',border:'none',cursor:'pointer'},
+              onClick:function(){setFld('foto',null);}},'× Remover foto'):null
+          )
         )
       ),
       ce('div',{className:'form-actions'},
