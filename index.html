@@ -2589,7 +2589,7 @@ function imprimirComprovanteServico(r,allReqs){
   );
   var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
     +PRINT_CSS
-    +'body{padding:20px;background:#f8fafc;font-family:"Plus Jakarta Sans",Arial,sans-serif}'
+    +'body{padding:20px;background:#f8fafc;font-family:Arial,Helvetica,sans-serif}'
     +'.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:680px;margin:0 auto;box-shadow:0 2px 8px rgba(0,0,0,.1)}'
     +'.sg{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;padding-top:14px;border-top:1px solid #e2e8f0}'
     +'.sl{height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px}'
@@ -3453,7 +3453,7 @@ function Controle(p){
     var _pw=1020,_ph=780;
     var w=window.open('','_blank','width='+_pw+',height='+_ph+',scrollbars=yes');
     if(!w){notify('\u26a0\ufe0f Permita pop-ups.');return;}
-    w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>@import url(https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700);@page{size:A4 landscape;margin:8mm}body{font-family:'Plus Jakarta Sans',Arial,sans-serif;font-size:12px;}table{width:100%;border-collapse:separate;}</style></head><body>'
+    w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>@page{size:A4 landscape;margin:8mm}body{font-family:Arial,sans-serif;font-size:12px;}table{width:100%;border-collapse:separate;}</style></head><body>'
       +'<table><tbody>'+rows.join('')+'</tbody></table>'
       +'<button onclick="window.print()" style="margin:10px;padding:6px 16px;">Imprimir</button>'
       +'</body></html>');
@@ -6227,7 +6227,7 @@ function Anotacoes(){
     var w=window.open('','_blank','width='+_pw+',height='+_ph+',left='+_pl+',top='+_pt+',scrollbars=yes');
     if(!w){notify('Permita pop-ups!');return;}
     w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS
-      +'body{font-family:"Plus Jakarta Sans",Arial,sans-serif}'
+      +'body{font-family:Arial,sans-serif}'
       +'.btn-pr{display:block;margin:18px auto 0;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
       +'@media print{.btn-pr{display:none!important}}'
       +'</style></head><body><div class="doc-paper">'
