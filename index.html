@@ -2855,18 +2855,20 @@ function Solicitacoes(){
             ce('div',{className:'hora-calc'},
               ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'horas',Math.max(1,(it.horas||1)-1));setTimeout(function(){nmRecalc(it._k);},0);}},'−'),
               ce('span',{className:'hora-val'},(it.horas||1)+'h'),
-              ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'horas',(it.horas||1)+1);setTimeout(function(){nmRecalc(it._k);},0);}},'+'
-            ))
-          ):null,
+              ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'horas',(it.horas||1)+1);setTimeout(function(){nmRecalc(it._k);},0);}},'+'),
+              (function(){var s=(SUBS[it.catId]||[]).find(function(x){return x.id===it.subId;});return s?ce('span',{style:{color:'#64748b',fontSize:12,marginLeft:4}},'× R$ '+Number(s.taxa).toFixed(2).replace('.',',')+'/h = '):null;})(),
+              ce('strong',{style:{fontSize:13,color:'#1e3a5f'}},'R$ '+(Number(it.taxa)||0).toFixed(2).replace('.',','))
+          )):null,
           /* Contador metros lineares */
           it.subId&&(function(){var s=(SUBS[it.catId]||[]).find(function(s){return s.id===it.subId;});return s&&(s.ml||s.m);})()?ce('div',{style:{marginBottom:8}},
             ce('label',{style:Object.assign({},nL,{marginBottom:6})},'📰 Metros Lineares'),
             ce('div',{className:'hora-calc'},
               ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'metros',Math.max(1,(it.metros||1)-1));setTimeout(function(){nmRecalc(it._k);},0);}},'−'),
               ce('span',{className:'hora-val'},(it.metros||1)+'m'),
-              ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'metros',(it.metros||1)+1);setTimeout(function(){nmRecalc(it._k);},0);}},'+'
-            ))
-          ):null,
+              ce('button',{className:'btn-hora',onClick:function(){nmUpd(it._k,'metros',(it.metros||1)+1);setTimeout(function(){nmRecalc(it._k);},0);}},'+'),
+              (function(){var s=(SUBS[it.catId]||[]).find(function(x){return x.id===it.subId;});return s?ce('span',{style:{color:'#64748b',fontSize:12,marginLeft:4}},'× R$ '+Number(s.taxa).toFixed(2).replace('.',',')+'/m = '):null;})(),
+              ce('strong',{style:{fontSize:13,color:'#1e3a5f'}},'R$ '+(Number(it.taxa)||0).toFixed(2).replace('.',','))
+          )):null,
           /* Taxa display */
           it.catId&&it.fp==='Pago'?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:8,padding:'8px 12px',background:'#eff6ff',borderRadius:8}},
             ce('span',{style:{fontSize:12,fontWeight:600,color:'#475569'}},'Taxa:'),
