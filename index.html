@@ -5577,6 +5577,7 @@ function Agenda(){
   function abrirForm(d){
     var dateStr=ano+'-'+('0'+(mes+1)).slice(-2)+'-'+('0'+d).slice(-2);
     setSubcats([]);setSubInfo(null);setSugs([]);setLocked(false);setIsento(false);setHoras(1);setMetros(1);
+setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({nome:'',rua:'',numero:'',bairro:'',ref:'',tel:'',email:''});
     setAgForm(Object.assign({},EMPTY_AG,{date:dateStr}));
   }
 
@@ -5667,7 +5668,7 @@ function Agenda(){
     ce(Toast,{msg:toast}),
     ce('div',{className:'page-header'},
       ce('h2',{className:'page-title'},'\ud83d\udcc5 Novo Agendamento \u2014 '+(agForm.date?agForm.date.split('-').reverse().join('/'):'')  ),
-      ce('button',{className:'btn btn-s',onClick:function(){setAgForm(null);setSubcats([]);setSubInfo(null);setSugs([]);setLocked(false);setIsento(false);}},'\u2190 Voltar')
+      ce('button',{className:'btn btn-s',onClick:function(){setAgForm(null);setSubcats([]);setSubInfo(null);setSugs([]);setLocked(false);setIsento(false);setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({nome:'',rua:'',numero:'',bairro:'',ref:'',tel:'',email:''});;}},'\u2190 Voltar')
     ),
     ce('div',{className:'card'},
       ce('div',{className:'sec-title'},'\ud83d\udccb Dados do Servi\u00e7o'),
