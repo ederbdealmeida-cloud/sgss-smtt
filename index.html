@@ -2621,6 +2621,8 @@ function Solicitacoes(){
   var sNSug=useState([]);var nSug=sNSug[0];var setNSug=sNSug[1];
   var sNDt=useState(function(){return today();});var nDt=sNDt[0];var setNDt=sNDt[1];
   var sNIt=useState([]);var nIt=sNIt[0];var setNIt=sNIt[1];
+  var sNTel=useState('');var nTel=sNTel[0];var setNTel=sNTel[1];
+  var sNEmail=useState('');var nEmail=sNEmail[0];var setNEmail=sNEmail[1];
   var filtered=all.filter(function(r){if(!srch)return true;var q=srch.toLowerCase();
   return r.nom.toLowerCase().indexOf(q)>=0
     ||r.prot.toLowerCase().indexOf(q)>=0
@@ -2668,13 +2670,9 @@ function Solicitacoes(){
     notify('Solicita\xe7\xe3o exclu\xedda!');sgssSave();
     }});}
   function nmEmpty(base){return {_k:uid(),cn:'',catId:'',subId:null,sn:'',
-    rua:base?(base.rua||''):'',
-    num:base?(base.num||base.numero||''):'',
-    bairro:base?(base.bairro||''):'',
-    tel:base?(base.tel||base.telefone||''):'',
-    email:base?(base.email||''):'',
-    ref:base?(base.ref||''):'',
-    obs:'',descricao:'',foto:null,urg:'Não',taxa:0,fp:'Pendente',horas:1,metros:1};}
+    rua:base?(base.rua||''):'',num:base?(base.num||base.numero||''):'',
+    bairro:base?(base.bairro||''):'',ref:base?(base.ref||''):'',
+    mesmoEndereco:false,obs:'',descricao:'',foto:null,urg:'Não',taxa:0,fp:'Pendente',horas:1,metros:1};}
   function nmLastSrv(sol){
     /* 1. Por solId (loose equality cobre number vs string) */
     var m=INIT_REQS.filter(function(r){return r.solId==sol.id&&!r.enc;});
@@ -2689,15 +2687,10 @@ function Solicitacoes(){
   function nmBusca(q){if(!q||q.length<2){setNSug([]);return;}var ql=q.toLowerCase();setNSug(INIT_SOLS.filter(function(s){return s.nome.toLowerCase().indexOf(ql)>=0;}).slice(0,8));}
   function nmEscolher(sol){
     setNSol(sol);setNSq(sol.nome);setNSug([]);
-    /* Preenche com dados do cadastro do solicitante */
-    var base={rua:sol.rua||'',num:sol.numero||'',bairro:sol.bairro||'',
-      tel:sol.telefone||'',email:sol.email||'',ref:sol.ref||''};
-    /* Se tiver servico anterior, usa o endereco do ultimo servico */
+    setNTel(sol.telefone||'');setNEmail(sol.email||'');
     var last=nmLastSrv(sol);
-    if(last&&(last.rua||last.bairro))base={
-      rua:last.rua||'',num:last.num||last.numero||'',bairro:last.bairro||'',
-      tel:last.tel||last.telefone||'',email:last.email||sol.email||'',ref:last.ref||''};
-    setNIt([nmEmpty(base)]);
+    var ob=last&&(last.rua||last.bairro)?{rua:last.rua||'',num:last.num||'',bairro:last.bairro||'',ref:last.ref||''}:null;
+    setNIt([nmEmpty(ob)]);
   }
   function nmHandleCat(k,catId){
     var cid=parseInt(catId)||'';
@@ -2742,6 +2735,10 @@ function Solicitacoes(){
       nmUpd(k,'foto',cv.toDataURL('image/jpeg',0.75));};
     img.src=ev.target.result;};rd.readAsDataURL(file);
   }
+  function nmSameAddr(k,chk){
+    nmUpd(k,'mesmoEndereco',chk);
+    if(chk&&nSol){nmUpd(k,'rua',nSol.rua||'');nmUpd(k,'num',nSol.numero||'');nmUpd(k,'bairro',nSol.bairro||'');nmUpd(k,'ref',nSol.ref||'');}
+  }
   function nmAdd(){setNIt(function(p){var l=p[p.length-1];return p.concat([nmEmpty(l)]);});}
   function nmUpd(k,fld,val){setNIt(function(p){return p.map(function(it){if(it._k!==k)return it;var n=Object.assign({},it);n[fld]=val;return n;});});}
   function nmRem(k){setNIt(function(p){return p.filter(function(it){return it._k!==k;});});}
@@ -2749,13 +2746,13 @@ function Solicitacoes(){
     if(!nSol&&!nSq.trim()){notify('Informe o solicitante.');return;}
     if(!nIt.length||!nIt[0].cn){notify('Informe pelo menos 1 serviço.');return;}
     var sol=nSol;
-    if(!sol){sol={id:uid(),nome:nSq.trim(),rua:nIt[0].rua||'',numero:nIt[0].num||'',bairro:nIt[0].bairro||'',telefone:nIt[0].tel||'',email:'',ref:''};INIT_SOLS.push(sol);}
+    if(!sol){sol={id:uid(),nome:nSq.trim(),rua:'',numero:'',bairro:'',telefone:nTel||'',email:nEmail||'',ref:''};INIT_SOLS.push(sol);}
     var grp=uid();
     var firstProt='';
     nIt.forEach(function(it,ix){
       var novo={id:uid(),prot:makeProtocol(),dt:nDt,solId:sol.id,nom:sol.nome,
         bairro:it.bairro||'',rua:it.rua||'',num:it.num||'',ref:it.ref||'',
-        tel:it.tel||'',email:it.email||'',catId:it.catId||'',cn:it.cn,subId:it.subId||null,
+        tel:nTel||'',email:nEmail||'',catId:it.catId||'',cn:it.cn,subId:it.subId||null,
         sn:it.sn||'',taxa:Number(it.taxa)||0,fp:it.fp||'Pendente',urg:it.urg||'Não',descricao:it.descricao||'',foto:it.foto||null,
         status:'Pendente',func:'',enc:0,obs:it.obs||'',grupo:grp};
       if(ix===0)firstProt=novo.prot;
@@ -2765,7 +2762,7 @@ function Solicitacoes(){
     saveSession();
     sgssSave();
     setAll(INIT_REQS.map(function(x){return Object.assign({},x);}));
-    setNM(false);setNSol(null);setNSq('');setNIt([]);
+    setNM(false);setNSol(null);setNSq('');setNTel('');setNEmail('');setNIt([]);
     notify('\u2705 '+nIt.length+' serviço(s) registado(s)! Protocolo: '+firstProt);
   }
   var EMPTY={nom:'',dt:today(),solId:null,bairro:'',rua:'',num:'',ref:'',tel:'',email:'',catId:'',cn:'',fp:'',subId:null,sn:'',taxa:0,urg:'N\xe3o',foto:null,descricao:''};
@@ -2798,7 +2795,14 @@ function Solicitacoes(){
                 ce('b',null,s.nome),ce('span',{style:{color:'#94a3b8',marginLeft:8,fontSize:11}},s.bairro||''));}))
             :null
           )
-        )
+        ),
+        ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginTop:12,paddingTop:12,borderTop:'1px solid #f1f5f9'}},
+          ce('div',null,ce('label',{style:nL},'Telefone'),ce('input',{style:nI,placeholder:'(55) 9 9999-9999',value:nTel,onChange:function(e){setNTel(e.target.value);}})),
+          ce('div',null,ce('label',{style:nL},'E-mail'),ce('input',{type:'email',style:nI,placeholder:'email@exemplo.com',value:nEmail,onChange:function(e){setNEmail(e.target.value);}}))
+        ),
+        nSol&&(nSol.rua||nSol.bairro)?ce('div',{style:{marginTop:8,padding:'7px 10px',background:'#f0f9ff',borderRadius:6,fontSize:11,color:'#0369a1',fontWeight:600}},
+          '🏠 Residência: '+(nSol.rua||'')+(nSol.numero?' nº '+nSol.numero:'')+(nSol.bairro?' — '+nSol.bairro:'')
+        ):null
       ),
       nIt.map(function(it,ix){
         var nmServ=CATS.map(function(c){return c.nome;}).filter(Boolean);
@@ -2853,10 +2857,10 @@ function Solicitacoes(){
             ce('div',null,ce('label',{style:nL},'N\u00ba'),ce('input',{style:nI,value:it.num,onChange:function(e){nmUpd(it._k,'num',e.target.value);}})),
             ce('div',null,ce('label',{style:nL},'Bairro'),ce('input',{style:nI,value:it.bairro,onChange:function(e){nmUpd(it._k,'bairro',e.target.value);}}))
           ),
-          ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8}},
-            ce('div',null,ce('label',{style:nL},'Telefone'),ce('input',{style:nI,value:it.tel,onChange:function(e){nmUpd(it._k,'tel',e.target.value);}})),
-            ce('div',null,ce('label',{style:nL},'E-mail'),ce('input',{type:'email',style:nI,value:it.email||'',onChange:function(e){nmUpd(it._k,'email',e.target.value);}}))
-          ),
+          nSol?ce('label',{style:{display:'flex',alignItems:'center',gap:8,cursor:'pointer',background:'#f0f9ff',border:'1px solid #bae6fd',borderRadius:7,padding:'8px 12px',marginBottom:8,fontSize:13,fontWeight:600,color:'#0369a1'}},
+            ce('input',{type:'checkbox',checked:!!it.mesmoEndereco,onChange:function(e){nmSameAddr(it._k,e.target.checked);}}),
+            '🏠 O local do serviço é o mesmo endereço do solicitante'
+          ):null,
           ce('div',{style:{marginBottom:8}},
             ce('label',{style:nL},'Ponto de Refer\u00eancia'),ce('input',{style:nI,value:it.ref,onChange:function(e){nmUpd(it._k,'ref',e.target.value);}})  
           ),
