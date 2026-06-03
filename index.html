@@ -1549,7 +1549,7 @@ function PainelFuncionario(p){
             ce('td',null,fmtD(r.dt)),
             ce('td',null,r.nom||'Não informado'),
             ce('td',null,r.bairro),
-            ce('td',{title:r.cn},r.cn.slice(0,22)+'\u2026'),
+            ce('td',{title:r.cn||''},(r.cn||'').slice(0,22)+(r.cn&&r.cn.length>22?'\u2026':'')),
             ce('td',{style:{fontWeight:600,textAlign:'right'}},fmt(r.taxa)),
             ce('td',null,ce('span',{className:'badge '+(normSt(r.status)==='Conclu\xc3\xaddo'?'b-gr':normSt(r.status)==='Em andamento'?'b-cy':normSt(r.status)==='Agendado'?'b-yw':'b-or')},normSt(r.status)))
           );})))
@@ -3097,7 +3097,7 @@ function Solicitacoes(){
           ce('td',null,ce('strong',null,r.prot)),ce('td',null,fmtD(r.dt)),
           isE?ce('td',null,ce('input',{value:editD.nom||'',onChange:function(e){setEditD(function(v){return Object.assign({},v,{nom:e.target.value});});},style:{padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12,width:'100%'}})):ce('td',null,r.nom||'Não informado'),
           isE?ce('td',null,ce('input',{value:editD.bairro||'',onChange:function(e){setEditD(function(v){return Object.assign({},v,{bairro:e.target.value});});},style:{padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12,width:'100%'}})):ce('td',null,r.bairro||'Não informado'),
-          ce('td',{title:r.sn},r.cn.slice(0,20)+'\u2026'),ce('td',null,fmtTaxa(r)),
+          ce('td',{title:r.cn||''},(r.cn||'').slice(0,20)+(r.cn&&r.cn.length>20?'\u2026':'')),ce('td',null,fmtTaxa(r)),
           isE?ce('td',null,ce('select',{value:editD.urg,onChange:function(e){setEditD(function(v){return Object.assign({},v,{urg:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11}},ce('option',{value:'Sim'},'\ud83d\udea8 Sim'),ce('option',{value:'N\u00e3o'},'N\u00e3o'))):ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
           isE?ce('td',null,ce('select',{value:editD.status,onChange:function(e){setEditD(function(v){return Object.assign({},v,{status:e.target.value});});},style:{padding:'3px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11}},ce('option',{value:'Pendente'},'Pendente'),ce('option',{value:'Agendado'},'Agendado'),ce('option',{value:'Em andamento'},'Em andamento'),ce('option',{value:'Conclu\u00eddo'},'Conclu\u00eddo'))):ce('td',null,ce('span',{className:'badge '+(normSt(r.status)==='Concluído'?'b-gr':normSt(r.status)==='Em andamento'?'b-cy':r.status==='Agendado'?'b-yw':'b-or')},r.status)),
           ce('td',null,
@@ -3945,7 +3945,7 @@ function Relatorios(){
                 return '<tr>'
                   +'<td style="padding:7px 10px;font-weight:700;color:#1e3a5f;border-bottom:1px solid #f1f5f9">'+htmlEsc(r.prot)+'</td>'
                   +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9">'+htmlEsc(r.nom)+'</td>'
-                  +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:11px">'+htmlEsc(r.sn||'')+'</td>'
+                  +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:11px">'+htmlEsc(r.cn||r.sn||'')+'</td>'
                   +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9">'+badge(r.status)+'</td>'
                   +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9">'+badge(r.urg==='Sim'?'Sim':'Não')+'</td>'
                   +'<td style="padding:7px 10px;border-bottom:1px solid #f1f5f9">'+badge(r.fp||'\xe2\x80\x94')+'</td>'
