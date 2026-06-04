@@ -3966,8 +3966,8 @@ function Relatorios(){
         ce('h3',{style:{margin:'0 0 4px',fontSize:16,fontWeight:700,color:'#1e3a5f'}},
             '\ud83d\udda8\ufe0f Selecionar P\u00e1ginas para Impress\u00e3o'),
         ce('p',{style:{margin:'0 0 14px',fontSize:12,color:'#64748b'}},
-            filtered.length+' registro(s) \u00b7 25 por p\u00e1g. \u00b7 '
-            +Math.ceil(filtered.length/25)+'\u00a0p\u00e1gina(s) no total'),
+            filtered.length+' registro(s) \u00b7 10 por p\u00e1g. \u00b7 '
+            +Math.ceil(filtered.length/10)+'\u00a0p\u00e1gina(s) no total'),
         ce('div',{style:{display:'flex',gap:20,marginBottom:14}},
           ce('label',{style:{display:'flex',alignItems:'center',gap:6,cursor:'pointer',fontSize:14}},
             ce('input',{type:'radio',name:'relpm',checked:pMode==='range',
@@ -3999,7 +3999,7 @@ function Relatorios(){
               'Cancelar'),
           ce('button',{className:'btn',
               onClick:function(){
-                var tp=Math.ceil(filtered.length/25);
+                var tp=Math.ceil(filtered.length/10);
                 var p1=1,p2=tp;
                 if(pMode==='range'){
                   p1=Math.max(1,parseInt(pFrom)||1);
@@ -4007,8 +4007,8 @@ function Relatorios(){
                 } else {
                   p1=p2=Math.min(tp,Math.max(1,parseInt(pSpec)||1));
                 }
-                var alvo=filtered.slice((p1-1)*25,
-                  Math.min(filtered.length,p2*25));
+                var alvo=filtered.slice((p1-1)*10,
+                  Math.min(filtered.length,p2*10));
                 setShowPDlg(false);
                 setTimeout(function(){doPrintLote(alvo);},80);
               }},
@@ -4096,7 +4096,7 @@ function Relatorios(){
             if(selIds.length>0){doPrintLote(alvo);return;}
             setPMode('range');
             setPFrom('1');
-            setPTo(String(Math.ceil(filtered.length/25)));
+            setPTo(String(Math.ceil(filtered.length/10)));
             setPSpec('1');
             setShowPDlg(true);
           }},'\ud83d\udda8\ufe0f Imprimir Lotes'+(selIds.length>0?' ('+selIds.length+' sel.)':filtered.length?' ('+filtered.length+')':''))
@@ -5160,6 +5160,11 @@ function RelatoriosPersonalizados(){
   ];
   var sCO=useState(COL_DEFS.map(function(c){return c.k;}));var colOrder=sCO[0];var setColOrder=sCO[1];
   var sDO=useState(null);var dragOver=sDO[0];var setDragOver=sDO[1];
+  var sRPdlg=useState(false);var rpShowPDlg=sRPdlg[0];var rpSetShowPDlg=sRPdlg[1];
+  var sRPmode=useState('range');var rpPMode=sRPmode[0];var rpSetPMode=sRPmode[1];
+  var sRPfrom=useState('1');var rpPFrom=sRPfrom[0];var rpSetPFrom=sRPfrom[1];
+  var sRPto=useState('1');var rpPTo=sRPto[0];var rpSetPTo=sRPto[1];
+  var sRPspec=useState('1');var rpPSpec=sRPspec[0];var rpSetPSpec=sRPspec[1];
   var dragRef=useRef(null);
   var actCols=colOrder.map(function(k){return COL_DEFS.find(function(c){return c.k===k;});}).filter(function(c){return c&&cols[c.k];});
   function toggleCol(k){
@@ -5234,19 +5239,32 @@ function RelatoriosPersonalizados(){
   }
   
   function prtAll(){if(!filtered.length){notify('\u26a0\ufe0f Sem resultados.');return;}imprimirDash('Relat\u00f3rio','<table style="width:100%;border-collapse:collapse"><thead>'+prtHead()+'</thead><tbody>'+prtRows(filtered)+'</tbody></table>',false);}
-  function prtLote(){
-    var sel=filtered.filter(function(r){return chk[r.id];});
-    if(!sel.length){notify('Seleccione registos.');return;}
+  function doPrtLoteRP(alvo){
+    if(!alvo||!alvo.length){notify('Sem resultados para imprimir.');return;}
     var w=window.open('','_blank','width=820,height=650,scrollbars=yes');
     if(!w){notify('Permita popups!');return;}
     w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
       +PRINT_CSS+'body{font-family:"IBM Plex Sans",Arial,sans-serif}</style></head><body>'
-      +buildHeader('Relatório Personalizado',sel.length+' registo(s)')
+      +buildHeader('Relatório Personalizado',alvo.length+' registo(s)')
       +'<table style="width:100%;border-collapse:collapse"><thead>'
-      +prtHead()+'</thead><tbody>'+prtRows(sel)+'</tbody></table>'
+      +prtHead()+'</thead><tbody>'+prtRows(alvo)+'</tbody></table>'
       +'<button onclick="window.print()" class="btn-pr">Imprimir</button>'
       +'</body></html>');
     w.document.close();
+  
+  }
+  function prtLote(){
+    var sel=Object.keys(chk).filter(function(k){return chk[k];});
+    var alvo=sel.length>0
+      ?filtered.filter(function(r){return chk[r.id];})
+      :filtered;
+    if(!alvo.length){notify('Sem resultados para imprimir.');return;}
+    if(sel.length>0){doPrtLoteRP(alvo);return;}
+    rpSetPMode('range');
+    rpSetPFrom('1');
+    rpSetPTo(String(Math.ceil(filtered.length/10)));
+    rpSetPSpec('1');
+    rpSetShowPDlg(true);
   }
   function expCSV(){if(!filtered.length){notify('\u26a0\ufe0f Sem resultados.');return;}var rows=[actCols.map(function(c){return c.l;}).join(';')];filtered.forEach(function(r){rows.push(actCols.map(function(c){return '"'+String(getCel(r,c.k)).replace(/"/g,'""')+'"';}).join(';'));});var blob=new Blob(['\xef\xbb\xbf'+rows.join('\r\n')],{type:'text/csv;charset=utf-8;'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='relatorio.csv';a.click();URL.revokeObjectURL(url);notify('\u2705 Exportado!');}
   return ce('div',{className:'page-content'},
@@ -5278,6 +5296,59 @@ function RelatoriosPersonalizados(){
           ce('button',{className:'btn btn-p',onClick:saveEdit},'\u2705 Guardar'),
           ce('button',{className:'btn',onClick:function(){setEditRow(null);}},'Cancelar'))
       )):null,
+    rpShowPDlg?ce('div',{style:{position:'fixed',inset:0,background:'rgba(0,0,0,.45)',
+        display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}},
+      ce('div',{style:{background:'#fff',borderRadius:12,padding:'28px 32px',
+          minWidth:340,maxWidth:460,boxShadow:'0 8px 32px rgba(0,0,0,.22)'}},
+        ce('h3',{style:{margin:'0 0 4px',fontSize:16,fontWeight:700,color:'#1e3a5f'}},
+            '\ud83d\udda8\ufe0f Selecionar P\u00e1ginas'),
+        ce('p',{style:{margin:'0 0 14px',fontSize:12,color:'#64748b'}},
+            filtered.length+' registro(s) \u00b7 10 por p\u00e1g. \u00b7 '
+            +Math.ceil(filtered.length/10)+'\u00a0p\u00e1gina(s)'),
+        ce('div',{style:{display:'flex',gap:20,marginBottom:14}},
+          ce('label',{style:{display:'flex',alignItems:'center',gap:6,cursor:'pointer',fontSize:14}},
+            ce('input',{type:'radio',name:'relpmp',checked:rpPMode==='range',
+                onChange:function(){rpSetPMode('range');}}),
+            'Intervalo de p\u00e1ginas'),
+          ce('label',{style:{display:'flex',alignItems:'center',gap:6,cursor:'pointer',fontSize:14}},
+            ce('input',{type:'radio',name:'relpmp',checked:rpPMode==='specific',
+                onChange:function(){rpSetPMode('specific');}}),
+            'P\u00e1gina espec\u00edfica')),
+        rpPMode==='range'
+          ?ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:18}},
+              ce('span',{style:{fontSize:13,color:'#475569'}},'De p\u00e1gina'),
+              ce('input',{type:'number',min:1,value:rpPFrom,
+                  style:{width:60,padding:'5px 8px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:14,textAlign:'center'},
+                  onChange:function(e){rpSetPFrom(e.target.value);}}),
+              ce('span',{style:{fontSize:13,color:'#475569'}},'at\u00e9'),
+              ce('input',{type:'number',min:1,value:rpPTo,
+                  style:{width:60,padding:'5px 8px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:14,textAlign:'center'},
+                  onChange:function(e){rpSetPTo(e.target.value);}}))
+          :ce('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:18}},
+              ce('span',{style:{fontSize:13,color:'#475569'}},'P\u00e1gina n\u00ba'),
+              ce('input',{type:'number',min:1,value:rpPSpec,
+                  style:{width:60,padding:'5px 8px',border:'1px solid #cbd5e1',borderRadius:6,fontSize:14,textAlign:'center'},
+                  onChange:function(e){rpSetPSpec(e.target.value);}})),
+        ce('div',{style:{display:'flex',justifyContent:'flex-end',gap:10}},
+          ce('button',{className:'btn btn-s',style:{background:'#f1f5f9',color:'#475569'},
+              onClick:function(){rpSetShowPDlg(false);}},
+              'Cancelar'),
+          ce('button',{className:'btn',
+              onClick:function(){
+                var tp=Math.ceil(filtered.length/10);
+                var p1=1,p2=tp;
+                if(rpPMode==='range'){
+                  p1=Math.max(1,parseInt(rpPFrom)||1);
+                  p2=Math.min(tp,parseInt(rpPTo)||tp);
+                } else {
+                  p1=p2=Math.min(tp,Math.max(1,parseInt(rpPSpec)||1));
+                }
+                var alvo=filtered.slice((p1-1)*10,
+                  Math.min(filtered.length,p2*10));
+                rpSetShowPDlg(false);
+                setTimeout(function(){doPrtLoteRP(alvo);},80);
+              }},
+              '\ud83d\udda8\ufe0f Imprimir')))):null,
     ce('h2',{className:'page-title',style:{marginBottom:20,marginTop:8}},'\ud83d\udccb Relat\u00f3rio Personalizado'),
     /* Container filtros */
     ce('div',{style:{marginLeft:4,background:'#fff',border:'1px solid #e2e8f0',borderRadius:10,padding:'14px',marginBottom:12}},
