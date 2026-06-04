@@ -6042,15 +6042,15 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
               :[ce('button',{key:'pr',className:'btn-icon',title:'Imprimir',
                   style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
                   onClick:function(){prtAgendaRow(r);}},'\ud83d\udda8\ufe0f'),
-                r._src==='m'?ce('button',{key:'ei',className:'btn-icon',title:'Editar Inline',
+                ce('button',{key:'ei',className:'btn-icon',title:'Editar Inline',
                   style:{background:'#fefce8',color:'#ca8a04',border:'1px solid #fde047'},
-                  onClick:function(){startInlineEdit(r);}},'⚡'):null,
-                r._src==='m'?ce('button',{key:'ec',className:'btn-icon',title:'Editar Completo',
+                  onClick:function(){startInlineEdit(r);}},'⚡'),
+                ce('button',{key:'ec',className:'btn-icon',title:'Editar Completo',
                   style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac'},
-                  onClick:function(){startEditAg(r);}},'✏️'):null,
-                r._src==='m'?ce('button',{key:'ex',className:'btn-icon',title:'Excluir',
+                  onClick:function(){startEditAg(r);}},'✏️'),
+                ce('button',{key:'ex',className:'btn-icon',title:'Excluir',
                   style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
-                  onClick:function(){setDelAgId(r.id);}},'\ud83d\uddd1\ufe0f'):null]
+                  onClick:function(){setDelAgId(r.id);}},'\ud83d\uddd1\ufe0f')]
           ))
         );})
       )
