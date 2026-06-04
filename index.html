@@ -141,6 +141,9 @@ body{height:100%;font-family:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif
 .tbl td{padding:10px 12px;border-bottom:1px solid #f8fafc;vertical-align:middle}
 .tbl tbody tr:nth-child(even) td{background:#fafbfc}
 .tbl tbody tr:nth-child(odd) td{background:#fff}
+.tbl-ag tbody tr:nth-child(even) td{background:#f0fdfa}
+.tbl-ag tbody tr:nth-child(odd) td{background:#fff}
+.tbl-ag tr:hover td{background:#ccfbf1!important;transition:.15s}
 .tbl tr:hover td{background:#eff6ff!important;transition:background .12s}
 .row-hl td{background:#eff6ff!important;border-top:2px solid #93c5fd!important;border-bottom:2px solid #93c5fd!important;}
 .row-hl td:first-child{border-left:2px solid #2563eb!important;}
@@ -6002,7 +6005,7 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
       ce('button',{className:'btn',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
         onClick:prtAgendaLote},_tw('\ud83d\udda8\ufe0f Imprimir Lote'))
     ),
-    ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl'},
+    ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl tbl-ag'},
       ce('thead',null,ce('tr',null,[ce('input',{type:'checkbox',onChange:function(e){var o={};listSlice.forEach(function(r){o[(r._src||'r')+r.id]=e.target.checked;});setChkAg(o);}}),'Data','Protocolo','Solicitante','Bairro','Serviço','Funcionário','Taxa','Urg.','Status','Ação'].map(function(c,i){return ce('th',{key:i},c);}))),
       ce('tbody',null,filtAll.length===0
         ?ce('tr',null,ce('td',{colSpan:11,className:'empty'},'Nenhum servi\u00e7o encontrado.'))
