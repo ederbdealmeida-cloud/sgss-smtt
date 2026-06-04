@@ -5702,6 +5702,7 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
     var clean=Object.assign({},r);
     delete clean.agDate;
     delete clean._src;
+    if(!clean.nome&&clean.nom) clean.nome=clean.nom;
     setEditAgId(clean.id);
     setSolRef(clean.solId?INIT_SOLS.find(function(s){return s.id===clean.solId;})||null:null);
     setMesmoEnd(false);
@@ -6011,7 +6012,7 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
             onChange:function(e){var k=(r._src||'r')+r.id;setChkAg(function(p){var o=Object.assign({},p);o[k]=e.target.checked;return o;});}})),
           ce('td',null,fmtD(r.dt||r.date)),
           ce('td',null,r.prot?ce('code',null,r.prot):ce('span',{style:{color:'#94a3b8',fontSize:10}},'\ud83d\udcc5')),
-          ce('td',null,r.nom||r.nome),
+          ce('td',null,r.nome||r.nom),
           ce('td',null,r.bairro),
           ce('td',{title:r.cn||r.sn},(r.cn||'').slice(0,24)+((r.cn||'').length>24?'\u2026':'')),
           ce('td',null,editInlineId===r.id
