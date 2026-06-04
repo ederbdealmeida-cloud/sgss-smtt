@@ -22,7 +22,7 @@ if('serviceWorker' in navigator){
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&family=Rubik:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e3a5f">
 <meta name="mobile-web-app-capable" content="yes">
@@ -6445,20 +6445,22 @@ function Anotacoes(){
 function Graficos(){
   var useState=React.useState,useRef=React.useRef,useEffect=React.useEffect;
   var EIXOS=[{v:'mes',l:'M\u00eas'},{v:'bairro',l:'Bairro'},{v:'func',l:'Funcion\u00e1rio'},{v:'cn',l:'Tipo de Servi\u00e7o'},{v:'status',l:'Status'},{v:'fp',l:'Forma de Pagamento'},{v:'urg',l:'Urg\u00eancia'}];
-  var METRICAS=[{v:'qtd',l:'Qtd de Servi\u00e7os'},{v:'taxa',l:'Total Arrecadado (R$)'},{v:'media',l:'M\u00e9dia por Servi\u00e7o (R$)'}];
+  var METRICAS=[{v:'qtd',l:'Qtd de Servi\u00e7os'},{v:'taxa',l:'Total Arrecadado (R$)'},{v:'media',l:'M\u00e9dia (R$)'}];
   var TIPOS=[
-    {v:'bar',l:'Barras Verticais'},
-    {v:'barH',l:'Barras Horizontais'},
-    {v:'barS',l:'Barras Empilhadas'},
-    {v:'line',l:'Linhas'},
-    {v:'area',l:'\u00c1rea Preenchida'},
-    {v:'pie',l:'Pizza'},
-    {v:'doughnut',l:'Rosca'},
-    {v:'polarArea',l:'\u00c1rea Polar'},
-    {v:'radar',l:'Radar'}
+    {v:'bar',l:'Barras Verticais',g:'2D'},{v:'barH',l:'Barras Horizontais',g:'2D'},
+    {v:'barS',l:'Barras Empilhadas',g:'2D'},{v:'line',l:'Linhas',g:'2D'},
+    {v:'area',l:'\u00c1rea Preenchida',g:'2D'},{v:'pie',l:'Pizza',g:'2D'},
+    {v:'donut',l:'Rosca',g:'2D'},{v:'bubble',l:'Bolhas',g:'2D'},
+    {v:'funnel',l:'Funil',g:'2D'},{v:'waterfall',l:'Cascata',g:'2D'},
+    {v:'treemap',l:'Mapa de \u00c1rvore',g:'2D'},{v:'sunburst',l:'Explos\u00e3o Solar',g:'2D'},
+    {v:'heatmap',l:'Mapa de Calor',g:'2D+'},{v:'bar3d',l:'Barras 3D Agrupadas',g:'3D'},
+    {v:'scatter3d',l:'Dispers\u00e3o 3D',g:'3D'},{v:'surface',l:'Superf\u00edcie 3D',g:'3D'}
   ];
-  var CORES=['#2563eb','#7c3aed','#059669','#dc2626','#d97706','#0891b2','#be185d','#65a30d','#9333ea','#0f766e','#b45309'];
+  var CORES=['#2563eb','#7c3aed','#059669','#dc2626','#d97706','#0891b2','#be185d','#65a30d','#9333ea','#0f766e','#b45309','#1d4ed8'];
+  var FT='Space Grotesk,sans-serif',FB='Inter,sans-serif';
+
   var sEx=useState('mes');var eixo=sEx[0];var setEixo=sEx[1];
+  var sEx2=useState('status');var eixo2=sEx2[0];var setEixo2=sEx2[1];
   var sMet=useState('qtd');var metrica=sMet[0];var setMetrica=sMet[1];
   var sTp=useState('bar');var tipo=sTp[0];var setTipo=sTp[1];
   var sDe=useState('');var dtDe=sDe[0];var setDtDe=sDe[1];
@@ -6466,11 +6468,29 @@ function Graficos(){
   var sFn=useState('');var fFunc=sFn[0];var setFFunc=sFn[1];
   var sCt=useState('');var fCat=sCt[0];var setFCat=sCt[1];
   var sSt=useState('');var fSt=sSt[0];var setFSt=sSt[1];
-  var sCI=useState(null);var chartInst=sCI[0];var setChartInst=sCI[1];
   var sMsg=useState('');var msg=sMsg[0];var setMsg=sMsg[1];
+  var sHas=useState(false);var hasChart=sHas[0];var setHasChart=sHas[1];
   var sRK=useState(0);var resetKey=sRK[0];var setResetKey=sRK[1];
-  var canvasRef=useRef(null);
-  useEffect(function(){if(!msg)return;var t=setTimeout(function(){setMsg('');},3000);return function(){clearTimeout(t);};},[msg]);
+  var plotRef=useRef(null);
+
+  var needs2=tipo==='heatmap'||tipo==='scatter3d'||tipo==='bar3d'||tipo==='surface';
+
+  useEffect(function(){if(!msg)return;var t=setTimeout(function(){setMsg('');},3500);return function(){clearTimeout(t);};},[msg]);
+
+  function getLbl(r,campo){
+    var MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    if(campo==='mes'){var p=r.dt?r.dt.split('-'):[];return p.length>=2?(MESES[parseInt(p[1])-1]||p[1])+'/'+p[0].slice(2):'S/D';}
+    if(campo==='func'){var fn=FUNC_LIST.find(function(f){return f.nome===(r.func||'');});return fn?fn.nome:(r.func||'Sem func.');}
+    if(campo==='cn')return r.cn||r.sn||'N\u00e3o classif.';
+    if(campo==='urg')return r.urg==='Sim'?'\u26a0 Urgente':'\u2713 Normal';
+    return r[campo]||'N/A';
+  }
+  function getSortKey(r,campo){return campo==='mes'?(r.dt?r.dt.slice(0,7):'0000-00'):getLbl(r,campo);}
+  function getVal(m){if(metrica==='qtd')return m.qtd;if(metrica==='taxa')return Math.round(m.taxa*100)/100;return m.qtd>0?Math.round(m.taxa/m.qtd*100)/100:0;}
+  function fmtV(v){return metrica==='qtd'?v+' servi\u00e7os':'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2});}
+  function metL(){return (METRICAS.find(function(m){return m.v===metrica;})||{}).l||'';}
+  function eixL(e){return (EIXOS.find(function(x){return x.v===e;})||{}).l||'';}
+
   function filtrar(){
     return INIT_REQS.filter(function(r){
       if(r.enc===1)return false;
@@ -6482,140 +6502,234 @@ function Graficos(){
       return true;
     });
   }
-  function agrupar(reqs){
-    var MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  function agrupar1(reqs){
     var map={};
     reqs.forEach(function(r){
-      var sortKey,lbl;
-      if(eixo==='mes'){
-        var p=r.dt?r.dt.split('-'):[];
-        sortKey=p.length>=2?(p[0]+'-'+p[1]):'0000-00';
-        lbl=p.length>=2?(MESES[parseInt(p[1])-1]||p[1])+'/'+p[0].slice(2):'S/D';
-      } else {
-        var raw=r[eixo]||'';
-        if(eixo==='func'){
-          var fn=FUNC_LIST.find(function(f){return f.nome===raw||f.id===raw;});
-          lbl=fn?fn.nome:(raw||'Sem funcion\u00e1rio');
-        } else if(eixo==='cn'){
-          lbl=r.cn||r.sn||'N\u00e3o classificado';
-        } else if(eixo==='bairro'){
-          lbl=raw||'N\u00e3o informado';
-        } else if(eixo==='urg'){
-          lbl=raw==='Sim'?'\u26a0 Urgente':'\u2713 Normal';
-        } else if(eixo==='status'){
-          lbl=raw||'Sem status';
-        } else if(eixo==='fp'){
-          lbl=raw||'N\u00e3o definido';
-        } else {
-          lbl=raw||'N/A';
-        }
-        sortKey=lbl;
-      }
-      if(!map[sortKey])map[sortKey]={lbl:lbl,qtd:0,taxa:0};
-      map[sortKey].qtd++;
-      map[sortKey].taxa+=parseFloat(String(r.taxa||0).replace(',','.'))||0;
+      var sk=getSortKey(r,eixo);var lbl=getLbl(r,eixo);
+      if(!map[sk])map[sk]={lbl:lbl,qtd:0,taxa:0};
+      map[sk].qtd++;map[sk].taxa+=parseFloat(String(r.taxa||0).replace(',','.'))||0;
     });
     var keys=Object.keys(map);
     if(eixo==='mes')keys.sort();
     else keys.sort(function(a,b){return metrica==='qtd'?map[b].qtd-map[a].qtd:map[b].taxa-map[a].taxa;});
     return {keys:keys,map:map};
   }
+
+  function agrupar2(reqs){
+    var xs={},ys={},mat={};
+    reqs.forEach(function(r){
+      var xk=getSortKey(r,eixo);var yk=getSortKey(r,eixo2);
+      xs[xk]=getLbl(r,eixo);ys[yk]=getLbl(r,eixo2);
+      var key=xk+'|||'+yk;
+      if(!mat[key])mat[key]={qtd:0,taxa:0};
+      mat[key].qtd++;mat[key].taxa+=parseFloat(String(r.taxa||0).replace(',','.'))||0;
+    });
+    var xkeys=Object.keys(xs).sort();var ykeys=Object.keys(ys).sort();
+    return {xkeys:xkeys,ykeys:ykeys,xs:xs,ys:ys,mat:mat};
+  }
+
   function gerar(){
-    if(!window.Chart){setMsg('\u26a0 Chart.js ainda carregando, aguarde.');return;}
+    if(!window.Plotly){setMsg('\u26a0 Plotly ainda carregando, aguarde.');return;}
     var reqs=filtrar();
     if(!reqs.length){setMsg('\u26a0 Nenhum dado para os filtros selecionados.');return;}
-    var g=agrupar(reqs);
-    var labels=g.keys.map(function(k){return g.map[k].lbl;});
-    var valores=g.keys.map(function(k){var m=g.map[k];if(metrica==='qtd')return m.qtd;if(metrica==='taxa')return Math.round(m.taxa*100)/100;return m.qtd>0?Math.round(m.taxa/m.qtd*100)/100:0;});
-    if(chartInst)chartInst.destroy();
-    var ctx=canvasRef.current.getContext('2d');
-    var isPie=(tipo==='pie'||tipo==='doughnut'||tipo==='polarArea'||tipo==='radar');
-    var isHoriz=(tipo==='barH');
-    var isStack=(tipo==='barS');
-    var isArea=(tipo==='area');
-    var chartType=isHoriz||isStack?'bar':isArea?'line':tipo;
-    var bgC=isPie?labels.map(function(_,i){return CORES[i%CORES.length];})
-             :isArea?CORES[0]+'55':CORES[0]+'33';
-    var bdC=isPie?labels.map(function(_,i){return CORES[i%CORES.length];}):CORES[0];
-    var metLbl=(METRICAS.find(function(m){return m.v===metrica;})||{}).l||'';
-    var eixoLbl=(EIXOS.find(function(e){return e.v===eixo;})||{}).l||'';
-    var nc=new window.Chart(ctx,{type:chartType,
-      data:{labels:labels,datasets:[{label:metLbl,data:valores,backgroundColor:bgC,borderColor:bdC,
-        borderWidth:isPie?1:2,fill:isArea,tension:.35,
-        pointRadius:(tipo==='line'||isArea)?4:0}]},
-      options:{responsive:true,maintainAspectRatio:false,indexAxis:isHoriz?'y':'x',
-        plugins:{
-          legend:{display:isPie,position:'right',labels:{font:{family:"'Rubik',sans-serif",size:12},boxWidth:14}},
-          title:{display:true,text:(function(){
-            var t=eixoLbl+' \u2014 '+metLbl;
-            var extras=[];
-            if(fFunc)extras.push('Funcion\u00e1rio: '+fFunc);
-            if(fCat){var c=CATS.find(function(x){return String(x.id)===String(fCat);});if(c)extras.push('Servi\u00e7o: '+c.nome);}
-            if(fSt)extras.push('Status: '+fSt);
-            if(dtDe||dtAte)extras.push((dtDe?dtDe.split('-').reverse().join('/'):'...')+' a '+(dtAte?dtAte.split('-').reverse().join('/'):'...'));
-            return extras.length?[t,extras.join(' | ')]:t;
-          })(),
-          font:{family:"'Space Grotesk',sans-serif",size:13,weight:'700'},color:'#1e3a5f',padding:{bottom:12}},
-          tooltip:{callbacks:{
-            title:function(items){return items[0]?items[0].label:'';},
-            label:function(c){
-              var v=isPie?c.parsed:(c.parsed.y!==undefined?c.parsed.y:c.parsed);
-              var val=metrica==='qtd'?v+' servi\u00e7o'+(v===1?'':'s'):'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2});
-              return ' '+metLbl+': '+val;
-            }
-          }}
-        },
-        scales:(function(){
-          if(isPie)return {};
-          var xTitle={display:true,color:'#475569',font:{family:"'Inter',sans-serif",size:11,weight:'600'}};
-          var yTitle={display:true,color:'#475569',font:{family:"'Inter',sans-serif",size:11,weight:'600'}};
-          var valTick={color:'#64748b',font:{family:"'Inter',sans-serif",size:11},callback:function(v){return metrica==='qtd'?v:'R$ '+v.toLocaleString('pt-BR');}};
-          var lblTick={color:'#64748b',font:{family:"'Inter',sans-serif",size:11}};
-          if(isHoriz)return {
-            x:{beginAtZero:true,grid:{color:'#f1f5f9'},title:Object.assign({},xTitle,{text:metLbl}),ticks:valTick},
-            y:{grid:{color:'#f1f5f9'},title:Object.assign({},yTitle,{text:eixoLbl}),ticks:lblTick}
-          };
-          if(isStack)return {
-            x:{stacked:true,grid:{color:'#f1f5f9'},title:Object.assign({},xTitle,{text:eixoLbl}),ticks:lblTick},
-            y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'},title:Object.assign({},yTitle,{text:metLbl}),ticks:valTick}
-          };
-          return {
-            x:{grid:{color:'#f1f5f9'},title:Object.assign({},xTitle,{text:eixoLbl}),ticks:lblTick},
-            y:{beginAtZero:true,grid:{color:'#f1f5f9'},title:Object.assign({},yTitle,{text:metLbl}),ticks:valTick}
-          };
-        }())
+    if(needs2&&eixo===eixo2){setMsg('\u26a0 Eixo X e Y devem ser diferentes.');return;}
+
+    var titleArr=[eixL(eixo)+(needs2?' \u00d7 '+eixL(eixo2):'')+' \u2014 '+metL()];
+    if(fFunc)titleArr.push('Func.: '+fFunc);
+    if(fSt)titleArr.push(fSt);
+    if(dtDe||dtAte)titleArr.push((dtDe||'...')+' a '+(dtAte||'...'));
+
+    var LY={font:{family:FB,size:12,color:'#374151'},paper_bgcolor:'#fff',plot_bgcolor:'#f8fafc',
+      title:{text:titleArr.join(' | '),font:{family:FT,size:13,color:'#1e3a5f'}},
+      margin:{l:60,r:20,t:55,b:60},showlegend:false,colorway:CORES};
+    var CFG={responsive:true,displaylogo:false,
+      toImageButtonOptions:{format:'png',filename:'grafico-sgss',scale:2},
+      modeBarButtonsToRemove:['sendDataToCloud']};
+
+    var traces=[],layout=Object.assign({},LY);
+
+    if(!needs2){
+      var g=agrupar1(reqs);
+      var L=g.keys.map(function(k){return g.map[k].lbl;});
+      var V=g.keys.map(function(k){return getVal(g.map[k]);});
+      var HT=L.map(function(l,i){return '<b>'+l+'</b><br>'+metL()+': '+fmtV(V[i]);});
+      var AX={xaxis:{title:{text:eixL(eixo),font:{family:FB,size:11}},tickangle:-30,gridcolor:'#e2e8f0'},
+               yaxis:{title:{text:metL(),font:{family:FB,size:11}},gridcolor:'#e2e8f0',zeroline:false}};
+
+      if(tipo==='bar'){
+        traces=[{type:'bar',x:L,y:V,marker:{color:CORES,opacity:.85},hovertext:HT,hoverinfo:'text',textposition:'outside',text:V}];
+        Object.assign(layout,AX);
+      }else if(tipo==='barH'){
+        traces=[{type:'bar',orientation:'h',x:V,y:L,marker:{color:CORES,opacity:.85},hovertext:HT,hoverinfo:'text'}];
+        layout.xaxis={title:{text:metL(),font:{family:FB,size:11}},gridcolor:'#e2e8f0'};
+        layout.yaxis={title:{text:eixL(eixo),font:{family:FB,size:11}},automargin:true};
+        layout.margin={l:130,r:20,t:55,b:50};
+      }else if(tipo==='barS'){
+        traces=[{type:'bar',x:L,y:V,marker:{color:CORES[0],opacity:.85},hovertext:HT,hoverinfo:'text'}];
+        layout.barmode='stack';Object.assign(layout,AX);
+      }else if(tipo==='line'){
+        traces=[{type:'scatter',mode:'lines+markers',x:L,y:V,line:{color:CORES[0],width:3},
+          marker:{color:CORES[0],size:7,line:{width:2,color:'#fff'}},hovertext:HT,hoverinfo:'text'}];
+        Object.assign(layout,AX);
+      }else if(tipo==='area'){
+        traces=[{type:'scatter',mode:'lines',x:L,y:V,fill:'tozeroy',fillcolor:CORES[0]+'44',
+          line:{color:CORES[0],width:2},hovertext:HT,hoverinfo:'text'}];
+        Object.assign(layout,AX);
+      }else if(tipo==='pie'){
+        traces=[{type:'pie',labels:L,values:V,hole:0,marker:{colors:CORES},textinfo:'label+percent',
+          hovertemplate:'<b>%{label}</b><br>'+metL()+': %{value}<br>%{percent}<extra></extra>'}];
+        layout.showlegend=true;layout.legend={font:{family:FB,size:11}};
+        layout.margin={l:20,r:20,t:55,b:20};
+      }else if(tipo==='donut'){
+        traces=[{type:'pie',labels:L,values:V,hole:.45,marker:{colors:CORES},textinfo:'label+percent',
+          hovertemplate:'<b>%{label}</b><br>'+metL()+': %{value}<br>%{percent}<extra></extra>'}];
+        layout.showlegend=true;layout.legend={font:{family:FB,size:11}};
+        layout.annotations=[{text:'<b>'+metL().split(' ')[0]+'</b>',x:.5,y:.5,showarrow:false,font:{size:12,family:FT}}];
+        layout.margin={l:20,r:20,t:55,b:20};
+      }else if(tipo==='bubble'){
+        var mx=Math.max.apply(null,V)||1;
+        traces=[{type:'scatter',mode:'markers',x:L,y:V,
+          marker:{size:V.map(function(v){return 10+Math.round(v/mx*50);}),color:CORES,opacity:.75,line:{width:1,color:'#fff'}},
+          hovertext:HT,hoverinfo:'text'}];
+        Object.assign(layout,AX);
+      }else if(tipo==='funnel'){
+        var si=V.map(function(_,i){return i;}).sort(function(a,b){return V[b]-V[a];});
+        traces=[{type:'funnel',y:si.map(function(i){return L[i];}),x:si.map(function(i){return V[i];}),
+          marker:{color:CORES},textinfo:'value+percent initial',hoverinfo:'y+x+percent initial'}];
+        layout.margin={l:150,r:20,t:55,b:30};
+      }else if(tipo==='waterfall'){
+        var wm=['absolute'],wv=[V[0]];
+        for(var wi=1;wi<V.length;wi++){wm.push('relative');wv.push(V[wi]-V[wi-1]);}
+        traces=[{type:'waterfall',x:L,y:wv,measure:wm,
+          connector:{line:{color:'#94a3b8',width:2}},
+          increasing:{marker:{color:CORES[2]}},decreasing:{marker:{color:CORES[3]}},
+          totals:{marker:{color:CORES[0]}},textposition:'outside',text:V.map(fmtV)}];
+        Object.assign(layout,AX);
+      }else if(tipo==='treemap'){
+        traces=[{type:'treemap',labels:L,parents:L.map(function(){return '';}),values:V,
+          textinfo:'label+value+percent root',branchvalues:'total',
+          marker:{colors:V,colorscale:[[0,CORES[0]+'55'],[1,CORES[0]]],showscale:false},
+          hovertemplate:'<b>%{label}</b><br>'+metL()+': %{value}<extra></extra>'}];
+        layout.margin={l:10,r:10,t:55,b:10};
+      }else if(tipo==='sunburst'){
+        traces=[{type:'sunburst',labels:L,parents:L.map(function(){return '';}),values:V,
+          branchvalues:'total',marker:{colors:CORES},
+          hovertemplate:'<b>%{label}</b><br>'+metL()+': %{value}<br>%{percentParent}<extra></extra>'}];
+        layout.margin={l:10,r:10,t:55,b:10};
       }
-    });
-    setChartInst(nc);
+    }else if(tipo==='heatmap'){
+      var g2=agrupar2(reqs);
+      var xL=g2.xkeys.map(function(k){return g2.xs[k];});
+      var yL=g2.ykeys.map(function(k){return g2.ys[k];});
+      var zM=g2.ykeys.map(function(yk){return g2.xkeys.map(function(xk){var m=g2.mat[xk+'|||'+yk];return m?getVal(m):0;});});
+      traces=[{type:'heatmap',x:xL,y:yL,z:zM,colorscale:[[0,'#eff6ff'],[.5,CORES[0]],[1,'#1e3a5f']],
+        hovertemplate:'<b>%{x} \u00d7 %{y}</b><br>'+metL()+': %{z}<extra></extra>',showscale:true}];
+      layout.xaxis={title:{text:eixL(eixo),font:{family:FB,size:11}},tickangle:-30};
+      layout.yaxis={title:{text:eixL(eixo2),font:{family:FB,size:11}},automargin:true};
+      layout.margin={l:110,r:60,t:55,b:80};
+    }else if(tipo==='bar3d'){
+      var g3=agrupar2(reqs);
+      g3.xkeys.forEach(function(xk,xi){
+        var yL3=g3.ykeys.map(function(k){return g3.ys[k];});
+        var zV=g3.ykeys.map(function(yk){var m=g3.mat[xk+'|||'+yk];return m?getVal(m):0;});
+        traces.push({type:'bar',x:yL3,y:zV,name:g3.xs[xk],
+          marker:{color:CORES[xi%CORES.length],opacity:.85},
+          hovertemplate:'<b>'+g3.xs[xk]+' \u00d7 %{x}</b><br>'+metL()+': %{y}<extra></extra>'});
+      });
+      layout.barmode='group';layout.showlegend=true;
+      layout.legend={title:{text:eixL(eixo),font:{family:FT,size:11}},font:{family:FB,size:11}};
+      layout.xaxis={title:{text:eixL(eixo2),font:{family:FB,size:11}},tickangle:-30};
+      layout.yaxis={title:{text:metL(),font:{family:FB,size:11}},gridcolor:'#e2e8f0'};
+    }else if(tipo==='scatter3d'){
+      var g4=agrupar2(reqs);
+      var xs4=[],ys4=[],zs4=[],cs4=[],ts4=[];
+      g4.xkeys.forEach(function(xk,xi){
+        g4.ykeys.forEach(function(yk){
+          var m=g4.mat[xk+'|||'+yk];
+          if(m&&getVal(m)>0){
+            xs4.push(g4.xs[xk]);ys4.push(g4.ys[yk]);zs4.push(getVal(m));
+            cs4.push(CORES[xi%CORES.length]);
+            ts4.push('<b>'+g4.xs[xk]+'</b><br>'+g4.ys[yk]+'<br>'+fmtV(getVal(m)));
+          }
+        });
+      });
+      var mxZ=Math.max.apply(null,zs4)||1;
+      traces=[{type:'scatter3d',mode:'markers',x:xs4,y:ys4,z:zs4,
+        marker:{size:zs4.map(function(v){return 3+Math.round(v/mxZ*14);}),color:zs4,
+          colorscale:[[0,CORES[5]+'88'],[.5,CORES[0]],[1,'#1e3a5f']],
+          opacity:.85,line:{width:0},showscale:true},
+        text:ts4,hoverinfo:'text'}];
+      layout.scene={xaxis:{title:eixL(eixo),gridcolor:'#e2e8f0'},
+        yaxis:{title:eixL(eixo2),gridcolor:'#e2e8f0'},
+        zaxis:{title:metL(),gridcolor:'#e2e8f0'},bgcolor:'#f8fafc',
+        camera:{eye:{x:1.5,y:1.5,z:.8}}};
+      layout.margin={l:0,r:0,t:55,b:0};
+    }else if(tipo==='surface'){
+      var g5=agrupar2(reqs);
+      var xL5=g5.xkeys.map(function(k){return g5.xs[k];});
+      var yL5=g5.ykeys.map(function(k){return g5.ys[k];});
+      var zM5=g5.ykeys.map(function(yk){return g5.xkeys.map(function(xk){var m=g5.mat[xk+'|||'+yk];return m?getVal(m):0;});});
+      traces=[{type:'surface',x:xL5,y:yL5,z:zM5,
+        colorscale:[[0,'#eff6ff'],[.3,CORES[5]],[.7,CORES[0]],[1,'#1e3a5f']],
+        contours:{z:{show:true,usecolormap:true,highlightcolor:'#ffd700',project:{z:true}}},
+        hovertemplate:'%{x}<br>%{y}<br>'+metL()+': %{z}<extra></extra>',opacity:.9}];
+      layout.scene={xaxis:{title:eixL(eixo)},yaxis:{title:eixL(eixo2)},
+        zaxis:{title:metL()},bgcolor:'#f8fafc',
+        camera:{eye:{x:1.6,y:1.6,z:.9}}};
+      layout.margin={l:0,r:0,t:55,b:0};
+    }
+
+    if(!traces.length){setMsg('\u26a0 Sem dados suficientes para este tipo de gr\u00e1fico.');return;}
+    window.Plotly.react(plotRef.current,traces,layout,CFG);
+    setHasChart(true);
   }
-  function exportPNG(){if(!canvasRef.current)return;var a=document.createElement('a');a.href=canvasRef.current.toDataURL('image/png');a.download='grafico-sgss-'+new Date().toISOString().slice(0,10)+'.png';a.click();}
-  function limpar(){setDtDe('');setDtAte('');setFFunc('');setFCat('');setFSt('');if(chartInst){chartInst.destroy();setChartInst(null);}setResetKey(function(k){return k+1;});}
+
+  function exportPNG(){
+    if(!hasChart||!plotRef.current)return;
+    window.Plotly.downloadImage(plotRef.current,{format:'png',filename:'grafico-sgss-'+new Date().toISOString().slice(0,10),width:1200,height:600,scale:2});
+  }
+  function limpar(){
+    setDtDe('');setDtAte('');setFFunc('');setFCat('');setFSt('');
+    if(hasChart&&plotRef.current)window.Plotly.purge(plotRef.current);
+    setHasChart(false);setResetKey(function(k){return k+1;});
+  }
+
   var nI={width:'100%',padding:'8px 10px',border:'1.5px solid #cbd5e1',borderRadius:6,fontSize:13,fontFamily:"'Inter',sans-serif",background:'#fff',outline:'none',boxSizing:'border-box'};
   var nL={fontSize:11,fontWeight:700,color:'#475569',display:'block',marginBottom:4,textTransform:'uppercase',letterSpacing:'.4px'};
+
   return ce('div',{className:'page'},
     msg?ce('div',{style:{position:'fixed',top:70,right:20,background:'#1e293b',color:'#fff',padding:'10px 18px',borderRadius:8,fontSize:13,zIndex:9999,boxShadow:'0 4px 12px rgba(0,0,0,.2)'}},msg):null,
     ce('div',{className:'page-header'},
       ce('h2',{className:'page-title'},'\uD83D\uDCC8 Gr\u00e1ficos'),
       ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap'}},
-        ce('button',{className:'btn',style:{background:'#2563eb',color:'#fff',border:'none'},onClick:gerar},'\uD83D\uDCCA Gerar Gr\u00e1fico'),
-        chartInst?ce('button',{className:'btn btn-s',onClick:exportPNG},'\uD83D\uDDA8 Exportar PNG'):null
+        ce('button',{className:'btn',style:{background:'#2563eb',color:'#fff',border:'none'},onClick:gerar},'\uD83D\uDCCA Gerar'),
+        hasChart?ce('button',{className:'btn btn-s',onClick:exportPNG},'\uD83D\uDDA8 Exportar PNG'):null,
+        ce('button',{className:'btn btn-s',onClick:limpar},'\u00d7 Limpar')
       )
     ),
     ce('div',{className:'card',style:{marginBottom:16}},
-      ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:14,marginBottom:16}},
+      ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(155px,1fr))',gap:14,marginBottom:16}},
+        ce('div',null,ce('label',{style:nL},'Tipo de Gr\u00e1fico'),
+          ce('select',{style:nI,value:tipo,onChange:function(e){setTipo(e.target.value);}},
+            ce('optgroup',{label:'\u2500\u2500 2D \u2500\u2500'},TIPOS.filter(function(t){return t.g==='2D';}).map(function(o){return ce('option',{key:o.v,value:o.v},o.l);})),
+            ce('optgroup',{label:'\u2500\u2500 2D Cruzado \u2500\u2500'},TIPOS.filter(function(t){return t.g==='2D+';}).map(function(o){return ce('option',{key:o.v,value:o.v},o.l);})),
+            ce('optgroup',{label:'\u2500\u2500 3D \u2500\u2500'},TIPOS.filter(function(t){return t.g==='3D';}).map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))
+          )
+        ),
         ce('div',null,ce('label',{style:nL},'Agrupar por (Eixo X)'),
           ce('select',{style:nI,value:eixo,onChange:function(e){setEixo(e.target.value);}},
             EIXOS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))),
-        ce('div',null,ce('label',{style:nL},'M\u00e9trica (Eixo Y)'),
+        needs2?ce('div',null,ce('label',{style:nL},'2\u00ba Agrupamento (Y)'),
+          ce('select',{style:nI,value:eixo2,onChange:function(e){setEixo2(e.target.value);}},
+            EIXOS.filter(function(o){return o.v!==eixo;}).map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))):null,
+        ce('div',null,ce('label',{style:nL},'M\u00e9trica'),
           ce('select',{style:nI,value:metrica,onChange:function(e){setMetrica(e.target.value);}},
-            METRICAS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))),
-        ce('div',null,ce('label',{style:nL},'Tipo de Gr\u00e1fico'),
-          ce('select',{style:nI,value:tipo,onChange:function(e){setTipo(e.target.value);}},
-            TIPOS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);})))
+            METRICAS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);})))
       ),
       ce('div',{key:'fg-'+resetKey,style:{borderTop:'1px solid #f1f5f9',paddingTop:12}},
         ce('p',{style:{fontSize:11,fontWeight:700,color:'#94a3b8',marginBottom:10,textTransform:'uppercase',letterSpacing:'.4px'}},'\uD83D\uDD0D Filtros opcionais'),
-        ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12}},
+        ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))',gap:10}},
           ce('div',null,ce('label',{style:nL},'De'),ce('input',{type:'date',style:nI,value:dtDe,onChange:function(e){setDtDe(e.target.value);}})),
           ce('div',null,ce('label',{style:nL},'At\u00e9'),ce('input',{type:'date',style:nI,value:dtAte,onChange:function(e){setDtAte(e.target.value);}})),
           ce('div',null,ce('label',{style:nL},'Funcion\u00e1rio'),
@@ -6636,16 +6750,18 @@ function Graficos(){
       )
     ),
     ce('div',{className:'card'},
-      !chartInst?ce('div',{style:{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:320,color:'#94a3b8',gap:12}},
+      needs2?ce('div',{style:{padding:'8px 12px',marginBottom:12,background:'#eff6ff',borderRadius:6,border:'1px solid #bfdbfe',fontSize:12,color:'#1d4ed8'}},
+        '\u2139\ufe0f Este tipo cruza dois agrupamentos: '+eixL(eixo)+' \u00d7 '+eixL(eixo2)):null,
+      !hasChart?ce('div',{style:{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:320,color:'#94a3b8',gap:12}},
         ce('span',{style:{fontSize:56}},'\uD83D\uDCC8'),
-        ce('span',{style:{fontSize:14,fontWeight:500}},'Configure os campos e clique em Gerar Gr\u00e1fico'),
+        ce('span',{style:{fontSize:14,fontWeight:500}},'Configure e clique em Gerar'),
         ce('button',{className:'btn',style:{background:'#2563eb',color:'#fff',border:'none',marginTop:4},onClick:gerar},'\uD83D\uDCCA Gerar agora')
       ):null,
-      ce('div',{style:{height:chartInst?420:0,position:'relative',transition:'height .3s ease'}},
-        ce('canvas',{ref:canvasRef}))
+      ce('div',{ref:plotRef,style:{width:'100%',minHeight:hasChart?480:0}})
     )
   );
 }
+
 
 function App(){
   var su=useState(null);var user=su[0];var setUser=su[1];
