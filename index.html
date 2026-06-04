@@ -5699,8 +5699,13 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
   }
 
   function startEditAg(r){
-    setEditAgId(r.id);setSolRef(r.solId?INIT_SOLS.find(function(s){return s.id===r.solId;})||null:null);
-    setMesmoEnd(false);setAgForm(Object.assign({},r));window.scrollTo({top:0,behavior:'smooth'});
+    var found=AGENDA_LIST.find(function(a){return a.id===r.id;});
+    if(!found){notify('Registro não encontrado.');return;}
+    setEditAgId(found.id);
+    setSolRef(found.solId?INIT_SOLS.find(function(s){return s.id===found.solId;})||null:null);
+    setMesmoEnd(false);
+    setAgForm(Object.assign({},found));
+    window.scrollTo({top:0,behavior:'smooth'});
   }
   function saveEditAg(){
     var taxaFinal=isento?0:(subInfo?(subInfo.h?subInfo.taxa*horas:subInfo.ml?subInfo.taxa*metros:subInfo.taxa):(agForm.taxa||0));
