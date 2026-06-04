@@ -5557,6 +5557,8 @@ function Agenda(){
   var sEdAgId=useState(null);var editAgId=sEdAgId[0];var setEditAgId=sEdAgId[1];
   var sdpg=useState(1);var dayPg=sdpg[0];var setDayPg=sdpg[1];
   var slpg=useState(1);var listPg=slpg[0];var setListPg=slpg[1];
+  var sEIn=useState(null);var editInlineId=sEIn[0];var setEditInlineId=sEIn[1];
+  var sEId=useState({});var editInlineData=sEId[0];var setEditInlineData=sEId[1];
   var t=useToast();var toast=t[0];var notify=t[1];
 
   var MNOMES=['Janeiro','Fevereiro','Mar\u00e7o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -5714,6 +5716,22 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
     var idx=AGENDA_LIST.findIndex(function(a){return a.id===id;});
     if(idx>=0){AGENDA_LIST.splice(idx,1);setAgItems(AGENDA_LIST.slice());sgssSave();notify('Agendamento removido.');}
   }
+  function startInlineEdit(r){
+    setEditInlineId(r.id);
+    setEditInlineData({status:r.status||'Agendado',func:r.func||'',taxa:r.taxa||0,urg:r.urg||'Não'});
+  }
+  function saveInlineEdit(){
+    var idx=AGENDA_LIST.findIndex(function(a){return a.id===editInlineId;});
+    if(idx>=0){
+      AGENDA_LIST[idx]=Object.assign({},AGENDA_LIST[idx],{
+        status:editInlineData.status,func:editInlineData.func,
+        taxa:Number(editInlineData.taxa)||0,urg:editInlineData.urg
+      });
+      sgssSave();
+    }
+    setEditInlineId(null);setEditInlineData({});
+  }
+
 
   var funcOpts=FUNC_LIST.filter(function(f){return Number(f.ativo);}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);});
   var allFuncs=Array.from(new Set(
@@ -5990,14 +6008,49 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
           ce('td',null,r.nom||r.nome),
           ce('td',null,r.bairro),
           ce('td',{title:r.cn||r.sn},(r.cn||'').slice(0,24)+((r.cn||'').length>24?'\u2026':'')),
-          ce('td',null,r.func||'\u2013'),
-          ce('td',{style:{textAlign:'right',fontWeight:600}},r.taxa>0?fmt(r.taxa):'\u2013'),
-          ce('td',null,r.urg==='Sim'?'\ud83d\udea8':'\u2013'),
-          ce('td',null,r.status?ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status):ce('span',{className:'badge',style:{background:'#e0f2fe',color:'#0369a1'}},'Agendado')),
-          ce('td',null,ce('div',{style:{display:'flex',gap:4}},
-            ce('button',{className:'btn-icon',title:'Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},onClick:function(){prtAgendaRow(r);}},'\ud83d\udda8\ufe0f'),
-            r._src==='m'?ce('button',{className:'btn-icon',title:'Editar',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac'},onClick:function(){startEditAg(r);}},'\u270f\ufe0f'):null,
-            r._src==='m'?ce('button',{className:'btn-icon',title:'Excluir',style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},onClick:function(){setDelAgId(r.id);}},'\ud83d\uddd1\ufe0f'):null
+          ce('td',null,editInlineId===r.id
+            ?ce('select',{style:{fontSize:11,padding:'2px 4px',border:'1px solid #cbd5e1',borderRadius:4},
+                value:editInlineData.func||'',onChange:function(e){setEditInlineData(function(p){return Object.assign({},p,{func:e.target.value});});}},
+                ce('option',{value:''},'-- A designar --'),
+                FUNC_LIST.filter(function(f){return f.ativo!==false;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);}))
+            :r.func||'\u2013'),
+          ce('td',{style:{textAlign:'right'}},editInlineId===r.id
+            ?ce('input',{type:'number',style:{width:70,fontSize:11,padding:'2px 4px',border:'1px solid #cbd5e1',borderRadius:4,textAlign:'right'},
+                value:editInlineData.taxa||0,onChange:function(e){setEditInlineData(function(p){return Object.assign({},p,{taxa:e.target.value});})}}
+             )
+            :ce('span',{style:{fontWeight:600}},r.taxa>0?fmt(r.taxa):'\u2013')),
+          ce('td',null,editInlineId===r.id
+            ?ce('select',{style:{fontSize:11,padding:'2px 4px',border:'1px solid #cbd5e1',borderRadius:4},
+                value:editInlineData.urg||'Não',onChange:function(e){setEditInlineData(function(p){return Object.assign({},p,{urg:e.target.value});});}},
+                ce('option',{value:'Não'},'Normal'),
+                ce('option',{value:'Sim'},'\ud83d\udea8 Urgente'))
+            :(r.urg==='Sim'?'\ud83d\udea8':'\u2013')),
+          ce('td',null,editInlineId===r.id
+            ?ce('select',{style:{fontSize:11,padding:'2px 4px',border:'1px solid #cbd5e1',borderRadius:4},
+                value:editInlineData.status||'Agendado',onChange:function(e){setEditInlineData(function(p){return Object.assign({},p,{status:e.target.value});});}},
+                ['Agendado','Pendente','Em andamento','Conclu\u00eddo','Cancelado'].map(function(s){return ce('option',{key:s,value:s},s);}))
+            :(r.status?ce('span',{className:'badge '+(r.status==='Conclu\u00eddo'?'b-gr':'b-or')},r.status):
+              ce('span',{className:'badge',style:{background:'#e0f2fe',color:'#0369a1'}},'Agendado'))),
+          ce('td',null,ce('div',{style:{display:'flex',gap:3,flexWrap:'wrap',alignItems:'center'}},
+            editInlineId===r.id
+              ?[ce('button',{key:'sv',className:'btn-icon',title:'Salvar',
+                  style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700},
+                  onClick:saveInlineEdit},'✔'),
+                ce('button',{key:'cn',className:'btn-icon',title:'Cancelar',
+                  style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
+                  onClick:function(){setEditInlineId(null);setEditInlineData({});}},'X')]
+              :[ce('button',{key:'pr',className:'btn-icon',title:'Imprimir',
+                  style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd'},
+                  onClick:function(){prtAgendaRow(r);}},'\ud83d\udda8\ufe0f'),
+                r._src==='m'?ce('button',{key:'ei',className:'btn-icon',title:'Editar Inline',
+                  style:{background:'#fefce8',color:'#ca8a04',border:'1px solid #fde047'},
+                  onClick:function(){startInlineEdit(r);}},'⚡'):null,
+                r._src==='m'?ce('button',{key:'ec',className:'btn-icon',title:'Editar Completo',
+                  style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac'},
+                  onClick:function(){startEditAg(r);}},'✏️'):null,
+                r._src==='m'?ce('button',{key:'ex',className:'btn-icon',title:'Excluir',
+                  style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
+                  onClick:function(){setDelAgId(r.id);}},'\ud83d\uddd1\ufe0f'):null]
           ))
         );})
       )
