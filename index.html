@@ -5699,12 +5699,13 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
   }
 
   function startEditAg(r){
-    var found=AGENDA_LIST.find(function(a){return a.id===r.id;});
-    if(!found){notify('Registro não encontrado.');return;}
-    setEditAgId(found.id);
-    setSolRef(found.solId?INIT_SOLS.find(function(s){return s.id===found.solId;})||null:null);
+    var clean=Object.assign({},r);
+    delete clean.agDate;
+    delete clean._src;
+    setEditAgId(clean.id);
+    setSolRef(clean.solId?INIT_SOLS.find(function(s){return s.id===clean.solId;})||null:null);
     setMesmoEnd(false);
-    setAgForm(Object.assign({},found));
+    setAgForm(clean);
     window.scrollTo({top:0,behavior:'smooth'});
   }
   function saveEditAg(){
