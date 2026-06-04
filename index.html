@@ -6446,7 +6446,17 @@ function Graficos(){
   var useState=React.useState,useRef=React.useRef,useEffect=React.useEffect;
   var EIXOS=[{v:'mes',l:'M\u00eas'},{v:'bairro',l:'Bairro'},{v:'func',l:'Funcion\u00e1rio'},{v:'cn',l:'Tipo de Servi\u00e7o'},{v:'status',l:'Status'},{v:'fp',l:'Forma de Pagamento'},{v:'urg',l:'Urg\u00eancia'}];
   var METRICAS=[{v:'qtd',l:'Qtd de Servi\u00e7os'},{v:'taxa',l:'Total Arrecadado (R$)'},{v:'media',l:'M\u00e9dia por Servi\u00e7o (R$)'}];
-  var TIPOS=[{v:'bar',l:'Barras'},{v:'line',l:'Linhas'},{v:'pie',l:'Pizza'},{v:'doughnut',l:'Rosca'},{v:'polarArea',l:'\u00c1rea Polar'}];
+  var TIPOS=[
+    {v:'bar',l:'Barras Verticais'},
+    {v:'barH',l:'Barras Horizontais'},
+    {v:'barS',l:'Barras Empilhadas'},
+    {v:'line',l:'Linhas'},
+    {v:'area',l:'\u00c1rea Preenchida'},
+    {v:'pie',l:'Pizza'},
+    {v:'doughnut',l:'Rosca'},
+    {v:'polarArea',l:'\u00c1rea Polar'},
+    {v:'radar',l:'Radar'}
+  ];
   var CORES=['#2563eb','#7c3aed','#059669','#dc2626','#d97706','#0891b2','#be185d','#65a30d','#9333ea','#0f766e','#b45309'];
   var sEx=useState('mes');var eixo=sEx[0];var setEixo=sEx[1];
   var sMet=useState('qtd');var metrica=sMet[0];var setMetrica=sMet[1];
@@ -6519,14 +6529,21 @@ function Graficos(){
     var valores=g.keys.map(function(k){var m=g.map[k];if(metrica==='qtd')return m.qtd;if(metrica==='taxa')return Math.round(m.taxa*100)/100;return m.qtd>0?Math.round(m.taxa/m.qtd*100)/100:0;});
     if(chartInst)chartInst.destroy();
     var ctx=canvasRef.current.getContext('2d');
-    var isPie=(tipo==='pie'||tipo==='doughnut'||tipo==='polarArea');
-    var bgC=isPie?labels.map(function(_,i){return CORES[i%CORES.length];}):CORES[0]+'33';
+    var isPie=(tipo==='pie'||tipo==='doughnut'||tipo==='polarArea'||tipo==='radar');
+    var isHoriz=(tipo==='barH');
+    var isStack=(tipo==='barS');
+    var isArea=(tipo==='area');
+    var chartType=isHoriz||isStack?'bar':isArea?'line':tipo;
+    var bgC=isPie?labels.map(function(_,i){return CORES[i%CORES.length];})
+             :isArea?CORES[0]+'55':CORES[0]+'33';
     var bdC=isPie?labels.map(function(_,i){return CORES[i%CORES.length];}):CORES[0];
     var metLbl=(METRICAS.find(function(m){return m.v===metrica;})||{}).l||'';
     var eixoLbl=(EIXOS.find(function(e){return e.v===eixo;})||{}).l||'';
-    var nc=new window.Chart(ctx,{type:tipo,
-      data:{labels:labels,datasets:[{label:metLbl,data:valores,backgroundColor:bgC,borderColor:bdC,borderWidth:isPie?1:2,fill:tipo==='line',tension:.35,pointRadius:tipo==='line'?4:0}]},
-      options:{responsive:true,maintainAspectRatio:false,
+    var nc=new window.Chart(ctx,{type:chartType,
+      data:{labels:labels,datasets:[{label:metLbl,data:valores,backgroundColor:bgC,borderColor:bdC,
+        borderWidth:isPie?1:2,fill:isArea,tension:.35,
+        pointRadius:(tipo==='line'||isArea)?4:0}]},
+      options:{responsive:true,maintainAspectRatio:false,indexAxis:isHoriz?'y':'x',
         plugins:{
           legend:{display:isPie,position:'right',labels:{font:{family:"'Rubik',sans-serif",size:12},boxWidth:14}},
           title:{display:true,text:(function(){
@@ -6548,14 +6565,25 @@ function Graficos(){
             }
           }}
         },
-        scales:isPie?{}:{
-          x:{grid:{color:'#f1f5f9'},
-            title:{display:true,text:eixoLbl,color:'#475569',font:{family:"'Inter',sans-serif",size:11,weight:'600'}},
-            ticks:{color:'#64748b',font:{family:"'Inter',sans-serif",size:11}}},
-          y:{beginAtZero:true,grid:{color:'#f1f5f9'},
-            title:{display:true,text:metLbl,color:'#475569',font:{family:"'Inter',sans-serif",size:11,weight:'600'}},
-            ticks:{color:'#64748b',font:{family:"'Inter',sans-serif",size:11},callback:function(v){return metrica==='qtd'?v:'R$ '+v.toLocaleString('pt-BR');}}}
-        }
+        scales:(function(){
+          if(isPie)return {};
+          var xTitle={display:true,color:'#475569',font:{family:"'Inter',sans-serif",size:11,weight:'600'}};
+          var yTitle={display:true,color:'#475569',font:{family:"'Inter',sans-serif",size:11,weight:'600'}};
+          var valTick={color:'#64748b',font:{family:"'Inter',sans-serif",size:11},callback:function(v){return metrica==='qtd'?v:'R$ '+v.toLocaleString('pt-BR');}};
+          var lblTick={color:'#64748b',font:{family:"'Inter',sans-serif",size:11}};
+          if(isHoriz)return {
+            x:{beginAtZero:true,grid:{color:'#f1f5f9'},title:Object.assign({},xTitle,{text:metLbl}),ticks:valTick},
+            y:{grid:{color:'#f1f5f9'},title:Object.assign({},yTitle,{text:eixoLbl}),ticks:lblTick}
+          };
+          if(isStack)return {
+            x:{stacked:true,grid:{color:'#f1f5f9'},title:Object.assign({},xTitle,{text:eixoLbl}),ticks:lblTick},
+            y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'},title:Object.assign({},yTitle,{text:metLbl}),ticks:valTick}
+          };
+          return {
+            x:{grid:{color:'#f1f5f9'},title:Object.assign({},xTitle,{text:eixoLbl}),ticks:lblTick},
+            y:{beginAtZero:true,grid:{color:'#f1f5f9'},title:Object.assign({},yTitle,{text:metLbl}),ticks:valTick}
+          };
+        }())
       }
     });
     setChartInst(nc);
