@@ -2130,7 +2130,7 @@ function imprimirDash(titulo,corpo,landscape){
           }))
         ))
       ),
-      ce('div',{className:'ch-card'},ce('h3',null,'Evolu\xe7\xe3o Mensal'),ce('div',{className:'bar-chart',style:{height:80}},MESES.map(function(m){return ce('div',{key:m.m,className:'bar-wrap'},ce('div',{className:'bar',style:{height:Math.round(m.v/maxM*85)+'%',background:'#3b82f6'}}),ce('div',{className:'bar-lbl',style:{fontSize:10}},m.m+' ('+m.v+')'));}))),
+      ce('div',{className:'ch-card'},ce('h3',null,'Evolu\xe7\xe3o Mensal'),ce('div',{className:'bar-chart',style:{height:80,overflowX:'auto',minWidth:0}},MESES.map(function(m){return ce('div',{key:m.m,className:'bar-wrap'},ce('div',{className:'bar',style:{height:Math.round(m.v/maxM*85)+'%',background:'#3b82f6'}}),ce('div',{className:'bar-lbl',style:{fontSize:10}},m.m+' ('+m.v+')'));}))),
       ce('div',{className:'card'},
     ce('h3',null,'💰 Serviços Pagos por Mês'),
     (function(){
@@ -2237,7 +2237,7 @@ function imprimirDash(titulo,corpo,landscape){
             );
           })()
         ),
-      ce('div',{className:'card',style:{overflowY:'auto'}},
+      ce('div',{className:'card',style:{overflowY:'auto',maxHeight:280}},
           ce('h3',{style:{margin:'0 0 8px',fontSize:13,fontWeight:700,color:'#1e3a5f'}},'\ud83d\udcc5 Pr\u00f3ximos Agendamentos'),
           (function(){
             var _tod=new Date();_tod.setHours(0,0,0,0);
