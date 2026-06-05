@@ -1685,6 +1685,17 @@ function Dashboard(){
   function parseTaxa(v){return parseFloat(String(v||0).replace(',','.'))||0;}
   var _rec=INIT_REQS.filter(function(r){return parseTaxa(r.taxa)>0;}).reduce(function(s,r){return s+parseTaxa(r.taxa);},0);
   var _agend=AGENDA_LIST.length;
+  var _mesAct=today().slice(0,7);
+  var _d4=new Date();_d4.setMonth(_d4.getMonth()-1);
+  var _mesAnt=_d4.getFullYear()+'-'+(String(_d4.getMonth()+1).padStart(2,'0'));
+  var _mn4=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var _nomAnt=_mn4[parseInt(_mesAnt.slice(5,7))-1]+'/'+_mesAnt.slice(2,4);
+  var _conclAct=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Concluído'&&r.dt&&r.dt.slice(0,7)===_mesAct;}).length;
+  var _conclAnt=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Concluído'&&r.dt&&r.dt.slice(0,7)===_mesAnt;}).length;
+  var _novAct=INIT_REQS.filter(function(r){return r.enc!==1&&r.dt&&r.dt.slice(0,7)===_mesAct;}).length;
+  var _novAnt=INIT_REQS.filter(function(r){return r.enc!==1&&r.dt&&r.dt.slice(0,7)===_mesAnt;}).length;
+  var _dConcl=_conclAct-_conclAnt;
+  var _dNov=_novAct-_novAnt;
   var CARDS=[
     {l:'Total de Solicita\u00e7\u00f5es',v:_tot,c:'s-bl',i:'\ud83d\udcdd'},
     {l:'Conclu\u00eddas',v:_concl,c:'s-gr',i:'\u2705'},
@@ -1692,7 +1703,8 @@ function Dashboard(){
     {l:'Urgentes Pendentes',v:_urg,c:'s-re',i:'\ud83d\udea8'},
     {l:'Agendamentos',v:_agend,c:'s-bl',i:'\ud83d\udcc5'},
     {l:'Solicitantes Cadastrados',v:_sol,c:'s-pu',i:'\ud83d\udc65'},
-    {l:'Receita Total',v:'R$\u00a0'+_rec.toLocaleString('pt-BR',{minimumFractionDigits:2}),c:'s-te',i:'\ud83d\udcb0'}
+    {l:'Receita Total',v:'R$\u00a0'+_rec.toLocaleString('pt-BR',{minimumFractionDigits:2}),c:'s-te',i:'\ud83d\udcb0'},
+    {l:'vs '+_nomAnt+' (Conclu\u00eddas)',v:(_dConcl>=0?'\u2191':'\u2193')+Math.abs(_dConcl)+' | Novas: '+(_dNov>=0?'+':'')+_dNov,c:_dConcl>=0?'s-gr':'s-re',i:'\ud83d\udcc8'}
   ];
 
   var maxB=Math.max.apply(null,BARS.map(function(b){return b.v;}));
@@ -2085,40 +2097,6 @@ function imprimirDash(titulo,corpo,landscape){
         row('Agend. futuros',_agFut,'#2563eb'),
         row('Agend. hoje',_agAt,_agAt>0?'#d97706':'#94a3b8')
       ),
-      ce('div',{style:{fontWeight:700,fontSize:12,color:'#1e3a5f',margin:'10px 0 4px'}},'📊 Stats vs mês anterior'),
-      (function(){
-        var _hj3=today(),_mesA=_hj3.slice(0,7);
-        var _d3=new Date();_d3.setMonth(_d3.getMonth()-1);
-        var _mesP=_d3.getFullYear()+'-'+(String(_d3.getMonth()+1).padStart(2,'0'));
-        var _mn3=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-        var _nomA=_mn3[parseInt(_mesA.slice(5,7))-1]+'/'+_mesA.slice(2,4);
-        var _nomP=_mn3[parseInt(_mesP.slice(5,7))-1]+'/'+_mesP.slice(2,4);
-        var calc=function(fn){
-          var a=INIT_REQS.filter(function(r){return r.enc!==1&&r.dt&&r.dt.slice(0,7)===_mesA&&fn(r);}).length;
-          var p=INIT_REQS.filter(function(r){return r.enc!==1&&r.dt&&r.dt.slice(0,7)===_mesP&&fn(r);}).length;
-          return {a:a,p:p,d:a-p,pct:p>0?Math.round(Math.abs(a-p)/p*100):a>0?100:0};
-        };
-        var cmp=function(s,lbl){
-          var seta=s.d>0?'↑':s.d<0?'↓':'→';
-          var cor=s.d>0?'#16a34a':s.d<0?'#dc2626':'#94a3b8';
-          return ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:11,padding:'3px 0',borderBottom:'1px solid #f8fafc'}},
-            ce('span',{style:{color:'#64748b'}},lbl),
-            ce('span',{style:{display:'flex',gap:4,alignItems:'center',fontWeight:700}},
-              ce('span',{style:{color:'#94a3b8'}},_nomP+':',s.p),
-              ce('span',{style:{color:'#cbd5e1'}},'→'),
-              ce('span',{style:{color:'#1e3a5f'}},_nomA+':',s.a),
-              ce('span',{style:{color:cor}},seta+(s.d!==0?' '+Math.abs(s.pct)+'%':''))
-            )
-          );
-        };
-        return ce('div',{style:{display:'flex',flexDirection:'column',gap:1,marginBottom:10}},
-          cmp(calc(function(r){return true;}),'Novas'),
-          cmp(calc(function(r){return r.status==='Concluído';}),'Concluídas'),
-          cmp(calc(function(r){return r.status==='Pendente';}),'Pendentes'),
-          cmp(calc(function(r){return r.urg==='Sim';}),'Urgentes'),
-          cmp(calc(function(r){return r.fp==='Pago';}),'Pagas')
-        );
-      })(),
       ce('div',{style:{fontWeight:700,fontSize:12,color:'#1e3a5f',margin:'4px 0 6px'}},
         '📅 Concluídas por mês (meta: ',META_MENSAL,')'
       ),
