@@ -2121,14 +2121,76 @@ function imprimirDash(titulo,corpo,landscape){
         ),
         ce('div',{className:'leg'},ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#16a34a'}}),ce('span',null,'Concluídas: '+_concl)),ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#d97706'}}),ce('span',null,'Pendentes: '+_pend)))
       ),
-      ce('div',{className:'card',style:{flex:'0 1 auto',maxHeight:180,overflowY:'auto'}},ce('h3',null,'Top Bairros'),(function(){
+      ce('div',{className:'card',style:{maxHeight:160,overflowY:'auto'}},ce('h3',null,'Top Bairros'),(function(){
       var _bMap={};INIT_REQS.forEach(function(r){if(r.enc!==1&&r.bairro)_bMap[r.bairro]=(_bMap[r.bairro]||0)+1;});
       var _bArr=Object.keys(_bMap).map(function(k){return{b:k,n:_bMap[k]};}).sort(function(a,b){return b.n-a.n;}).slice(0,5);
       var _bMax=_bArr.length>0?_bArr[0].n:1;
       return _bArr.length>0
         ?ce('div',{className:'blist'},_bArr.map(function(b,i){return ce('div',{key:b.b,className:'brow'},ce('span',{className:'b-rk'},'#'+(i+1)),ce('span',{className:'b-nm'},b.b),ce('div',{className:'b-bw'},ce('div',{className:'b-br',style:{width:Math.round(b.n/_bMax*100)+'%'}})),ce('span',{className:'b-ct'},b.n));}))
         :ce('div',{style:{color:'#94a3b8',fontSize:13,padding:'8px 0'}},'Nenhum dado disponível');
-    })())
+    })()),
+        ce('div',{className:'card',style:{minHeight:0}},
+          ce('h3',{style:{margin:'0 0 8px',fontSize:13,fontWeight:700,color:'#1e3a5f'}},'\ud83d\udccb \u00daltimas Solicita\u00e7\u00f5es'),
+          (function(){
+            var _last=INIT_REQS.filter(function(r){return r.enc!==1;})
+              .sort(function(a,b){return (b.dt||'')>(a.dt||'')?1:-1;}).slice(0,5);
+            if(!_last.length)return ce('div',{style:{color:'#94a3b8',fontSize:12}},'Sem dados.');
+            return ce('div',{style:{display:'flex',flexDirection:'column',gap:4}},
+              _last.map(function(r,i){
+                var sc=r.status==='Conclu\u00eddo'?'#16a34a':r.status==='Em andamento'?'#2563eb':'#d97706';
+                return ce('div',{key:i,style:{display:'flex',justifyContent:'space-between',alignItems:'center',
+                    padding:'4px 6px',borderRadius:6,background:i%2===0?'#f8fafc':'#fff',fontSize:11.5}},
+                  ce('span',{style:{fontWeight:600,color:'#1e3a5f',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:100}},r.nom||r.nome||'\u2014'),
+                  ce('span',{style:{fontSize:10,background:sc+'22',color:sc,borderRadius:12,padding:'2px 7px',fontWeight:700,whiteSpace:'nowrap'}},r.status||'Agendado')
+                );
+              })
+            );
+          })()
+        ),
+        ce('div',{className:'card',style:{minHeight:0}},
+          ce('h3',{style:{margin:'0 0 8px',fontSize:13,fontWeight:700,color:'#1e3a5f'}},'\ud83d\udc77 Top Funcion\u00e1rios'),
+          (function(){
+            var _fm={};
+            INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Conclu\u00eddo'&&r.func;})
+              .forEach(function(r){_fm[r.func]=(_fm[r.func]||0)+1;});
+            var _fa=Object.keys(_fm).map(function(k){return{n:k,v:_fm[k]};}).sort(function(a,b){return b.v-a.v;}).slice(0,4);
+            if(!_fa.length)return ce('div',{style:{color:'#94a3b8',fontSize:12}},'Sem dados.');
+            var _mx=_fa[0].v;
+            return ce('div',{style:{display:'flex',flexDirection:'column',gap:5}},
+              _fa.map(function(f,i){
+                return ce('div',{key:i,style:{display:'flex',alignItems:'center',gap:6,fontSize:11.5}},
+                  ce('span',{style:{color:'#94a3b8',fontWeight:700,minWidth:14}},'#'+(i+1)),
+                  ce('span',{style:{flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},f.n),
+                  ce('div',{style:{flex:1,height:6,background:'#f1f5f9',borderRadius:4,overflow:'hidden'}},
+                    ce('div',{style:{height:'100%',borderRadius:4,background:'#2563eb',width:Math.round(f.v/_mx*100)+'%'}})
+                  ),
+                  ce('span',{style:{fontWeight:700,color:'#16a34a',minWidth:24,textAlign:'right'}},f.v)
+                );
+              })
+            );
+          })()
+        ),
+        ce('div',{className:'card',style:{flex:1,minHeight:0,overflowY:'auto'}},
+          ce('h3',{style:{margin:'0 0 8px',fontSize:13,fontWeight:700,color:'#1e3a5f'}},'\ud83d\udcc5 Pr\u00f3ximos Agendamentos'),
+          (function(){
+            var _tod=new Date();_tod.setHours(0,0,0,0);
+            var _ag=AGENDA_LIST.filter(function(a){return a.date>=_tod.toISOString().slice(0,10)&&a.status!=='Cancelado';})
+              .sort(function(a,b){return a.date>b.date?1:-1;}).slice(0,5);
+            if(!_ag.length)return ce('div',{style:{color:'#94a3b8',fontSize:12}},'Nenhum agendamento futuro.');
+            return ce('div',{style:{display:'flex',flexDirection:'column',gap:4}},
+              _ag.map(function(a,i){
+                var _pts=a.date.split('-');
+                var _dstr=_pts[2]+'/'+_pts[1];
+                return ce('div',{key:i,style:{display:'flex',alignItems:'center',gap:6,
+                    padding:'4px 6px',borderRadius:6,background:i%2===0?'#f0fdfa':'#fff',fontSize:11.5}},
+                  ce('span',{style:{fontWeight:700,color:'#0891b2',minWidth:38}},_dstr),
+                  ce('span',{style:{flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},a.nome||a.nom||'\u2014'),
+                  ce('span',{style:{fontSize:10,color:'#64748b',whiteSpace:'nowrap'}},a.func||'\u2014')
+                );
+              })
+            );
+          })()
+        )
     )
   )
 ),
