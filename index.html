@@ -2039,31 +2039,82 @@ function imprimirDash(titulo,corpo,landscape){
       ce('div',{className:'stats-grid',style:{marginBottom:0,gridTemplateColumns:'repeat(2,1fr)',gap:2}},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));}))
     ),
     ce('div',{style:{minWidth:0}},
-      ce('div',{className:'ch-card',style:{height:'100%',boxSizing:'border-box'}},
-  ce('h3',null,'Status'),
-  ce('svg',{width:110,height:110,viewBox:'0 0 36 36',style:{display:'block',margin:'0 auto'}},
+      ce('div',{className:'ch-card',style:{height:'100%',boxSizing:'border-box',overflowY:'auto'}},
+  ce('h3',{style:{margin:'0 0 10px',fontSize:13,fontWeight:700,color:'#1e3a5f'}},'Status Geral'),
+  ce('svg',{width:100,height:100,viewBox:'0 0 36 36',style:{display:'block',margin:'0 auto 10px'}},
     ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#e2e8f0',strokeWidth:3}),
-    ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#16a34a',strokeWidth:3,strokeDasharray:(_tot>0?Math.round(_concl/_tot*100):0)+' '+(100-(_tot>0?Math.round(_concl/_tot*100):0)),strokeDashoffset:25,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
-    ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#d97706',strokeWidth:3,strokeDasharray:(_tot>0?Math.round(_pend/_tot*100):0)+' '+(100-(_tot>0?Math.round(_pend/_tot*100):0)),strokeDashoffset:100-(_tot>0?Math.round(_concl/_tot*100):0)+25,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
-    ce('text',{x:18,y:19,textAnchor:'middle',fontSize:5,fontWeight:'bold',fill:'#1e293b'},(_tot>0?Math.round(_concl/_tot*100):0)+'%'),
-    ce('text',{x:18,y:24,textAnchor:'middle',fontSize:3.5,fill:'#64748b'},'Concluídas')
+    ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#16a34a',strokeWidth:3,
+      strokeDasharray:(_tot>0?Math.round(_concl/_tot*100):0)+' '+(100-(_tot>0?Math.round(_concl/_tot*100):0)),
+      strokeDashoffset:25,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
+    ce('text',{x:18,y:20,textAnchor:'middle',fontSize:6,fontWeight:'bold',fill:'#1e293b'},(_tot>0?Math.round(_concl/_tot*100):0)+'%'),
+    ce('text',{x:18,y:25,textAnchor:'middle',fontSize:3,fill:'#64748b'},'Concluídas')
   ),
-  ce('div',{style:{display:'flex',flexDirection:'column',gap:5,marginTop:10}},
-    ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#16a34a'}}),ce('span',null,'Concluídas: ',ce('strong',null,_concl))),
-    ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#2563eb'}}),ce('span',null,'Em andamento: ',ce('strong',null,(function(){return INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Em andamento';}).length;})()))),
-    ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#d97706'}}),ce('span',null,'Pendentes: ',ce('strong',null,_pend))),
-    ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#dc2626'}}),ce('span',null,'Urgentes: ',ce('strong',null,_urg)))
-  ),
-  ce('div',{style:{borderTop:'1px solid #f1f5f9',marginTop:10,paddingTop:10,display:'flex',flexDirection:'column',gap:4}},
-    ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12}},
-      ce('span',{style:{color:'#64748b'}},'Total geral'),ce('span',{style:{fontWeight:700}},_tot)),
-    ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12}},
-      ce('span',{style:{color:'#64748b'}},'Taxa de conclusão'),ce('span',{style:{fontWeight:700,color:'#16a34a'}},(_tot>0?Math.round(_concl/_tot*100):0)+'%')),
-    ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12}},
-      ce('span',{style:{color:'#64748b'}},'Receita total'),ce('span',{style:{fontWeight:700,color:'#0891b2'}},'R$ '+_rec.toLocaleString('pt-BR',{minimumFractionDigits:2}))),
-    ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12}},
-      ce('span',{style:{color:'#64748b'}},'Enc. vizinhos'),ce('span',{style:{fontWeight:700,color:'#7c3aed'}},(function(){return INIT_REQS.filter(function(r){return r.enc===1;}).length;})()))
-  )
+  (function(){
+    var _and=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Em andamento';}).length;
+    var _can=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Cancelado';}).length;
+    var _sf=INIT_REQS.filter(function(r){return r.enc!==1&&!r.func&&r.status!=='Concluído';}).length;
+    var _pago=INIT_REQS.filter(function(r){return r.enc!==1&&r.fp==='Pago';}).length;
+    var _npago=INIT_REQS.filter(function(r){return r.enc!==1&&r.fp&&r.fp!=='Pago';}).length;
+    var _enc=INIT_REQS.filter(function(r){return r.enc===1;}).length;
+    var _hj2=today();
+    var _sem=new Date();_sem.setDate(_sem.getDate()-7);var _semStr=_sem.toISOString().slice(0,10);
+    var _hoje=INIT_REQS.filter(function(r){return r.enc!==1&&r.dt===_hj2;}).length;
+    var _semana=INIT_REQS.filter(function(r){return r.enc!==1&&r.dt>=_semStr;}).length;
+    var _mesAtual2=_hj2.slice(0,7);
+    var _mesConcl=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Concluído'&&r.dt&&r.dt.slice(0,7)===_mesAtual2;}).length;
+    var _meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    var _hisMetas=[];
+    for(var _mi=5;_mi>=0;_mi--){
+      var _d2=new Date();_d2.setMonth(_d2.getMonth()-_mi);
+      var _mk=_d2.getFullYear()+'-'+(String(_d2.getMonth()+1).padStart(2,'0'));
+      var _ml=_meses[_d2.getMonth()]+'/'+String(_d2.getFullYear()).slice(2);
+      var _mk2=_mk;
+      var _mc=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Concluído'&&r.dt&&r.dt.slice(0,7)===_mk2;}).length;
+      _hisMetas.push({m:_ml,c:_mc,ok:_mc>=META_MENSAL,cur:_mi===0});
+    }
+    var _agFut=AGENDA_LIST.filter(function(a){return a.date>=_hj2&&a.status!=='Cancelado';}).length;
+    var _agAt=AGENDA_LIST.filter(function(a){return a.date===_hj2;}).length;
+    var row=function(lbl,val,col){
+      return ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:11.5,padding:'3px 0',borderBottom:'1px solid #f8fafc'}},
+        ce('span',{style:{color:'#64748b'}},lbl),
+        ce('span',{style:{fontWeight:700,color:col||'#1e293b'}},val));};
+    return ce('div',null,
+      ce('div',{style:{display:'flex',flexDirection:'column',gap:1,marginBottom:8}},
+        row('Concluídas',_concl,'#16a34a'),
+        row('Em andamento',_and,'#2563eb'),
+        row('Pendentes',_pend,'#d97706'),
+        row('Urgentes',_urg,'#dc2626'),
+        row('Canceladas',_can,'#94a3b8'),
+        row('Enc. vizinhos',_enc,'#7c3aed'),
+        row('Sem funcionário',_sf,_sf>0?'#dc2626':'#16a34a'),
+        row('Pagas',_pago,'#0891b2'),
+        row('Não pagas',_npago,'#d97706'),
+        row('Taxa conclusão',(_tot>0?Math.round(_concl/_tot*100):0)+'%','#16a34a'),
+        row('Receita total','R$ '+_rec.toLocaleString('pt-BR',{minimumFractionDigits:2}),'#0891b2'),
+        row('Hoje',_hoje,'#1e3a5f'),
+        row('Últimos 7 dias',_semana,'#1e3a5f'),
+        row('Concluídas este mês',_mesConcl,_mesConcl>=META_MENSAL?'#16a34a':'#d97706'),
+        row('Meta mensal (alvo: '+META_MENSAL+')',_mesConcl>=META_MENSAL?'✅ Atingida':'⏳ '+_mesConcl+'/'+META_MENSAL,_mesConcl>=META_MENSAL?'#16a34a':'#dc2626'),
+        row('Meta anual (alvo: '+META_ANO+')',_concl>=META_ANO?'✅ Atingida':'⏳ '+_concl+'/'+META_ANO,_concl>=META_ANO?'#16a34a':'#dc2626'),
+        row('Agend. futuros',_agFut,'#2563eb'),
+        row('Agend. hoje',_agAt,_agAt>0?'#d97706':'#94a3b8')
+      ),
+      ce('div',{style:{fontSize:11.5,fontWeight:700,color:'#1e3a5f',margin:'8px 0 4px'}},'📅 Metas Mensais — 6 meses'),
+      ce('div',{style:{display:'flex',flexDirection:'column',gap:2}},
+        _hisMetas.map(function(h,i){
+          return ce('div',{key:i,style:{display:'flex',justifyContent:'space-between',alignItems:'center',
+            fontSize:11,padding:'3px 6px',borderRadius:4,
+            background:h.cur?'#eff6ff':h.ok?'#f0fdf4':'#fff7ed'}},
+            ce('span',{style:{fontWeight:h.cur?700:400,color:h.cur?'#2563eb':'#475569'}},h.m+(h.cur?' (actual)':'')),
+            ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
+              ce('span',{style:{fontWeight:700,fontSize:12}},h.c),
+              ce('span',{style:{fontSize:11}},h.ok?'✅':'❌')
+            )
+          );
+        })
+      )
+    );
+  })()
 )
     )
   ),
