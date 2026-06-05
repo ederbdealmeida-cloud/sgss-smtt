@@ -2109,9 +2109,9 @@ function imprimirDash(titulo,corpo,landscape){
       return ce('div',null,
         ce('table',{className:'tbl tbl-dash',style:{tableLayout:'fixed',width:'100%'}},
           ce('thead',null,ce('tr',null,
-            ce('th',null,'Mês'),
-            ce('th',{style:{textAlign:'center'}},'Qtd.'),
-            ce('th',{style:{textAlign:'center',width:'30%'}},'Total Arrecadado'))),
+            ce('th',{style:{width:'35%'}},'Mês'),
+            ce('th',{style:{textAlign:'center',width:'15%'}},'Qtd.'),
+            ce('th',{style:{textAlign:'center',width:'50%'}},'Total Arrecadado'))),
           ce('tbody',null,_pArr.map(function(row,i){
             return ce('tr',{key:i,style:{background:i%2===0?'#fff':'#f8fafc'}},
               ce('td',{style:{fontWeight:600}},row.m),
