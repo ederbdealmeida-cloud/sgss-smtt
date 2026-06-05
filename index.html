@@ -4101,7 +4101,7 @@ function Relatorios(){
             setPTo(String(Math.ceil(filtered.length/10)));
             setPSpec('1');
             setShowPDlg(true);
-          }},'\ud83d\udda8\ufe0f Imprimir Lotes'+(Object.keys(selChk).length>0?' ('+Object.keys(selChk).length+' sel.)':filtered.length?' ('+filtered.length+')':''))
+          }},'\ud83d\udda8\ufe0f Imprimir Lote'+(Object.keys(selChk).length>0?' ('+Object.keys(selChk).length+' sel.)':filtered.length?' ('+filtered.length+')':''))
         )
       ),
       filtered.length===0?ce('p',{className:'empty'},'Nenhum resultado.'):ce(React.Fragment,null,
@@ -6608,7 +6608,7 @@ function Anotacoes(){
       ce('div',{style:{display:'flex',gap:8}},
         ce('button',{className:'btn btn-s',onClick:exportExcel},'\ud83d\udcca Excel'),
         ce('button',{className:'btn btn-s',onClick:imprimirLotes},
-          '\ud83d\udda8\ufe0f Imprimir Lotes'+(selIds.length>0?' ('+selIds.length+' sel.)':filtered.length?' ('+filtered.length+')':''))
+          '\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+' sel.)':filtered.length?' ('+filtered.length+')':''))
       ),
       ce('span',{style:{fontSize:12,color:'#64748b'}},filtered.length+' anota\u00e7\u00e3o(es)')
     ),
