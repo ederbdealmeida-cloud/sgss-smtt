@@ -2039,7 +2039,40 @@ function imprimirDash(titulo,corpo,landscape){
           }))
         )
       ),
-      ce('div',{className:'ch-card'},ce('h3',null,'Evolu\xe7\xe3o Mensal'),ce('div',{className:'bar-chart',style:{height:80}},MESES.map(function(m){return ce('div',{key:m.m,className:'bar-wrap'},ce('div',{className:'bar',style:{height:Math.round(m.v/maxM*85)+'%',background:'#3b82f6'}}),ce('div',{className:'bar-lbl',style:{fontSize:10}},m.m+' ('+m.v+')'));})))
+      ce('div',{className:'ch-card'},ce('h3',null,'Evolu\xe7\xe3o Mensal'),ce('div',{className:'bar-chart',style:{height:80}},MESES.map(function(m){return ce('div',{key:m.m,className:'bar-wrap'},ce('div',{className:'bar',style:{height:Math.round(m.v/maxM*85)+'%',background:'#3b82f6'}}),ce('div',{className:'bar-lbl',style:{fontSize:10}},m.m+' ('+m.v+')'));}))),
+        ce('div',{className:'card'},
+    ce('h3',null,'💰 Serviços Pagos por Mês'),
+    (function(){
+      var _pfn2=funcSel?(FUNC_LIST.find(function(f){return f.id===parseInt(funcSel);})||{}).nome||'':'';
+      var _pMap={};
+      INIT_REQS.forEach(function(r){
+        if(r.enc===1||!r.dt||r.fp!=='Pago')return;
+        if(_pfn2&&r.func!==_pfn2)return;
+        var _pts=r.dt.split('-');if(_pts.length<2)return;
+        var _k=_pts[0]+'-'+_pts[1];
+        var _mn=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(_pts[1])-1]||_pts[1];
+        if(!_pMap[_k])_pMap[_k]={m:_mn+'/'+_pts[0].slice(2),n:0,val:0};
+        _pMap[_k].n++;
+        _pMap[_k].val+=parseTaxa(r.taxa);
+      });
+      var _pArr=Object.keys(_pMap).sort().reverse().slice(0,12).map(function(k){return _pMap[k];});
+      if(!_pArr.length)return ce('div',{style:{color:'#94a3b8',fontSize:13,padding:'8px 0'}},'Nenhum serviço pago registado.');
+      return ce('div',{style:{overflowX:'auto'}},
+        ce('table',{className:'tbl tbl-dash'},
+          ce('thead',null,ce('tr',null,
+            ce('th',null,'Mês'),
+            ce('th',{style:{textAlign:'center'}},'Qtd.'),
+            ce('th',{style:{textAlign:'right'}},'Total Arrecadado'))),
+          ce('tbody',null,_pArr.map(function(row,i){
+            return ce('tr',{key:i,style:{background:i%2===0?'#fff':'#f8fafc'}},
+              ce('td',{style:{fontWeight:600}},row.m),
+              ce('td',{style:{textAlign:'center',fontWeight:700}},row.n),
+              ce('td',{style:{textAlign:'right',fontWeight:700,color:'#16a34a'}},
+                'R$\u00a0'+row.val.toLocaleString('pt-BR',{minimumFractionDigits:2}))
+            );})))
+      );
+    })()
+  )
     ),
     ce('div',{style:{display:'flex',flexDirection:'column',gap:14}},
       ce('div',{className:'card meta-card'},
@@ -2099,39 +2132,7 @@ function imprimirDash(titulo,corpo,landscape){
     )
   )
 ),
-  ce('div',{className:'card',style:{marginTop:14}},
-    ce('h3',null,'💰 Serviços Pagos por Mês'),
-    (function(){
-      var _pfn2=funcSel?(FUNC_LIST.find(function(f){return f.id===parseInt(funcSel);})||{}).nome||'':'';
-      var _pMap={};
-      INIT_REQS.forEach(function(r){
-        if(r.enc===1||!r.dt||r.fp!=='Pago')return;
-        if(_pfn2&&r.func!==_pfn2)return;
-        var _pts=r.dt.split('-');if(_pts.length<2)return;
-        var _k=_pts[0]+'-'+_pts[1];
-        var _mn=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(_pts[1])-1]||_pts[1];
-        if(!_pMap[_k])_pMap[_k]={m:_mn+'/'+_pts[0].slice(2),n:0,val:0};
-        _pMap[_k].n++;
-        _pMap[_k].val+=parseTaxa(r.taxa);
-      });
-      var _pArr=Object.keys(_pMap).sort().reverse().slice(0,12).map(function(k){return _pMap[k];});
-      if(!_pArr.length)return ce('div',{style:{color:'#94a3b8',fontSize:13,padding:'8px 0'}},'Nenhum serviço pago registado.');
-      return ce('div',{style:{overflowX:'auto'}},
-        ce('table',{className:'tbl tbl-dash'},
-          ce('thead',null,ce('tr',null,
-            ce('th',null,'Mês'),
-            ce('th',{style:{textAlign:'center'}},'Qtd.'),
-            ce('th',{style:{textAlign:'right'}},'Total Arrecadado'))),
-          ce('tbody',null,_pArr.map(function(row,i){
-            return ce('tr',{key:i,style:{background:i%2===0?'#fff':'#f8fafc'}},
-              ce('td',{style:{fontWeight:600}},row.m),
-              ce('td',{style:{textAlign:'center',fontWeight:700}},row.n),
-              ce('td',{style:{textAlign:'right',fontWeight:700,color:'#16a34a'}},
-                'R$\u00a0'+row.val.toLocaleString('pt-BR',{minimumFractionDigits:2}))
-            );})))
-      );
-    })()
-  )
+ 
   );
 }
 
