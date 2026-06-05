@@ -5705,7 +5705,7 @@ function Comunicacao(){
   var items=paginate(filtered,pg);
   function openW(s){setMsg('Ol\xe1, '+s.nom+'! Aqui \xe9 a SMTT de Cacequi. Estamos entrando em contato sobre sua solicita\xe7\xe3o de servi\xe7o. Obrigado!');setModal({tipo:'whatsapp',item:s});}
   function openE(s){setMsg('Prezado(a) '+s.nom+',\n\nEntramos em contato sobre o andamento de sua solicita\xe7\xe3o junto \xe0 SMTT de Cacequi/RS.\n\nAtenciosamente,\nSMTT');setModal({tipo:'email',item:s});}
-  return ce('div',{className:'page'},
+  return ce('div',{className:'page',style:{paddingTop:28,paddingLeft:28,paddingRight:28}},
     ce(Toast,{msg:toast}),
     modal?ce('div',{className:'modal-ov'},ce('div',{className:'modal-bx',style:{maxWidth:520}},ce('h3',{className:'modal-title'},modal.tipo==='whatsapp'?'\ud83d\udcac Enviar WhatsApp':'\ud83d\udce7 Enviar E-mail'),ce('p',{style:{color:'#64748b',fontSize:13,marginBottom:12}},'Para: ',ce('strong',null,modal.item.nom),' \u2014 '+(modal.tipo==='whatsapp'?modal.item.tel:modal.item.email)),ce('div',{className:'fg'},ce('label',null,'Mensagem'),ce('textarea',{className:'msg-area',rows:7,value:msg,onChange:function(e){setMsg(e.target.value);}})),ce('div',{className:'modal-acts'},ce('button',{className:'btn btn-s',onClick:function(){setModal(null);}},'Cancelar'),ce('button',{className:'btn',style:{background:modal.tipo==='whatsapp'?'#25d366':'#2563eb',color:'#fff'},onClick:function(){
               var texto=encodeURIComponent(msg);
