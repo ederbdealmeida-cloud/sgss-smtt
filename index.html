@@ -2010,6 +2010,22 @@ function imprimirDash(titulo,corpo,landscape){
       ce('span',{style:{fontSize:10,color:'#94a3b8',fontWeight:400,marginLeft:8}},'v534a90c')),
       !funcSel?ce('button',{className:'btn btn-s',onClick:imprimirVisaoGeral},_tw('\ud83d\udda8\ufe0f Imprimir Vis\u00e3o Geral')):null
     ),
+    (function(){
+  var _ms2=COMUNICADOS_LIST.filter(function(c){return !c.dtVal||c.dtVal>=today();});
+  var _bc2=_ms2.filter(function(c){return c.prioridade==='urgente';})[0]||_ms2[0]||null;
+  if(!_bc2)return null;
+  var BG2={'urgente':'#fef2f2','normal':'#eff6ff','info':'#f0fdf4'};
+  var BD2={'urgente':'#fca5a5','normal':'#93c5fd','info':'#86efac'};
+  return ce('div',{style:{background:BG2[_bc2.prioridade],border:'1.5px solid '+BD2[_bc2.prioridade],
+    borderRadius:8,padding:'8px 14px',marginBottom:10,display:'flex',alignItems:'center',gap:10}},
+    ce('span',{style:{fontSize:16}},_bc2.prioridade==='urgente'?'🔴':_bc2.prioridade==='info'?'🟢':'🔵'),
+    ce('div',{style:{flex:1}},
+      ce('div',{style:{fontWeight:700,fontSize:13}},_bc2.titulo),
+      ce('div',{style:{fontSize:12,color:'#64748b'}},_bc2.msg.slice(0,120)+(_bc2.msg.length>120?'...':''))
+    ),
+    _ms2.length>1?ce('span',{style:{fontSize:11,color:'#64748b',whiteSpace:'nowrap'}},'+'+(_ms2.length-1)+' mais'):null
+  );
+})(),
     ce('div',{style:{display:'flex',alignItems:'center',gap:8}},
       ce('label',{style:{fontSize:12.5,fontWeight:600,color:'#475569',whiteSpace:'nowrap'}},'\ud83d\udc77 Funcion\u00e1rio:'),
       ce('select',{value:funcSel,onChange:function(e){setFuncSel(e.target.value);},style:{padding:'7px 12px',borderRadius:8,border:'1.5px solid #e2e8f0',fontFamily:'inherit',fontSize:13,minWidth:200}},
@@ -2018,23 +2034,6 @@ function imprimirDash(titulo,corpo,landscape){
       )
     ),
     funcSel?ce(PainelFuncionario,{key:funcSel,funcId:parseInt(funcSel)}):ce(React.Fragment,null,
-  ce('div',{style:{background:'#fff',borderRadius:'var(--r-lg)',padding:'12px 18px',boxShadow:'var(--sh)',display:'flex',alignItems:'center',gap:14,marginBottom:14}},
-  ce('div',{style:{fontSize:26,flexShrink:0}},'\U0001f4e2'),
-  (function(){
-  var _ms=COMUNICADOS_LIST.filter(function(c){return !c.dtVal||c.dtVal>=today();});
-  var _bc=_ms.filter(function(c){return c.prioridade==='urgente';})[0]||_ms[0]||null;
-  if(!_bc)return null;
-  var BG={'urgente':'#fef2f2','normal':'#eff6ff','info':'#f0fdf4'};
-  var BD={'urgente':'#fca5a5','normal':'#93c5fd','info':'#86efac'};
-  return ce('div',{style:{background:BG[_bc.prioridade],border:'1.5px solid '+BD[_bc.prioridade],
-    borderRadius:8,padding:'10px 14px',marginBottom:8,display:'flex',alignItems:'center',gap:10}},
-    ce('span',{style:{fontSize:18}},_bc.prioridade==='urgente'?'\ud83d\udd34':_bc.prioridade==='info'?'\ud83d\udfe2':'\ud83d\udd35'),
-    ce('div',{style:{flex:1}},
-      ce('div',{style:{fontWeight:700,fontSize:13}},_bc.titulo),
-      ce('div',{style:{fontSize:12,color:'#64748b'}},_bc.msg.slice(0,100)+(_bc.msg.length>100?'...':''))),
-    _ms.length>1?ce('span',{style:{fontSize:11,color:'#64748b',whiteSpace:'nowrap'}},'+'+(_ms.length-1)+' no Mural'):null);
-})()
-),
   ce('div',{style:{display:'grid',gridTemplateColumns:'3fr 2fr',gap:14}},
     ce('div',{style:{minWidth:0}},
       ce('div',{className:'stats-grid',style:{marginBottom:0,gridTemplateColumns:'repeat(2,1fr)',gap:2}},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));}))
