@@ -2039,9 +2039,9 @@ function imprimirDash(titulo,corpo,landscape){
       ce('div',{className:'stats-grid',style:{marginBottom:0,gridTemplateColumns:'repeat(2,1fr)',gap:2}},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));}))
     ),
     ce('div',{style:{minWidth:0}},
-      ce('div',{className:'ch-card',style:{height:'100%',boxSizing:'border-box',overflowY:'auto'}},
+      ce('div',{className:'ch-card',style:{height:'100%',boxSizing:'border-box',overflowY:'scroll',maxHeight:420}},
   ce('h3',{style:{margin:'0 0 10px',fontSize:13,fontWeight:700,color:'#1e3a5f'}},'Status Geral'),
-  ce('svg',{width:100,height:100,viewBox:'0 0 36 36',style:{display:'block',margin:'0 auto 10px'}},
+  ce('svg',{width:90,height:90,viewBox:'0 0 36 36',style:{display:'block',margin:'0 auto 10px'}},
     ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#e2e8f0',strokeWidth:3}),
     ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#16a34a',strokeWidth:3,
       strokeDasharray:(_tot>0?Math.round(_concl/_tot*100):0)+' '+(100-(_tot>0?Math.round(_concl/_tot*100):0)),
@@ -2066,9 +2066,8 @@ function imprimirDash(titulo,corpo,landscape){
     var _hisMetas=[];
     for(var _mi=5;_mi>=0;_mi--){
       var _d2=new Date();_d2.setMonth(_d2.getMonth()-_mi);
-      var _mk=_d2.getFullYear()+'-'+(String(_d2.getMonth()+1).padStart(2,'0'));
+      var _mk2=_d2.getFullYear()+'-'+(String(_d2.getMonth()+1).padStart(2,'0'));
       var _ml=_meses[_d2.getMonth()]+'/'+String(_d2.getFullYear()).slice(2);
-      var _mk2=_mk;
       var _mc=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Concluído'&&r.dt&&r.dt.slice(0,7)===_mk2;}).length;
       _hisMetas.push({m:_ml,c:_mc,ok:_mc>=META_MENSAL,cur:_mi===0});
     }
@@ -2080,22 +2079,18 @@ function imprimirDash(titulo,corpo,landscape){
         ce('span',{style:{fontWeight:700,color:col||'#1e293b'}},val));};
     return ce('div',null,
       ce('div',{style:{display:'flex',flexDirection:'column',gap:1,marginBottom:8}},
-        row('Concluídas',_concl,'#16a34a'),
         row('Em andamento',_and,'#2563eb'),
-        row('Pendentes',_pend,'#d97706'),
-        row('Urgentes',_urg,'#dc2626'),
         row('Canceladas',_can,'#94a3b8'),
         row('Enc. vizinhos',_enc,'#7c3aed'),
         row('Sem funcionário',_sf,_sf>0?'#dc2626':'#16a34a'),
         row('Pagas',_pago,'#0891b2'),
         row('Não pagas',_npago,'#d97706'),
         row('Taxa conclusão',(_tot>0?Math.round(_concl/_tot*100):0)+'%','#16a34a'),
-        row('Receita total','R$ '+_rec.toLocaleString('pt-BR',{minimumFractionDigits:2}),'#0891b2'),
-        row('Hoje',_hoje,'#1e3a5f'),
+        row('Hoje (novas)',_hoje,'#1e3a5f'),
         row('Últimos 7 dias',_semana,'#1e3a5f'),
         row('Concluídas este mês',_mesConcl,_mesConcl>=META_MENSAL?'#16a34a':'#d97706'),
-        row('Meta mensal (alvo: '+META_MENSAL+')',_mesConcl>=META_MENSAL?'✅ Atingida':'⏳ '+_mesConcl+'/'+META_MENSAL,_mesConcl>=META_MENSAL?'#16a34a':'#dc2626'),
-        row('Meta anual (alvo: '+META_ANO+')',_concl>=META_ANO?'✅ Atingida':'⏳ '+_concl+'/'+META_ANO,_concl>=META_ANO?'#16a34a':'#dc2626'),
+        row('Meta mensal (alvo '+META_MENSAL+')',_mesConcl>=META_MENSAL?'✅ Atingida':'⏳ '+_mesConcl+'/'+META_MENSAL,_mesConcl>=META_MENSAL?'#16a34a':'#dc2626'),
+        row('Meta anual (alvo '+META_ANO+')',_concl>=META_ANO?'✅ Atingida':'⏳ '+_concl+'/'+META_ANO,_concl>=META_ANO?'#16a34a':'#dc2626'),
         row('Agend. futuros',_agFut,'#2563eb'),
         row('Agend. hoje',_agAt,_agAt>0?'#d97706':'#94a3b8')
       ),
@@ -2105,7 +2100,7 @@ function imprimirDash(titulo,corpo,landscape){
           return ce('div',{key:i,style:{display:'flex',justifyContent:'space-between',alignItems:'center',
             fontSize:11,padding:'3px 6px',borderRadius:4,
             background:h.cur?'#eff6ff':h.ok?'#f0fdf4':'#fff7ed'}},
-            ce('span',{style:{fontWeight:h.cur?700:400,color:h.cur?'#2563eb':'#475569'}},h.m+(h.cur?' (actual)':'')),
+            ce('span',{style:{fontWeight:h.cur?700:400,color:h.cur?'#2563eb':'#475569'}},h.m+(h.cur?' (atual)':'')),
             ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
               ce('span',{style:{fontWeight:700,fontSize:12}},h.c),
               ce('span',{style:{fontSize:11}},h.ok?'✅':'❌')
