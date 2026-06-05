@@ -3968,12 +3968,17 @@ function Relatorios(){
         ce('p',{style:{margin:'0 0 14px',fontSize:12,color:'#64748b'}},
             filtered.length+' registro(s) \u00b7 10 por p\u00e1g. \u00b7 '
             +Math.ceil(filtered.length/10)+'\u00a0p\u00e1gina(s) no total'),
-        ce('div',{style:{display:'flex',gap:20,marginBottom:14}},
-          ce('label',{style:{display:'flex',alignItems:'center',gap:6,cursor:'pointer',fontSize:14}},
+        ce('div',{style:{display:'flex',flexDirection:'column',gap:10,marginBottom:14}},
+          selIds.length>0?ce('label',{style:{display:'flex',alignItems:'center',gap:8,cursor:'pointer',fontSize:14,
+              fontWeight:pMode==='selected'?700:400,color:pMode==='selected'?'#1e3a5f':'inherit'}},
+            ce('input',{type:'radio',name:'relpm',checked:pMode==='selected',
+                onChange:function(){setPMode('selected');}}),
+            '\u2705 Registros selecionados (',ce('strong',null,selIds.length),' marcados)'):null,
+          ce('label',{style:{display:'flex',alignItems:'center',gap:8,cursor:'pointer',fontSize:14}},
             ce('input',{type:'radio',name:'relpm',checked:pMode==='range',
                 onChange:function(){setPMode('range');}}),
             'Intervalo de p\u00e1ginas'),
-          ce('label',{style:{display:'flex',alignItems:'center',gap:6,cursor:'pointer',fontSize:14}},
+          ce('label',{style:{display:'flex',alignItems:'center',gap:8,cursor:'pointer',fontSize:14}},
             ce('input',{type:'radio',name:'relpm',checked:pMode==='specific',
                 onChange:function(){setPMode('specific');}}),
             'P\u00e1gina espec\u00edfica')),
@@ -3999,16 +4004,24 @@ function Relatorios(){
               'Cancelar'),
           ce('button',{className:'btn',
               onClick:function(){
-                var tp=Math.ceil(filtered.length/10);
-                var p1=1,p2=tp;
-                if(pMode==='range'){
-                  p1=Math.max(1,parseInt(pFrom)||1);
-                  p2=Math.min(tp,parseInt(pTo)||tp);
+                var alvo;
+                if(pMode==='selected'){
+                  var ids={};
+                  selIds.forEach(function(x){ids[String(x)]=true;});
+                  alvo=filtered.filter(function(r){return ids[String(r.id)]===true;});
+                  if(!alvo.length){notify('Nenhum registo selecionado encontrado.');return;}
                 } else {
-                  p1=p2=Math.min(tp,Math.max(1,parseInt(pSpec)||1));
+                  var tp=Math.ceil(filtered.length/10);
+                  var p1=1,p2=tp;
+                  if(pMode==='range'){
+                    p1=Math.max(1,parseInt(pFrom)||1);
+                    p2=Math.min(tp,parseInt(pTo)||tp);
+                  } else {
+                    p1=p2=Math.min(tp,Math.max(1,parseInt(pSpec)||1));
+                  }
+                  alvo=filtered.slice((p1-1)*10,
+                    Math.min(filtered.length,p2*10));
                 }
-                var alvo=filtered.slice((p1-1)*10,
-                  Math.min(filtered.length,p2*10));
                 setShowPDlg(false);
                 setTimeout(function(){doPrintLote(alvo);},80);
               }},
@@ -4091,13 +4104,10 @@ function Relatorios(){
           ce('button',{className:'btn btn-p',onClick:function(){
             if(!filtered.length){notify('Sem resultados para imprimir.');return;}
             if(selIds.length>0){
-              var selSet=selIds.map(function(x){return String(x);});
-              var alvo=filtered.filter(function(r){return selSet.indexOf(String(r.id))>=0;});
-              if(!alvo.length){notify('Nenhum registo selecionado encontrado.');return;}
-              doPrintLote(alvo);
-              return;
+              setPMode('selected');
+            } else {
+              setPMode('range');
             }
-            setPMode('range');
             setPFrom('1');
             setPTo(String(Math.ceil(filtered.length/10)));
             setPSpec('1');
