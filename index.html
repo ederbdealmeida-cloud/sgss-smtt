@@ -2018,34 +2018,18 @@ function imprimirDash(titulo,corpo,landscape){
       )
     ),
     funcSel?ce(PainelFuncionario,{key:funcSel,funcId:parseInt(funcSel)}):ce(React.Fragment,null,
-  ce('div',{style:{display:'grid',gridTemplateColumns:'2fr 1fr',gap:14}},
-    ce('div',null,
-      ce('div',{className:'stats-grid'},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));}))
-    ),
-    ce('div',null,
-      ce('div',{className:'card meta-card'},
-      ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}},
-        ce('h3',{style:{margin:0,fontSize:14,fontWeight:700,color:'#1e3a5f'}},'\ud83c\udfaf Metas de Desempenho'),
-        ce('span',{style:{fontSize:11,color:'#64748b'}},['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][new Date().getMonth()]+'/'+new Date().getFullYear())
-      ),
-      ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}},
-        ce('div',null,
-          ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12.5}},
-            ce('span',null,'Meta Mensal'),
-            ce('span',{style:{fontWeight:700,color:pctMes>=100?'#16a34a':pctMes>=70?'#d97706':'#dc2626'}},concluiMes+'/'+META_MENSAL+' ('+pctMes+'%)')
-          ),
-          ce('div',{className:'meta-bar-bg'},ce('div',{className:'meta-bar',style:{width:pctMes+'%',background:pctMes>=100?'#16a34a':pctMes>=70?'#d97706':'#dc2626'}},pctMes>15?pctMes+'%':''))
+  ce('div',{style:{display:'grid',gridTemplateColumns:'2fr 1fr',gap:14,alignItems:'stretch'}},
+    ce('div',null,ce('div',{className:'stats-grid'},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));}))),
+    ce('div',{className:'ch-card',style:{height:'100%',boxSizing:'border-box'}},ce('h3',null,'Status'),
+        ce('svg',{width:110,height:110,viewBox:'0 0 36 36',style:{display:'block',margin:'0 auto'}},
+          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#e2e8f0',strokeWidth:3}),
+          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#16a34a',strokeWidth:3,strokeDasharray:'63 37',strokeDashoffset:25,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
+          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#d97706',strokeWidth:3,strokeDasharray:'37 63',strokeDashoffset:87,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
+          ce('text',{x:18,y:19,textAnchor:'middle',fontSize:5,fontWeight:'bold',fill:'#1e293b'},(_tot>0?Math.round(_concl/_tot*100):0)+'%'),
+          ce('text',{x:18,y:24,textAnchor:'middle',fontSize:3.5,fill:'#64748b'},'Concluídas')
         ),
-        ce('div',null,
-          ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12.5}},
-            ce('span',null,'Meta Anual'),
-            ce('span',{style:{fontWeight:700,color:pctAno>=100?'#16a34a':pctAno>=70?'#d97706':'#dc2626'}},concluiAno+'/'+META_ANO+' ('+pctAno+'%)')
-          ),
-          ce('div',{className:'meta-bar-bg'},ce('div',{className:'meta-bar',style:{width:pctAno+'%',background:pctAno>=100?'#16a34a':pctAno>=70?'#d97706':'#dc2626'}},pctAno>15?pctAno+'%':''))
-        )
+        ce('div',{className:'leg'},ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#16a34a'}}),ce('span',null,'Concluídas: '+_concl)),ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#d97706'}}),ce('span',null,'Pendentes: '+_pend)))
       )
-    )
-    )
   ),
   ce('div',{style:{background:'#fff',borderRadius:'var(--r-lg)',padding:'12px 18px',boxShadow:'var(--sh)',display:'flex',alignItems:'center',gap:14,marginTop:14}},
   ce('div',{style:{fontSize:26,flexShrink:0}},'\U0001f4e2'),
@@ -2120,16 +2104,28 @@ function imprimirDash(titulo,corpo,landscape){
   )
     ),
     ce('div',{style:{display:'flex',flexDirection:'column',gap:14}},
-      ce('div',{className:'ch-card'},ce('h3',null,'Status'),
-        ce('svg',{width:110,height:110,viewBox:'0 0 36 36',style:{display:'block',margin:'0 auto'}},
-          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#e2e8f0',strokeWidth:3}),
-          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#16a34a',strokeWidth:3,strokeDasharray:'63 37',strokeDashoffset:25,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
-          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#d97706',strokeWidth:3,strokeDasharray:'37 63',strokeDashoffset:87,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
-          ce('text',{x:18,y:19,textAnchor:'middle',fontSize:5,fontWeight:'bold',fill:'#1e293b'},(_tot>0?Math.round(_concl/_tot*100):0)+'%'),
-          ce('text',{x:18,y:24,textAnchor:'middle',fontSize:3.5,fill:'#64748b'},'Concluídas')
-        ),
-        ce('div',{className:'leg'},ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#16a34a'}}),ce('span',null,'Concluídas: '+_concl)),ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#d97706'}}),ce('span',null,'Pendentes: '+_pend)))
+      ce('div',{className:'card meta-card'},
+      ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}},
+        ce('h3',{style:{margin:0,fontSize:14,fontWeight:700,color:'#1e3a5f'}},'\ud83c\udfaf Metas de Desempenho'),
+        ce('span',{style:{fontSize:11,color:'#64748b'}},['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][new Date().getMonth()]+'/'+new Date().getFullYear())
       ),
+      ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}},
+        ce('div',null,
+          ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12.5}},
+            ce('span',null,'Meta Mensal'),
+            ce('span',{style:{fontWeight:700,color:pctMes>=100?'#16a34a':pctMes>=70?'#d97706':'#dc2626'}},concluiMes+'/'+META_MENSAL+' ('+pctMes+'%)')
+          ),
+          ce('div',{className:'meta-bar-bg'},ce('div',{className:'meta-bar',style:{width:pctMes+'%',background:pctMes>=100?'#16a34a':pctMes>=70?'#d97706':'#dc2626'}},pctMes>15?pctMes+'%':''))
+        ),
+        ce('div',null,
+          ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12.5}},
+            ce('span',null,'Meta Anual'),
+            ce('span',{style:{fontWeight:700,color:pctAno>=100?'#16a34a':pctAno>=70?'#d97706':'#dc2626'}},concluiAno+'/'+META_ANO+' ('+pctAno+'%)')
+          ),
+          ce('div',{className:'meta-bar-bg'},ce('div',{className:'meta-bar',style:{width:pctAno+'%',background:pctAno>=100?'#16a34a':pctAno>=70?'#d97706':'#dc2626'}},pctAno>15?pctAno+'%':''))
+        )
+      )
+    ),
       ce('div',{className:'card'},ce('h3',null,'Top Bairros'),(function(){
       var _bMap={};INIT_REQS.forEach(function(r){if(r.enc!==1&&r.bairro)_bMap[r.bairro]=(_bMap[r.bairro]||0)+1;});
       var _bArr=Object.keys(_bMap).map(function(k){return{b:k,n:_bMap[k]};}).sort(function(a,b){return b.n-a.n;}).slice(0,5);
