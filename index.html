@@ -2026,8 +2026,8 @@ function imprimirDash(titulo,corpo,landscape){
     _ms2.length>1?ce('span',{style:{fontSize:11,color:'#64748b',whiteSpace:'nowrap'}},'+'+(_ms2.length-1)+' mais'):null
   );
 })(),
-    ce('div',{style:{display:'flex',alignItems:'center',gap:8}},
-      ce('label',{style:{fontSize:12.5,fontWeight:600,color:'#475569',whiteSpace:'nowrap'}},'\ud83d\udc77 Funcion\u00e1rio:'),
+    ce('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:14}},
+      ce('label',{style:{fontSize:15,fontWeight:600,color:'#475569',whiteSpace:'nowrap'}},'\ud83d\udc77 Funcion\u00e1rio:'),
       ce('select',{value:funcSel,onChange:function(e){setFuncSel(e.target.value);},style:{padding:'7px 12px',borderRadius:8,border:'1.5px solid #e2e8f0',fontFamily:'inherit',fontSize:13,minWidth:200}},
         ce('option',{value:''},'\u2014 Vis\u00e3o Geral \u2014'),
         FUNC_LIST.filter(function(f){return f.ativo===1;}).map(function(f){return ce('option',{key:f.id,value:f.id},f.nome+(f.cargo?' \u2014 '+f.cargo:''));})
