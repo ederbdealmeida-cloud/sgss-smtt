@@ -3854,6 +3854,7 @@ function Relatorios(){
   var sfdtde=useState('');var fdtDe=sfdtde[0];var setFdtDe=sfdtde[1];
   var sfdtate=useState('');var fdtAte=sfdtate[0];var setFdtAte=sfdtate[1];
   var schk2=useState({});var selChk=schk2[0];var setSelChk=schk2[1];
+  var selChkRef=useRef({});selChkRef.current=selChk;
   var sffp=useState('');var ffp=sffp[0];var setFfp=sffp[1];
   var spg=useState(1);var pg=spg[0];var setPg=spg[1];
   var sPdlg=useState(false);var showPDlg=sPdlg[0];var setShowPDlg=sPdlg[1];
@@ -4090,8 +4091,8 @@ function Relatorios(){
           }},_tw('\u2b07\ufe0f Excel')),
           ce('button',{className:'btn btn-p',onClick:function(){
             if(!filtered.length){notify('Sem resultados para imprimir.');return;}
-            if(Object.keys(selChk).length>0){
-              var alvo=filtered.filter(function(r){return !!selChk[r.id];});
+            if(Object.keys(selChkRef.current).length>0){
+              var alvo=filtered.filter(function(r){return !!selChkRef.current[r.id];});
               if(!alvo.length){notify('Nenhum registo selecionado encontrado.');return;}
               doPrintLote(alvo);
               return;
