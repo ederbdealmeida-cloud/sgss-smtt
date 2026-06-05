@@ -3960,7 +3960,7 @@ function Relatorios(){
   function handlePrintRel(){
             if(!filtered.length){notify('Sem resultados para imprimir.');return;}
             if(Object.keys(selChkRef.current).length>0){
-              var alvo=filtered.filter(function(r){return !!selChkRef.current[r.id];});
+              var alvo=filtered.filter(function(r){return !!selChkRef.current[r.prot];});
               if(!alvo.length){notify('Nenhum registo selecionado encontrado.');return;}
               doPrintLote(alvo);
               return;
@@ -4109,15 +4109,15 @@ function Relatorios(){
       filtered.length===0?ce('p',{className:'empty'},'Nenhum resultado.'):ce(React.Fragment,null,
         ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl tbl-rel'},
           ce('thead',null,ce('tr',null,[ce('th',{key:'chk',style:{width:32}},ce('input',{type:'checkbox',
-              checked:filtered.length>0&&filtered.every(function(r){return !!selChk[r.id];}),
+              checked:filtered.length>0&&filtered.every(function(r){return !!selChk[r.prot];}),
               onChange:function(){
-                setSelChk(filtered.every(function(r){return !!selChk[r.id];})?{}:filtered.reduce(function(o,r){o[r.id]=true;return o;},{}));
+                setSelChk(filtered.every(function(r){return !!selChk[r.prot];})?{}:filtered.reduce(function(o,r){o[r.prot]=true;return o;},{}));
               }})),'#','Protocolo','Data','Solicitante','Bairro','Servi\u00e7o','Taxa','Urg.','Status','Funcion\u00e1rio'].map(function(c){return typeof c==='string'?ce('th',{key:c},c):c;}).concat([ce('th',{key:'ac',className:'no-print'},'A\xe7\xf5es')]))),
           ce('tbody',null,items.map(function(r,i){
             var isEditing=relEdit&&relEdit.id===r.id;
             if(isEditing)return ce('tr',{key:r.id,style:{background:'#eff6ff'}},
               ce('td',{style:{borderTop:'2px solid #2563eb',borderBottom:'2px solid #2563eb',borderLeft:'2px solid #2563eb',borderRadius:'4px 0 0 4px'}},
-                ce('input',{type:'checkbox',checked:!!selChk[r.id],onChange:function(){setSelChk(function(prev){var o=Object.assign({},prev);if(o[r.id])delete o[r.id];else o[r.id]=true;return o;});}})),
+                ce('input',{type:'checkbox',checked:!!selChk[r.prot],onChange:function(){setSelChk(function(prev){var o=Object.assign({},prev);if(o[r.prot])delete o[r.prot];else o[r.prot]=true;return o;});}})),
               ce('td',{style:{borderTop:'2px solid #2563eb',borderBottom:'2px solid #2563eb'}},(pg-1)*PER+i+1),
               ce('td',{style:{borderTop:'2px solid #2563eb',borderBottom:'2px solid #2563eb'}},ce('code',null,r.prot)),
               ce('td',{style:{borderTop:'2px solid #2563eb',borderBottom:'2px solid #2563eb'}},fmtD(r.dt)),
@@ -4185,7 +4185,7 @@ function Relatorios(){
               )
             );
             return ce('tr',{key:r.id,className:r.urg==='Sim'&&r.status!=='Conclu\u00eddo'?'row-urg':''},
-              ce('td',null,ce('input',{type:'checkbox',checked:!!selChk[r.id],onChange:function(){setSelChk(function(prev){var o=Object.assign({},prev);if(o[r.id])delete o[r.id];else o[r.id]=true;return o;});}})),
+              ce('td',null,ce('input',{type:'checkbox',checked:!!selChk[r.prot],onChange:function(){setSelChk(function(prev){var o=Object.assign({},prev);if(o[r.prot])delete o[r.prot];else o[r.prot]=true;return o;});}})),
               ce('td',null,(pg-1)*PER+i+1),ce('td',null,ce('code',null,r.prot)),ce('td',null,fmtD(r.dt)),
               ce('td',null,r.nom||'Não informado'),ce('td',null,r.bairro),ce('td',{title:r.cn||''},(r.cn||'').slice(0,22)+(r.cn&&r.cn.length>22?'\u2026':'')),
               ce('td',{style:{textAlign:'right',fontWeight:600}},fmtTaxa(r)),
