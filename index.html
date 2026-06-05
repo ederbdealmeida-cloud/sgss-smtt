@@ -2019,17 +2019,33 @@ function imprimirDash(titulo,corpo,landscape){
     ),
     funcSel?ce(PainelFuncionario,{key:funcSel,funcId:parseInt(funcSel)}):ce(React.Fragment,null,
   ce('div',{style:{display:'grid',gridTemplateColumns:'2fr 1fr',gap:14,alignItems:'stretch'}},
-    ce('div',null,ce('div',{className:'stats-grid'},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));}))),
-    ce('div',{className:'ch-card',style:{height:'100%',boxSizing:'border-box'}},ce('h3',null,'Status'),
-        ce('svg',{width:110,height:110,viewBox:'0 0 36 36',style:{display:'block',margin:'0 auto'}},
-          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#e2e8f0',strokeWidth:3}),
-          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#16a34a',strokeWidth:3,strokeDasharray:'63 37',strokeDashoffset:25,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
-          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#d97706',strokeWidth:3,strokeDasharray:'37 63',strokeDashoffset:87,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
-          ce('text',{x:18,y:19,textAnchor:'middle',fontSize:5,fontWeight:'bold',fill:'#1e293b'},(_tot>0?Math.round(_concl/_tot*100):0)+'%'),
-          ce('text',{x:18,y:24,textAnchor:'middle',fontSize:3.5,fill:'#64748b'},'Concluídas')
-        ),
-        ce('div',{className:'leg'},ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#16a34a'}}),ce('span',null,'Concluídas: '+_concl)),ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#d97706'}}),ce('span',null,'Pendentes: '+_pend)))
-      )
+    ce('div',null,ce('div',{className:'stats-grid',style:{marginBottom:0}},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));}))),
+    ce('div',{className:'ch-card',style:{height:'100%',boxSizing:'border-box'}},
+  ce('h3',null,'Status'),
+  ce('svg',{width:110,height:110,viewBox:'0 0 36 36',style:{display:'block',margin:'0 auto'}},
+    ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#e2e8f0',strokeWidth:3}),
+    ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#16a34a',strokeWidth:3,strokeDasharray:(_tot>0?Math.round(_concl/_tot*100):0)+' '+(100-(_tot>0?Math.round(_concl/_tot*100):0)),strokeDashoffset:25,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
+    ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#d97706',strokeWidth:3,strokeDasharray:(_tot>0?Math.round(_pend/_tot*100):0)+' '+(100-(_tot>0?Math.round(_pend/_tot*100):0)),strokeDashoffset:100-(_tot>0?Math.round(_concl/_tot*100):0)+25,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
+    ce('text',{x:18,y:19,textAnchor:'middle',fontSize:5,fontWeight:'bold',fill:'#1e293b'},(_tot>0?Math.round(_concl/_tot*100):0)+'%'),
+    ce('text',{x:18,y:24,textAnchor:'middle',fontSize:3.5,fill:'#64748b'},'Concluídas')
+  ),
+  ce('div',{style:{display:'flex',flexDirection:'column',gap:5,marginTop:10}},
+    ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#16a34a'}}),ce('span',null,'Concluídas: ',ce('strong',null,_concl))),
+    ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#2563eb'}}),ce('span',null,'Em andamento: ',ce('strong',null,(function(){return INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Em andamento';}).length;})()))),
+    ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#d97706'}}),ce('span',null,'Pendentes: ',ce('strong',null,_pend))),
+    ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#dc2626'}}),ce('span',null,'Urgentes: ',ce('strong',null,_urg)))
+  ),
+  ce('div',{style:{borderTop:'1px solid #f1f5f9',marginTop:10,paddingTop:10,display:'flex',flexDirection:'column',gap:4}},
+    ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12}},
+      ce('span',{style:{color:'#64748b'}},'Total geral'),ce('span',{style:{fontWeight:700}},_tot)),
+    ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12}},
+      ce('span',{style:{color:'#64748b'}},'Taxa de conclusão'),ce('span',{style:{fontWeight:700,color:'#16a34a'}},(_tot>0?Math.round(_concl/_tot*100):0)+'%')),
+    ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12}},
+      ce('span',{style:{color:'#64748b'}},'Receita total'),ce('span',{style:{fontWeight:700,color:'#0891b2'}},'R$ '+_rec.toLocaleString('pt-BR',{minimumFractionDigits:2}))),
+    ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12}},
+      ce('span',{style:{color:'#64748b'}},'Enc. vizinhos'),ce('span',{style:{fontWeight:700,color:'#7c3aed'}},(function(){return INIT_REQS.filter(function(r){return r.enc===1;}).length;})()))
+  )
+)
   ),
   ce('div',{style:{background:'#fff',borderRadius:'var(--r-lg)',padding:'12px 18px',boxShadow:'var(--sh)',display:'flex',alignItems:'center',gap:14,marginTop:14}},
   ce('div',{style:{fontSize:26,flexShrink:0}},'\U0001f4e2'),
