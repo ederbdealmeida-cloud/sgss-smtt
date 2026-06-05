@@ -3957,6 +3957,20 @@ function Relatorios(){
             })();
           
   }
+  function handlePrintRel(){
+            if(!filtered.length){notify('Sem resultados para imprimir.');return;}
+            if(Object.keys(selChkRef.current).length>0){
+              var alvo=filtered.filter(function(r){return !!selChkRef.current[r.id];});
+              if(!alvo.length){notify('Nenhum registo selecionado encontrado.');return;}
+              doPrintLote(alvo);
+              return;
+            }
+            setPMode('range');
+            setPFrom('1');
+            setPTo(String(Math.ceil(filtered.length/10)));
+            setPSpec('1');
+            setShowPDlg(true);
+          }
   function limpar(){setRloading(false);setFst('');setFurg('');setFb('');setFsol('');setFfunc('');setFfp('');setFprot('');setFcat('');setDone(false);setPg(1);}
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
@@ -4089,20 +4103,7 @@ function Relatorios(){
             var a=document.createElement('a');a.href=url;a.download='relatorio-smtt.csv';a.click();
             setTimeout(function(){URL.revokeObjectURL(url);},1000);
           }},_tw('\u2b07\ufe0f Excel')),
-          ce('button',{className:'btn btn-p',onClick:function(){
-            if(!filtered.length){notify('Sem resultados para imprimir.');return;}
-            if(Object.keys(selChkRef.current).length>0){
-              var alvo=filtered.filter(function(r){return !!selChkRef.current[r.id];});
-              if(!alvo.length){notify('Nenhum registo selecionado encontrado.');return;}
-              doPrintLote(alvo);
-              return;
-            }
-            setPMode('range');
-            setPFrom('1');
-            setPTo(String(Math.ceil(filtered.length/10)));
-            setPSpec('1');
-            setShowPDlg(true);
-          }},'\ud83d\udda8\ufe0f Imprimir Lote'+(Object.keys(selChk).length>0?' ('+Object.keys(selChk).length+' sel.)':filtered.length?' ('+filtered.length+')':''))
+          ce('button',{className:'btn btn-p',onClick:handlePrintRel},'\ud83d\udda8\ufe0f Imprimir Lote'+(Object.keys(selChk).length>0?' ('+Object.keys(selChk).length+' sel.)':filtered.length?' ('+filtered.length+')':''))
         )
       ),
       filtered.length===0?ce('p',{className:'empty'},'Nenhum resultado.'):ce(React.Fragment,null,
