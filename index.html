@@ -2018,27 +2018,11 @@ function imprimirDash(titulo,corpo,landscape){
       )
     ),
     funcSel?ce(PainelFuncionario,{key:funcSel,funcId:parseInt(funcSel)}):ce(React.Fragment,null,
-  ce('div',{className:'stats-grid'},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));})),
-  ce('div',{style:{display:'grid',gridTemplateColumns:'3fr 1fr',gap:14,marginTop:14}},
-    ce('div',{style:{display:'flex',flexDirection:'column',gap:14}},
-      ce('div',{className:'ch-card'},
-        ce('h3',null,'Solicita\xe7\xf5es por Categoria'),
-        ce('div',{className:'bar-chart'},BARS.map(function(b,i){return ce('div',{key:b.l,className:'bar-wrap'},ce('div',{className:'bar',style:{height:Math.round(b.v/maxB*90)+'%',background:COLORS[i]}}),ce('div',{className:'bar-lbl'},b.l));})),
-        /* Tabela com qtd e % */
-        ce('table',{className:'tbl tbl-dash',style:{marginTop:14,fontSize:12}},
-          ce('thead',null,ce('tr',null,ce('th',null,'#'),ce('th',null,'Categoria'),ce('th',{style:{textAlign:'center'}},'Qtd.'),ce('th',{style:{textAlign:'center'}},'%'),ce('th',{style:{width:120}},'Propor\xe7\xe3o'))),
-          ce('tbody',null,BARS.map(function(b,i){
-            var pct=((b.v/total)*100).toFixed(1);
-            return ce('tr',{key:b.l},
-              ce('td',null,ce('span',{style:{display:'inline-block',width:10,height:10,borderRadius:3,background:COLORS[i],marginRight:6,verticalAlign:'middle'}}),i+1),
-              ce('td',{title:b.cat},b.cat.slice(0,30)+'\u2026'),
-              ce('td',{style:{textAlign:'center',fontWeight:700}},b.v),
-              ce('td',{style:{textAlign:'center',fontWeight:700,color:COLORS[i]}},pct+'%'),
-              ce('td',null,ce('div',{style:{background:'#f1f5f9',borderRadius:4,height:8,overflow:'hidden'}},ce('div',{style:{width:pct+'%',height:'100%',background:COLORS[i],borderRadius:4}})))
-            );
-          }))
-        )
-      ),
+  ce('div',{style:{display:'grid',gridTemplateColumns:'2fr 1fr',gap:14}},
+    ce('div',null,
+      ce('div',{className:'stats-grid'},CARDS.map(function(c){return ce('div',{key:c.l,className:'stat '+c.c},ce('div',{className:'stat-ico'},c.i),ce('div',{className:'stat-val'},c.v),ce('div',{className:'stat-lbl'},c.l));}))
+    ),
+    ce('div',null,
       ce('div',{className:'card meta-card'},
       ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}},
         ce('h3',{style:{margin:0,fontSize:14,fontWeight:700,color:'#1e3a5f'}},'\ud83c\udfaf Metas de Desempenho'),
@@ -2060,7 +2044,46 @@ function imprimirDash(titulo,corpo,landscape){
           ce('div',{className:'meta-bar-bg'},ce('div',{className:'meta-bar',style:{width:pctAno+'%',background:pctAno>=100?'#16a34a':pctAno>=70?'#d97706':'#dc2626'}},pctAno>15?pctAno+'%':''))
         )
       )
-    ),
+    )
+    )
+  ),
+  ce('div',{style:{background:'#fff',borderRadius:'var(--r-lg)',padding:'12px 18px',boxShadow:'var(--sh)',display:'flex',alignItems:'center',gap:14,marginTop:14}},
+  ce('div',{style:{fontSize:26,flexShrink:0}},'\U0001f4e2'),
+  (function(){
+  var _ms=COMUNICADOS_LIST.filter(function(c){return !c.dtVal||c.dtVal>=today();});
+  var _bc=_ms.filter(function(c){return c.prioridade==='urgente';})[0]||_ms[0]||null;
+  if(!_bc)return null;
+  var BG={'urgente':'#fef2f2','normal':'#eff6ff','info':'#f0fdf4'};
+  var BD={'urgente':'#fca5a5','normal':'#93c5fd','info':'#86efac'};
+  return ce('div',{style:{background:BG[_bc.prioridade],border:'1.5px solid '+BD[_bc.prioridade],
+    borderRadius:8,padding:'10px 14px',marginBottom:8,display:'flex',alignItems:'center',gap:10}},
+    ce('span',{style:{fontSize:18}},_bc.prioridade==='urgente'?'\ud83d\udd34':_bc.prioridade==='info'?'\ud83d\udfe2':'\ud83d\udd35'),
+    ce('div',{style:{flex:1}},
+      ce('div',{style:{fontWeight:700,fontSize:13}},_bc.titulo),
+      ce('div',{style:{fontSize:12,color:'#64748b'}},_bc.msg.slice(0,100)+(_bc.msg.length>100?'...':''))),
+    _ms.length>1?ce('span',{style:{fontSize:11,color:'#64748b',whiteSpace:'nowrap'}},'+'+(_ms.length-1)+' no Mural'):null);
+})()
+),
+  ce('div',{style:{display:'grid',gridTemplateColumns:'2fr 1fr',gap:14,marginTop:14}},
+    ce('div',{style:{display:'flex',flexDirection:'column',gap:14}},
+      ce('div',{className:'ch-card'},
+        ce('h3',null,'Solicita\xe7\xf5es por Categoria'),
+        ce('div',{className:'bar-chart'},BARS.map(function(b,i){return ce('div',{key:b.l,className:'bar-wrap'},ce('div',{className:'bar',style:{height:Math.round(b.v/maxB*90)+'%',background:COLORS[i]}}),ce('div',{className:'bar-lbl'},b.l));})),
+        /* Tabela com qtd e % */
+        ce('table',{className:'tbl tbl-dash',style:{marginTop:14,fontSize:12}},
+          ce('thead',null,ce('tr',null,ce('th',null,'#'),ce('th',null,'Categoria'),ce('th',{style:{textAlign:'center'}},'Qtd.'),ce('th',{style:{textAlign:'center'}},'%'),ce('th',{style:{width:120}},'Propor\xe7\xe3o'))),
+          ce('tbody',null,BARS.map(function(b,i){
+            var pct=((b.v/total)*100).toFixed(1);
+            return ce('tr',{key:b.l},
+              ce('td',null,ce('span',{style:{display:'inline-block',width:10,height:10,borderRadius:3,background:COLORS[i],marginRight:6,verticalAlign:'middle'}}),i+1),
+              ce('td',{title:b.cat},b.cat.slice(0,30)+'\u2026'),
+              ce('td',{style:{textAlign:'center',fontWeight:700}},b.v),
+              ce('td',{style:{textAlign:'center',fontWeight:700,color:COLORS[i]}},pct+'%'),
+              ce('td',null,ce('div',{style:{background:'#f1f5f9',borderRadius:4,height:8,overflow:'hidden'}},ce('div',{style:{width:pct+'%',height:'100%',background:COLORS[i],borderRadius:4}})))
+            );
+          }))
+        )
+      ),
       ce('div',{className:'ch-card'},ce('h3',null,'Evolu\xe7\xe3o Mensal'),ce('div',{className:'bar-chart',style:{height:80}},MESES.map(function(m){return ce('div',{key:m.m,className:'bar-wrap'},ce('div',{className:'bar',style:{height:Math.round(m.v/maxM*85)+'%',background:'#3b82f6'}}),ce('div',{className:'bar-lbl',style:{fontSize:10}},m.m+' ('+m.v+')'));}))),
       ce('div',{className:'card'},
     ce('h3',null,'💰 Serviços Pagos por Mês'),
@@ -2094,7 +2117,19 @@ function imprimirDash(titulo,corpo,landscape){
             );})))
       );
     })()
-  ),
+  )
+    ),
+    ce('div',{style:{display:'flex',flexDirection:'column',gap:14}},
+      ce('div',{className:'ch-card'},ce('h3',null,'Status'),
+        ce('svg',{width:110,height:110,viewBox:'0 0 36 36',style:{display:'block',margin:'0 auto'}},
+          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#e2e8f0',strokeWidth:3}),
+          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#16a34a',strokeWidth:3,strokeDasharray:'63 37',strokeDashoffset:25,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
+          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#d97706',strokeWidth:3,strokeDasharray:'37 63',strokeDashoffset:87,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
+          ce('text',{x:18,y:19,textAnchor:'middle',fontSize:5,fontWeight:'bold',fill:'#1e293b'},(_tot>0?Math.round(_concl/_tot*100):0)+'%'),
+          ce('text',{x:18,y:24,textAnchor:'middle',fontSize:3.5,fill:'#64748b'},'Concluídas')
+        ),
+        ce('div',{className:'leg'},ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#16a34a'}}),ce('span',null,'Concluídas: '+_concl)),ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#d97706'}}),ce('span',null,'Pendentes: '+_pend)))
+      ),
       ce('div',{className:'card'},ce('h3',null,'Top Bairros'),(function(){
       var _bMap={};INIT_REQS.forEach(function(r){if(r.enc!==1&&r.bairro)_bMap[r.bairro]=(_bMap[r.bairro]||0)+1;});
       var _bArr=Object.keys(_bMap).map(function(k){return{b:k,n:_bMap[k]};}).sort(function(a,b){return b.n-a.n;}).slice(0,5);
@@ -2103,24 +2138,6 @@ function imprimirDash(titulo,corpo,landscape){
         ?ce('div',{className:'blist'},_bArr.map(function(b,i){return ce('div',{key:b.b,className:'brow'},ce('span',{className:'b-rk'},'#'+(i+1)),ce('span',{className:'b-nm'},b.b),ce('div',{className:'b-bw'},ce('div',{className:'b-br',style:{width:Math.round(b.n/_bMax*100)+'%'}})),ce('span',{className:'b-ct'},b.n));}))
         :ce('div',{style:{color:'#94a3b8',fontSize:13,padding:'8px 0'}},'Nenhum dado disponível');
     })()),
-      ce('div',{className:'card'},
-          ce('h3',{style:{margin:'0 0 8px',fontSize:13,fontWeight:700,color:'#1e3a5f'}},'\ud83d\udccb \u00daltimas Solicita\u00e7\u00f5es'),
-          (function(){
-            var _last=INIT_REQS.filter(function(r){return r.enc!==1;})
-              .sort(function(a,b){return (b.dt||'')>(a.dt||'')?1:-1;}).slice(0,5);
-            if(!_last.length)return ce('div',{style:{color:'#94a3b8',fontSize:12}},'Sem dados.');
-            return ce('div',{style:{display:'flex',flexDirection:'column',gap:4}},
-              _last.map(function(r,i){
-                var sc=r.status==='Conclu\u00eddo'?'#16a34a':r.status==='Em andamento'?'#2563eb':'#d97706';
-                return ce('div',{key:i,style:{display:'flex',justifyContent:'space-between',alignItems:'center',
-                    padding:'4px 6px',borderRadius:6,background:i%2===0?'#f8fafc':'#fff',fontSize:11.5}},
-                  ce('span',{style:{fontWeight:600,color:'#1e3a5f',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:100}},r.nom||r.nome||'\u2014'),
-                  ce('span',{style:{fontSize:10,background:sc+'22',color:sc,borderRadius:12,padding:'2px 7px',fontWeight:700,whiteSpace:'nowrap'}},r.status||'Agendado')
-                );
-              })
-            );
-          })()
-        ),
       ce('div',{className:'card'},
           ce('h3',{style:{margin:'0 0 8px',fontSize:13,fontWeight:700,color:'#1e3a5f'}},'\ud83d\udc77 Top Funcion\u00e1rios'),
           (function(){
@@ -2139,6 +2156,24 @@ function imprimirDash(titulo,corpo,landscape){
                     ce('div',{style:{height:'100%',borderRadius:4,background:'#2563eb',width:Math.round(f.v/_mx*100)+'%'}})
                   ),
                   ce('span',{style:{fontWeight:700,color:'#16a34a',minWidth:24,textAlign:'right'}},f.v)
+                );
+              })
+            );
+          })()
+        ),
+      ce('div',{className:'card'},
+          ce('h3',{style:{margin:'0 0 8px',fontSize:13,fontWeight:700,color:'#1e3a5f'}},'\ud83d\udccb \u00daltimas Solicita\u00e7\u00f5es'),
+          (function(){
+            var _last=INIT_REQS.filter(function(r){return r.enc!==1;})
+              .sort(function(a,b){return (b.dt||'')>(a.dt||'')?1:-1;}).slice(0,5);
+            if(!_last.length)return ce('div',{style:{color:'#94a3b8',fontSize:12}},'Sem dados.');
+            return ce('div',{style:{display:'flex',flexDirection:'column',gap:4}},
+              _last.map(function(r,i){
+                var sc=r.status==='Conclu\u00eddo'?'#16a34a':r.status==='Em andamento'?'#2563eb':'#d97706';
+                return ce('div',{key:i,style:{display:'flex',justifyContent:'space-between',alignItems:'center',
+                    padding:'4px 6px',borderRadius:6,background:i%2===0?'#f8fafc':'#fff',fontSize:11.5}},
+                  ce('span',{style:{fontWeight:600,color:'#1e3a5f',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:100}},r.nom||r.nome||'\u2014'),
+                  ce('span',{style:{fontSize:10,background:sc+'22',color:sc,borderRadius:12,padding:'2px 7px',fontWeight:700,whiteSpace:'nowrap'}},r.status||'Agendado')
                 );
               })
             );
@@ -2165,37 +2200,8 @@ function imprimirDash(titulo,corpo,landscape){
             );
           })()
         )
-    ),
-    ce('div',{style:{display:'flex',flexDirection:'column'}},
-      ce('div',{className:'ch-card'},ce('h3',null,'Status'),
-        ce('svg',{width:110,height:110,viewBox:'0 0 36 36',style:{display:'block',margin:'0 auto'}},
-          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#e2e8f0',strokeWidth:3}),
-          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#16a34a',strokeWidth:3,strokeDasharray:'63 37',strokeDashoffset:25,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
-          ce('circle',{cx:18,cy:18,r:15.9,fill:'none',stroke:'#d97706',strokeWidth:3,strokeDasharray:'37 63',strokeDashoffset:87,style:{transform:'rotate(-90deg)',transformOrigin:'50% 50%'}}),
-          ce('text',{x:18,y:19,textAnchor:'middle',fontSize:5,fontWeight:'bold',fill:'#1e293b'},(_tot>0?Math.round(_concl/_tot*100):0)+'%'),
-          ce('text',{x:18,y:24,textAnchor:'middle',fontSize:3.5,fill:'#64748b'},'Concluídas')
-        ),
-        ce('div',{className:'leg'},ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#16a34a'}}),ce('span',null,'Concluídas: '+_concl)),ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#d97706'}}),ce('span',null,'Pendentes: '+_pend)))
-      )
     )
-  ),
-ce('div',{style:{marginTop:14,background:'#fff',borderRadius:'var(--r-lg)',padding:'14px 20px',boxShadow:'var(--sh)',display:'flex',alignItems:'center',gap:16,minHeight:64}},
-  ce('div',{style:{fontSize:28,flexShrink:0}},'\ud83d\udce2'),
-  (function(){
-  var _ms=COMUNICADOS_LIST.filter(function(c){return !c.dtVal||c.dtVal>=today();});
-  var _bc=_ms.filter(function(c){return c.prioridade==='urgente';})[0]||_ms[0]||null;
-  if(!_bc)return null;
-  var BG={'urgente':'#fef2f2','normal':'#eff6ff','info':'#f0fdf4'};
-  var BD={'urgente':'#fca5a5','normal':'#93c5fd','info':'#86efac'};
-  return ce('div',{style:{background:BG[_bc.prioridade],border:'1.5px solid '+BD[_bc.prioridade],
-    borderRadius:8,padding:'10px 14px',marginBottom:8,display:'flex',alignItems:'center',gap:10}},
-    ce('span',{style:{fontSize:18}},_bc.prioridade==='urgente'?'\ud83d\udd34':_bc.prioridade==='info'?'\ud83d\udfe2':'\ud83d\udd35'),
-    ce('div',{style:{flex:1}},
-      ce('div',{style:{fontWeight:700,fontSize:13}},_bc.titulo),
-      ce('div',{style:{fontSize:12,color:'#64748b'}},_bc.msg.slice(0,100)+(_bc.msg.length>100?'...':''))),
-    _ms.length>1?ce('span',{style:{fontSize:11,color:'#64748b',whiteSpace:'nowrap'}},'+'+(_ms.length-1)+' no Mural'):null);
-})()
-)
+  )
 ),
  
   );
