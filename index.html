@@ -5250,9 +5250,19 @@ function RelatoriosPersonalizados(){
     if(!alvo||!alvo.length){notify('Sem resultados para imprimir.');return;}
     var w=window.open('','_blank','width=820,height=650,scrollbars=yes');
     if(!w){notify('Permita popups!');return;}
+    var _t=alvo.length,_c=alvo.filter(function(r){return r.status==='Concluído';}).length;
+    var _rv=alvo.reduce(function(s,r){return s+(parseFloat(r.taxa)||0);},0);
+    var _sp='<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">'
+      +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#2563eb;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">'+_t+'</div><div style="font-size:10px;margin-top:2px">Total</div></div>'
+      +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#16a34a;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">'+_c+'</div><div style="font-size:10px;margin-top:2px">Conclu\u00eddo</div></div>'
+      +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#1e3a5f;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">'+(_t>0?Math.round(_c/_t*100):0)+'%</div><div style="font-size:10px;margin-top:2px">Conclus\u00e3o</div></div>'
+      +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#0891b2;color:#fff;border-radius:8px;padding:10px 16px;text-align:center"><div style="font-size:20px;font-weight:900">R$ '+_rv.toLocaleString('pt-BR',{minimumFractionDigits:2})+'</div><div style="font-size:10px;margin-top:2px">Receita</div></div>'
+      +'</div>';
+
     w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
       +PRINT_CSS+'body{font-family:"IBM Plex Sans",Arial,sans-serif}</style></head><body>'
       +buildHeader('Relatório Personalizado',alvo.length+' registo(s)')
+      +_sp
       +'<table style="width:100%;border-collapse:collapse"><thead>'
       +prtHead()+'</thead><tbody>'+prtRows(alvo)+'</tbody></table>'
       +'<button onclick="window.print()" class="btn-pr">Imprimir</button>'
@@ -5396,6 +5406,13 @@ function RelatoriosPersonalizados(){
           :filtered.length===0
             ?ce('div',{style:{textAlign:'center',padding:'30px',color:'#94a3b8'}},ce('div',{style:{fontSize:28,marginBottom:5}},'\ud83d\udccb'),ce('div',null,'Nenhum resultado.'))
             :ce('div',null,
+                ce('div',{className:'rel-info',style:{marginBottom:8}},
+                  ce('span',null,'\ud83d\udcca ',ce('strong',null,filtered.length),' resultado(s)'),
+                  ce('span',null,'\u2705 Conclu\u00eddas: ',ce('strong',null,
+                    filtered.filter(function(r){return r.status==='Conclu\u00eddo';}).length)),
+                  ce('span',null,'\ud83d\udcb0 Total: ',ce('strong',null,
+                    fmt(filtered.reduce(function(s,r){return s+(parseFloat(r.taxa)||0);},0))))
+                ),
                 ce('div',{style:{overflowX:'auto',WebkitOverflowScrolling:'touch'}},
                 ce('table',{className:'tbl tbl-relp',style:{minWidth:500}},
                   ce('thead',null,ce('tr',null,
