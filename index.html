@@ -2070,11 +2070,11 @@ function imprimirDash(titulo,corpo,landscape){
   ),
   ce('div',{style:{display:'grid',gridTemplateColumns:'3fr 2fr',gap:14,marginTop:14}},
     ce('div',{style:{display:'flex',flexDirection:'column',gap:14,minWidth:0}},
-      ce('div',{className:'ch-card'},
+      ce('div',{className:'ch-card',style:{overflow:'hidden'}},
         ce('h3',null,'Solicita\xe7\xf5es por Categoria'),
-        ce('div',{className:'bar-chart'},BARS.map(function(b,i){return ce('div',{key:b.l,className:'bar-wrap'},ce('div',{className:'bar',style:{height:Math.round(b.v/maxB*90)+'%',background:COLORS[i]}}),ce('div',{className:'bar-lbl'},b.l));})),
+        ce('div',{className:'bar-chart',style:{overflowX:'auto'}},BARS.map(function(b,i){return ce('div',{key:b.l,className:'bar-wrap'},ce('div',{className:'bar',style:{height:Math.round(b.v/maxB*90)+'%',background:COLORS[i]}}),ce('div',{className:'bar-lbl'},b.l));})),
         /* Tabela com qtd e % */
-        ce('table',{className:'tbl tbl-dash',style:{marginTop:14,fontSize:12}},
+        ce('div',{style:{overflowX:'auto'}},ce('table',{className:'tbl tbl-dash',style:{marginTop:14,fontSize:12,minWidth:400}},
           ce('thead',null,ce('tr',null,ce('th',null,'#'),ce('th',null,'Categoria'),ce('th',{style:{textAlign:'center'}},'Qtd.'),ce('th',{style:{textAlign:'center'}},'%'),ce('th',{style:{width:120}},'Propor\xe7\xe3o'))),
           ce('tbody',null,BARS.map(function(b,i){
             var pct=((b.v/total)*100).toFixed(1);
@@ -2086,7 +2086,7 @@ function imprimirDash(titulo,corpo,landscape){
               ce('td',null,ce('div',{style:{background:'#f1f5f9',borderRadius:4,height:8,overflow:'hidden'}},ce('div',{style:{width:pct+'%',height:'100%',background:COLORS[i],borderRadius:4}})))
             );
           }))
-        )
+        ))
       ),
       ce('div',{className:'ch-card'},ce('h3',null,'Evolu\xe7\xe3o Mensal'),ce('div',{className:'bar-chart',style:{height:80}},MESES.map(function(m){return ce('div',{key:m.m,className:'bar-wrap'},ce('div',{className:'bar',style:{height:Math.round(m.v/maxM*85)+'%',background:'#3b82f6'}}),ce('div',{className:'bar-lbl',style:{fontSize:10}},m.m+' ('+m.v+')'));}))),
       ce('div',{className:'card'},
