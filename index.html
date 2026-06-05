@@ -2050,8 +2050,6 @@ function imprimirDash(titulo,corpo,landscape){
     ce('text',{x:18,y:25,textAnchor:'middle',fontSize:3,fill:'#64748b'},'Concluídas')
   ),
   (function(){
-    var _and=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Em andamento';}).length;
-    var _can=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Cancelado';}).length;
     var _sf=INIT_REQS.filter(function(r){return r.enc!==1&&!r.func&&r.status!=='Concluído';}).length;
     var _pago=INIT_REQS.filter(function(r){return r.enc!==1&&r.fp==='Pago';}).length;
     var _npago=INIT_REQS.filter(function(r){return r.enc!==1&&r.fp&&r.fp!=='Pago';}).length;
@@ -2060,50 +2058,49 @@ function imprimirDash(titulo,corpo,landscape){
     var _sem=new Date();_sem.setDate(_sem.getDate()-7);var _semStr=_sem.toISOString().slice(0,10);
     var _hoje=INIT_REQS.filter(function(r){return r.enc!==1&&r.dt===_hj2;}).length;
     var _semana=INIT_REQS.filter(function(r){return r.enc!==1&&r.dt>=_semStr;}).length;
-    var _mesAtual2=_hj2.slice(0,7);
-    var _mesConcl=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Concluído'&&r.dt&&r.dt.slice(0,7)===_mesAtual2;}).length;
+    var _agFut=AGENDA_LIST.filter(function(a){return a.date>=_hj2&&a.status!=='Cancelado';}).length;
+    var _agAt=AGENDA_LIST.filter(function(a){return a.date===_hj2;}).length;
     var _meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    var _hisMetas=[];
+    var _hist=[];
     for(var _mi=5;_mi>=0;_mi--){
       var _d2=new Date();_d2.setMonth(_d2.getMonth()-_mi);
       var _mk2=_d2.getFullYear()+'-'+(String(_d2.getMonth()+1).padStart(2,'0'));
       var _ml=_meses[_d2.getMonth()]+'/'+String(_d2.getFullYear()).slice(2);
       var _mc=INIT_REQS.filter(function(r){return r.enc!==1&&r.status==='Concluído'&&r.dt&&r.dt.slice(0,7)===_mk2;}).length;
-      _hisMetas.push({m:_ml,c:_mc,ok:_mc>=META_MENSAL,cur:_mi===0});
+      _hist.push({m:_ml,c:_mc,pct:Math.min(Math.round(_mc/META_MENSAL*100),100),ok:_mc>=META_MENSAL,cur:_mi===0});
     }
-    var _agFut=AGENDA_LIST.filter(function(a){return a.date>=_hj2&&a.status!=='Cancelado';}).length;
-    var _agAt=AGENDA_LIST.filter(function(a){return a.date===_hj2;}).length;
     var row=function(lbl,val,col){
       return ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:11.5,padding:'3px 0',borderBottom:'1px solid #f8fafc'}},
         ce('span',{style:{color:'#64748b'}},lbl),
         ce('span',{style:{fontWeight:700,color:col||'#1e293b'}},val));};
     return ce('div',null,
-      ce('div',{style:{display:'flex',flexDirection:'column',gap:1,marginBottom:8}},
-        row('Em andamento',_and,'#2563eb'),
-        row('Canceladas',_can,'#94a3b8'),
-        row('Enc. vizinhos',_enc,'#7c3aed'),
-        row('Sem funcionário',_sf,_sf>0?'#dc2626':'#16a34a'),
+      ce('div',{style:{display:'flex',flexDirection:'column',gap:1,marginBottom:10}},
+        row('Taxa de conclusão',(_tot>0?Math.round(_concl/_tot*100):0)+'%','#16a34a'),
+        row('Sem funcionário atribuído',_sf,_sf>0?'#dc2626':'#16a34a'),
+        row('Encerradas (arquivadas)',_enc,'#7c3aed'),
         row('Pagas',_pago,'#0891b2'),
         row('Não pagas',_npago,'#d97706'),
-        row('Taxa conclusão',(_tot>0?Math.round(_concl/_tot*100):0)+'%','#16a34a'),
         row('Hoje (novas)',_hoje,'#1e3a5f'),
         row('Últimos 7 dias',_semana,'#1e3a5f'),
-        row('Concluídas este mês',_mesConcl,_mesConcl>=META_MENSAL?'#16a34a':'#d97706'),
-        row('Meta mensal (alvo '+META_MENSAL+')',_mesConcl>=META_MENSAL?'✅ Atingida':'⏳ '+_mesConcl+'/'+META_MENSAL,_mesConcl>=META_MENSAL?'#16a34a':'#dc2626'),
-        row('Meta anual (alvo '+META_ANO+')',_concl>=META_ANO?'✅ Atingida':'⏳ '+_concl+'/'+META_ANO,_concl>=META_ANO?'#16a34a':'#dc2626'),
         row('Agend. futuros',_agFut,'#2563eb'),
         row('Agend. hoje',_agAt,_agAt>0?'#d97706':'#94a3b8')
       ),
-      ce('div',{style:{fontSize:11.5,fontWeight:700,color:'#1e3a5f',margin:'8px 0 4px'}},'📅 Metas Mensais — 6 meses'),
-      ce('div',{style:{display:'flex',flexDirection:'column',gap:2}},
-        _hisMetas.map(function(h,i){
-          return ce('div',{key:i,style:{display:'flex',justifyContent:'space-between',alignItems:'center',
-            fontSize:11,padding:'3px 6px',borderRadius:4,
-            background:h.cur?'#eff6ff':h.ok?'#f0fdf4':'#fff7ed'}},
-            ce('span',{style:{fontWeight:h.cur?700:400,color:h.cur?'#2563eb':'#475569'}},h.m+(h.cur?' (atual)':'')),
-            ce('span',{style:{display:'flex',alignItems:'center',gap:4}},
-              ce('span',{style:{fontWeight:700,fontSize:12}},h.c),
-              ce('span',{style:{fontSize:11}},h.ok?'✅':'❌')
+      ce('div',{style:{fontWeight:700,fontSize:12,color:'#1e3a5f',margin:'4px 0 6px'}},
+        '📅 Concluídas por mês (meta: ',META_MENSAL,')'
+      ),
+      ce('div',{style:{display:'flex',flexDirection:'column',gap:5}},
+        _hist.map(function(h,i){
+          return ce('div',{key:i},
+            ce('div',{style:{display:'flex',justifyContent:'space-between',fontSize:11,marginBottom:2}},
+              ce('span',{style:{fontWeight:h.cur?700:400,color:h.cur?'#2563eb':'#475569'}},
+                h.m+(h.cur?' ← atual':'')),
+              ce('span',{style:{fontWeight:700,color:h.ok?'#16a34a':'#dc2626'}},
+                h.c+'/'+META_MENSAL+' '+(h.ok?'✅':'❌'))
+            ),
+            ce('div',{style:{background:'#f1f5f9',borderRadius:4,height:8,overflow:'hidden'}},
+              ce('div',{style:{height:'100%',borderRadius:4,width:h.pct+'%',
+                background:h.ok?'#16a34a':h.pct>=50?'#d97706':'#dc2626',
+                transition:'width .3s'}})
             )
           );
         })
