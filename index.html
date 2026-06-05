@@ -2074,7 +2074,7 @@ function imprimirDash(titulo,corpo,landscape){
     })()
   )
     ),
-    ce('div',{style:{display:'flex',flexDirection:'column',gap:14}},
+    ce('div',{style:{display:'flex',flexDirection:'column',gap:14,height:'100%'}},
       ce('div',{className:'card meta-card'},
       ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}},
         ce('h3',{style:{margin:0,fontSize:14,fontWeight:700,color:'#1e3a5f'}},'\ud83c\udfaf Metas de Desempenho'),
@@ -2121,7 +2121,7 @@ function imprimirDash(titulo,corpo,landscape){
         ),
         ce('div',{className:'leg'},ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#16a34a'}}),ce('span',null,'Concluídas: '+_concl)),ce('div',{className:'leg-item'},ce('div',{className:'leg-dot',style:{background:'#d97706'}}),ce('span',null,'Pendentes: '+_pend)))
       ),
-      ce('div',{className:'card'},ce('h3',null,'Top Bairros'),(function(){
+      ce('div',{className:'card',style:{flex:1}},ce('h3',null,'Top Bairros'),(function(){
       var _bMap={};INIT_REQS.forEach(function(r){if(r.enc!==1&&r.bairro)_bMap[r.bairro]=(_bMap[r.bairro]||0)+1;});
       var _bArr=Object.keys(_bMap).map(function(k){return{b:k,n:_bMap[k]};}).sort(function(a,b){return b.n-a.n;}).slice(0,5);
       var _bMax=_bArr.length>0?_bArr[0].n:1;
