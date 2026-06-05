@@ -2106,12 +2106,12 @@ function imprimirDash(titulo,corpo,landscape){
       });
       var _pArr=Object.keys(_pMap).sort().reverse().slice(0,12).map(function(k){return _pMap[k];});
       if(!_pArr.length)return ce('div',{style:{color:'#94a3b8',fontSize:13,padding:'8px 0'}},'Nenhum serviço pago registado.');
-      return ce('div',{style:{overflowX:'auto'}},
-        ce('table',{className:'tbl tbl-dash'},
+      return ce('div',null,
+        ce('table',{className:'tbl tbl-dash',style:{tableLayout:'fixed',width:'100%'}},
           ce('thead',null,ce('tr',null,
             ce('th',null,'Mês'),
             ce('th',{style:{textAlign:'center'}},'Qtd.'),
-            ce('th',{style:{textAlign:'right'}},'Total Arrecadado'))),
+            ce('th',{style:{textAlign:'center',width:'30%'}},'Total Arrecadado'))),
           ce('tbody',null,_pArr.map(function(row,i){
             return ce('tr',{key:i,style:{background:i%2===0?'#fff':'#f8fafc'}},
               ce('td',{style:{fontWeight:600}},row.m),
