@@ -3922,7 +3922,7 @@ function Relatorios(){
                 +'</tr>';
               }).join('');
               var total=alvo.length;
-              var concl=filtered.filter(function(r){return r.status==='Concluído';}).length;
+              var concl=alvo.filter(function(r){return r.status==='Concluído';}).length;
               var receita=alvo.reduce(function(s,r){return s+(parseFloat(r.taxa)||0);},0);
               var pct=total>0?Math.round(concl/total*100):0;
               var cards=function(v,l,c){'return "<div style=\"-webkit-print-color-adjust:exact;print-color-adjust:exact;background:"+c+";color:#fff;border-radius:8px;padding:10px 16px;text-align:center\"><div style=\"font-size:20px;font-weight:900\">"+(typeof v==="string"?v:v)+"</div><div style=\"font-size:10px;margin-top:2px;\">"+ l +"</div></div>"'};
@@ -4089,11 +4089,14 @@ function Relatorios(){
             setTimeout(function(){URL.revokeObjectURL(url);},1000);
           }},_tw('\u2b07\ufe0f Excel')),
           ce('button',{className:'btn btn-p',onClick:function(){
-            var alvo=selIds.length>0
-              ?filtered.filter(function(r){return selIds.includes(r.id);})
-              :filtered;
-            if(!alvo.length){notify('Sem resultados para imprimir.');return;}
-            if(selIds.length>0){doPrintLote(alvo);return;}
+            if(!filtered.length){notify('Sem resultados para imprimir.');return;}
+            if(selIds.length>0){
+              var selSet=selIds.map(function(x){return String(x);});
+              var alvo=filtered.filter(function(r){return selSet.indexOf(String(r.id))>=0;});
+              if(!alvo.length){notify('Nenhum registo selecionado encontrado.');return;}
+              doPrintLote(alvo);
+              return;
+            }
             setPMode('range');
             setPFrom('1');
             setPTo(String(Math.ceil(filtered.length/10)));
