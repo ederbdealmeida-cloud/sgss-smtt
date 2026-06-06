@@ -1974,6 +1974,7 @@ function imprimirDash(titulo,corpo,landscape){
     +'</div>'
 
     /* ══ URGENTES ══ */
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
     +(urgArr.length>0
       ?sec('🔴','Solicitações Urgentes Pendentes ('+urgArr.length+')',C.red,
         tbl('<tr>'+th('Protocolo')+th('Solicitante')+th('Serviço')+th('Bairro')+th('Dias','center')+'</tr>',
@@ -2004,7 +2005,8 @@ function imprimirDash(titulo,corpo,landscape){
             return ztr(td(row.m)+td(row.n,'center','700')
               +td('R$&nbsp;'+row.val.toLocaleString('pt-BR',{minimumFractionDigits:2}),'right','700','#166534'));
           }).join('')));
-    })();
+    })()
+    +'</div>'
 
     imprimirDash('Visão Geral – '+fmtD(_hj),html,true);
   }
