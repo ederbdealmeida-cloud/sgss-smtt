@@ -2889,8 +2889,26 @@ function compartilharComprovanteServico(r,allReqs,btnEl){
   _bimg.src=_BRASAO;
 
   function _gerarECompartilhar(_brasao46){
-    var _assinW=180;var _assinaturas='<div style="margin-top:28px;padding-top:14px;border-top:1px solid #e2e8f0;text-align:center;padding-left:0px">'  +'<span style="display:inline-block;width:'+_assinW+'px;text-align:center;vertical-align:top;margin:0 24px;margin-left:55px">'  +'<div style="height:1px;background:#1e293b;margin:36px 0 5px 0"></div>'  +'<span style="font-size:10px;color:#64748b;font-weight:600">Assinatura e Carimbo - SMTT</span>'  +'</span>'  +'<span style="display:inline-block;width:'+_assinW+'px;text-align:center;vertical-align:top;margin:0 24px">'  +'<div style="height:1px;background:#1e293b;margin:36px 0 5px 0"></div>'  +'<span style="font-size:10px;color:#64748b;font-weight:600">Recebido pelo Solicitante</span>'  +'</span>'  +'</div>'  +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px">SMTT CACEQUI - SGSS - PROTOCOLO EMITIDO ELETRONICAMENTE</div>';
-    var _brasaoHtml=_brasao46
+    var _assinW=180;
+    var _gap=24;
+    var _divW=680;
+    var _totalW=(_assinW*2)+(_gap*2)+48; /* 2 spans + margens */
+    var _leftPad=Math.round((_divW-_totalW)/2);
+    var _assinaturas='<div style="margin-top:28px;padding-top:14px;border-top:1px solid #e2e8f0">'
+      +'<table style="border-collapse:collapse;width:100%"><tr>'
+      +'<td style="width:'+_leftPad+'px"></td>'
+      +'<td style="width:'+_assinW+'px;text-align:center;vertical-align:top">'
+      +'<div style="height:1px;background:#1e293b;margin:36px 0 5px 0"></div>'
+      +'<span style="font-size:10px;color:#64748b;font-weight:600">Assinatura e Carimbo - SMTT</span></td>'
+      +'<td style="width:'+(_gap*2)+'px"></td>'
+      +'<td style="width:'+_assinW+'px;text-align:center;vertical-align:top">'
+      +'<div style="height:1px;background:#1e293b;margin:36px 0 5px 0"></div>'
+      +'<span style="font-size:10px;color:#64748b;font-weight:600">Recebido pelo Solicitante</span></td>'
+      +'<td></td>'
+      +'</tr></table></div>'
+      +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px">SMTT CACEQUI - SGSS - PROTOCOLO EMITIDO ELETRONICAMENTE</div>';
+    
+var _brasaoHtml=_brasao46
       ?'<img src="'+_brasao46+'" style="width:46px;height:46px;display:block;">'
       :'';
     var _header='<table width="100%" style="border-collapse:collapse;width:100%;margin-bottom:18px;padding-bottom:14px;border-bottom:3px solid #1e3a5f"><tr>'      +'<td width="58" style="width:58px;vertical-align:middle;padding-right:14px">'      +(_brasaoHtml?'<div style="width:58px;height:58px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px;overflow:hidden">'+_brasaoHtml+'</div>':'')+'</td>'      +'<td style="vertical-align:middle">'      +'<div style="font-size:13px;font-weight:800;color:#1e3a5f;text-transform:uppercase">PREFEITURA MUNICIPAL DE CACEQUI &ndash; RS</div>'      +'<div style="font-size:11px;color:#475569;margin-top:2px">Secretaria Municipal de Transporte e Tr&acirc;nsito</div>'      +'<div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:5px">Comprovante de Solicita&ccedil;&atilde;o'+(parts.length>1?' - '+parts.length+' servi&ccedil;os':'')+'</div>'      +'<div style="font-size:10px;color:#94a3b8;margin-top:2px">Emitido em: '+(new Date()).toLocaleDateString('pt-BR')+'</div>'      +'</td></tr></table>';
