@@ -3521,12 +3521,17 @@ function Documentos2(p){
       var clone=el.cloneNode(true);
       clone.querySelectorAll('img').forEach(function(img){if(img.src===_BRASAO||img.src.length>500)img.src=_b46;});
       clone.querySelectorAll('.btn-pr,.btn-sh,button').forEach(function(b){b.style.display='none';});
+      clone.querySelectorAll('.no-print').forEach(function(b){b.style.display='none';});
       wrap.appendChild(clone);
+      /* Ocultar o original durante captura para evitar duplicacao */
+      var _origVis=el.style.visibility;
+      el.style.visibility='hidden';
       document.body.appendChild(wrap);
-      var _h=wrap.offsetHeight||800;
+      var _h=wrap.scrollHeight||wrap.offsetHeight||800;
       setTimeout(function(){
         html2canvas(wrap,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680,height:_h,scrollY:0,scrollX:0}).then(function(canvas){
           document.body.removeChild(wrap);
+          el.style.visibility=_origVis;
           var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
           var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
           var img=canvas.toDataURL('image/jpeg',0.92);
@@ -3539,6 +3544,7 @@ function Documentos2(p){
           setPdfStore(function(s){var u={};u[tipo]=file;u[tipo+'Txt']='\ud83d\udce4 Compartilhar';return Object.assign({},s,u);});
         }).catch(function(e){
           if(document.body.contains(wrap))document.body.removeChild(wrap);
+          el.style.visibility=_origVis;
           setPdfStore(function(s){var u={};u[tipo+'Txt']='\ud83d\udce4 Compartilhar';return Object.assign({},s,u);});
           notify('Erro ao gerar: '+e.message);
         });
