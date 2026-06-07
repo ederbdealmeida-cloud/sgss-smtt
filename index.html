@@ -2897,11 +2897,10 @@ function compartilharComprovanteServico(r,allReqs,btnEl){
     var _inner=_header+b.svcCards+b.card2+b.card3+_assinaturas;
     var _div=document.createElement('div');
     _div.style.cssText='position:fixed;left:0;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;opacity:0;pointer-events:none;z-index:-9999;';
-    _div.innerHTML='<div style="background:#fff;padding:0;font-family:Arial,Helvetica,sans-serif;">'+_inner+'</div>';
+    _div.innerHTML=_inner;
     document.body.appendChild(_div);
-    var _content=_div.firstChild;
     setTimeout(function(){
-      html2canvas(_content,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680}).then(function(canvas){
+      html2canvas(_div,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680,height:_div.scrollHeight,windowHeight:_div.scrollHeight}).then(function(canvas){
         document.body.removeChild(_div);
         var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
         var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
