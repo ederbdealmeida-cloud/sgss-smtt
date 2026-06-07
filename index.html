@@ -3758,14 +3758,14 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
           ce('div',{style:{flex:1,textAlign:'center'}},
             ce('div',{style:{borderTop:'1px solid #64748b',paddingTop:2,fontSize:8,color:'#64748b'}},'Ciente SEFAZ'))
         ),
-        ce('div',{className:'no-print',style:{textAlign:'right',padding:'6px 8px 4px'}},
-          ce('button',{style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,fontSize:10,padding:'4px 10px',borderRadius:6,cursor:'pointer'},
-            onClick:function(){
-              if(pdfStore.sefaz){_share(pdfStore.sefaz,'comprovante_sefaz.pdf');return;}
-              _gerarPdf('sefaz','comprovante_sefaz.pdf','sefaz-block');
-            }},pdfStore.sefazTxt)
-        )
       )
+    ),
+    ce('div',{className:'no-print',style:{textAlign:'right',marginTop:8,maxWidth:260}},
+      ce('button',{style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,fontSize:11,padding:'5px 12px',borderRadius:6,cursor:'pointer'},
+        onClick:function(){
+          if(pdfStore.sefaz){_share(pdfStore.sefaz,'comprovante_sefaz.pdf');return;}
+          _gerarPdf('sefaz','comprovante_sefaz.pdf','sefaz-block');
+        }},pdfStore.sefazTxt)
     )
     )):null,
   );
