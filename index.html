@@ -3639,16 +3639,16 @@ function Documentos2(p){
           })
         );
       })(),
-ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Funcion\xe1rio')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Chefe de Divis\xe3o'))),
-    ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,width:'100%',marginTop:12},
+ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Funcion\xe1rio')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Chefe de Divis\xe3o')))
+    ):null,
+    doc==='comp'?ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,width:'100%',marginTop:12},
       onClick:function(){
         if(pdfStore.comp){_share(pdfStore.comp,'comprovante_func.pdf');return;}
         var el=document.querySelector('.doc-paper');
         if(!el){notify('Documento n\u00e3o vis\u00edvel.');return;}
         var _hs='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS+'</style></head><body>'+el.outerHTML+'</body></html>';
         _gerarPdf('comp',_hs,'comprovante_func.pdf');
-      }},pdfStore.compTxt)
-    ):null,
+      }},pdfStore.compTxt):null,
     doc==='sefaz'&&isPago?ce('div',{className:'doc-paper'},
       ce('div',{className:'doc-head'},ce('div',{style:{
             width:58,height:58,background:'#fff',
@@ -3665,15 +3665,15 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
       /* Solicitante — esquerda */
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Dados do Solicitante'),ce('div',{className:'doc-fields-stack'},ce(FL,{label:'Nome',value:d.nom}),ce(FL,{label:'Logradouro',value:d.rua}),ce(FL,{label:'N\xfamero',value:d.num}),ce(FL,{label:'Bairro',value:d.bairro}),ce(FL,{label:'Ponto de Refer\xeancia',value:d.ref}),ce(FL,{label:'Telefone',value:d.tel}))),
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Servi\xe7o e Taxa'),ce(FI,{label:'Tipo de Servi\xe7o',value:d.cn}),ce(FI,{label:'Subcategoria',value:d.sn}),ce('div',{className:'doc-taxa'},ce('span',null,'VALOR A RECOLHER'),ce('strong',null,fmt(d.taxa)))),
-      ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura e Carimbo SMTT')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Recebido por (SEFAZ)'))),
-    ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,width:'100%',marginTop:12},
+      ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura e Carimbo SMTT')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Recebido por (SEFAZ)')))):null,
+    doc==='sefaz'&&isPago?ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,width:'100%',marginTop:12},
       onClick:function(){
         if(pdfStore.sefaz){_share(pdfStore.sefaz,'comprovante_sefaz.pdf');return;}
         var el=document.querySelector('.doc-paper');
         if(!el){notify('Documento n\u00e3o vis\u00edvel.');return;}
         var _hs='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS+'</style></head><body>'+el.outerHTML+'</body></html>';
         _gerarPdf('sefaz',_hs,'comprovante_sefaz.pdf');
-      }},pdfStore.sefazTxt),
+      }},pdfStore.sefazTxt):null,
     /* ── MEMORANDO ── folha extra compacta vertical */
     ce('div',{style:{pageBreakBefore:'always',breakBefore:'page',
         borderTop:'3px dashed #cbd5e1',paddingTop:20,marginTop:40,
