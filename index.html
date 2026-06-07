@@ -2865,21 +2865,49 @@ function imprimirComprovanteServico(r,allReqs){
     +'</body></html>';
   w.document.write(html);
   w.document.close();
-  /* Expor funcao de compartilhar para o popup acessar via window.opener */
+  /* Compartilhar: gera PDF na janela pai (onde html2canvas/jspdf estao carregados) */
   var _prot=main.prot||'comprovante';
   var _nome='comprovante_'+_prot.replace(/[^a-zA-Z0-9-]/g,'_')+'.pdf';
-  window._sgssShareSol=function(htmlStr){
-    sgssCompartilharHtml(htmlStr,_nome,function(e){alert(e);});
-  };
   var _btnSh=w.document.getElementById('btn-share-sol');
   if(_btnSh){
     _btnSh.onclick=function(){
-      if(w.opener&&w.opener._sgssShareSol){
-        var _hs='<!DOCTYPE html>'+w.document.documentElement.outerHTML;
-        w.opener._sgssShareSol(_hs);
-      } else {
-        w.alert('Compartilhamento indisponivel. Abra a partir do SGSS.');
-      }
+      var op=w.opener||window;
+      var h2c=op.html2canvas;
+      var jspdf=op.jspdf;
+      if(!h2c||!jspdf){w.alert('Bibliotecas PDF nao carregadas. Recarregue o SGSS.');return;}
+      if(!navigator.share||!navigator.canShare){w.alert('Compartilhamento nao disponivel neste dispositivo.');return;}
+      _btnSh.textContent='📄 Gerando PDF...';
+      _btnSh.disabled=true;
+      /* Renderizar o conteudo do popup via html2canvas na janela pai */
+      var _wrap=w.document.querySelector('.wrap')||w.document.body;
+      var _div=document.createElement('div');
+      _div.style.cssText='position:fixed;left:-9999px;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;';
+      _div.innerHTML=_wrap.innerHTML;
+      _div.querySelectorAll('.btn-pr,.btn-sh,button').forEach(function(b){b.style.display='none';});
+      document.body.appendChild(_div);
+      h2c(_div,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680}).then(function(canvas){
+        document.body.removeChild(_div);
+        var pdf=new jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+        var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
+        var img=canvas.toDataURL('image/jpeg',0.92);
+        var ih=pW*canvas.height/canvas.width;
+        pdf.addImage(img,'JPEG',0,0,pW,Math.min(ih,pH));
+        var pos=0;
+        while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,'JPEG',0,-pos,pW,ih);}
+        var blob=pdf.output('blob');
+        var file=new File([blob],_nome,{type:'application/pdf'});
+        if(!navigator.canShare({files:[file]})){w.alert('Dispositivo nao suporta compartilhamento de PDF.');_btnSh.textContent='📤 Compartilhar';_btnSh.disabled=false;return;}
+        navigator.share({title:'Comprovante SMTT - '+_prot,files:[file]}).then(function(){
+          _btnSh.textContent='📤 Compartilhar';_btnSh.disabled=false;
+        }).catch(function(e){
+          _btnSh.textContent='📤 Compartilhar';_btnSh.disabled=false;
+          if(e.name!=='AbortError')w.alert('Erro: '+e.message);
+        });
+      }).catch(function(e){
+        document.body.removeChild(_div);
+        _btnSh.textContent='📤 Compartilhar';_btnSh.disabled=false;
+        w.alert('Erro ao gerar PDF: '+e.message);
+      });
     };
   }
 }
