@@ -1712,9 +1712,8 @@ function Dashboard(){
   var maxB=Math.max.apply(null,BARS.map(function(b){return b.v;}));
   
 function sgssCompartilharHtml(htmlCompleto,nomeArquivo,onErr){
-  if(!window.html2canvas||!window.jspdf){onErr("ERRO: Libs nao carregadas. Recarregue.");return;}
-  if(!navigator.share||!navigator.canShare){onErr("ERRO: Share API nao suportada neste navegador.");return;}
-  onErr("DEBUG: iniciando geracao PDF...");
+  if(!window.html2canvas||!window.jspdf){onErr("Recarregue a pagina e tente novamente.");return;}
+  if(!navigator.share||!navigator.canShare){onErr("Compartilhamento nao suportado neste navegador.");return;}
   var div=document.createElement("div");
   div.style.cssText="position:fixed;left:-9999px;top:0;width:794px;background:#fff;z-index:-1;";
   var bm=htmlCompleto.match(/<body[^>]*>([\s\S]*)<\/body>/i);
