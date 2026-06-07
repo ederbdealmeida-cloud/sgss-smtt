@@ -3751,7 +3751,58 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
             ce('div',{style:{borderTop:'1px solid #64748b',paddingTop:2,fontSize:8,color:'#64748b'}},'Resp. SMTT')),
           ce('div',{style:{flex:1,textAlign:'center'}},
             ce('div',{style:{borderTop:'1px solid #64748b',paddingTop:2,fontSize:8,color:'#64748b'}},'Ciente SEFAZ'))
+        )
+      )
+    ),
+    /* ── MEMORANDO ── folha extra compacta vertical */
+    ce('div',{style:{pageBreakBefore:'always',breakBefore:'page',
+        borderTop:'3px dashed #cbd5e1',paddingTop:20,marginTop:40,
+        maxWidth:260,margin:'40px 0 0 0'}},
+      ce('div',{style:{background:'#fff',border:'1.5px solid #cbd5e1',borderRadius:6,
+        boxShadow:'0 1px 4px rgba(0,0,0,.1)',overflow:'hidden',fontSize:10}},
+        ce('div',{style:{display:'flex',alignItems:'center',gap:6,padding:'5px 8px',
+          background:'#1e3a5f',borderBottom:'2px solid #2563eb'}},
+          ce('div',{style:{background:'#fff',borderRadius:4,padding:'2px 4px',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',width:44,height:38}},
+            ce('img',{src:_BRASAO,style:{width:36,height:36,objectFit:'contain'}})),
+          ce('div',{style:{flex:1,lineHeight:1.2}},
+            ce('div',{style:{color:'#fff',fontWeight:800,fontSize:8}},'Pref. Mun. de Cacequi \u2013 RS'),
+            ce('div',{style:{color:'#93c5fd',fontWeight:700,fontSize:8}},'Memorando Interno \u2013 SMTT')
+          )
         ),
+        ce('div',{style:{display:'flex',alignItems:'center',gap:4,padding:'4px 8px',
+          borderBottom:'1px solid #e2e8f0',background:'#f8fafc'}},
+          ce('span',{style:{fontWeight:700,color:'#1e3a5f',fontSize:9,whiteSpace:'nowrap'}},'Memorando Nº'),
+          ce('input',{className:'no-print',value:memoNum,
+            onChange:function(e){setMemoNum(e.target.value);},
+            placeholder:'001/2025',
+            style:{width:60,padding:'1px 4px',border:'1px solid #93c5fd',borderRadius:3,
+              fontSize:9,fontWeight:700,color:'#1e3a5f',fontFamily:'inherit',outline:'none'}}),
+          ce('span',{className:'print-only',style:{
+            display:'inline-block',width:32,height:14,padding:'0 3px',
+            background:'#fff',border:'1px solid #64748b',borderRadius:2,
+            color:'#1e3a5f',fontWeight:700,fontSize:9,lineHeight:'14px'}},memoNum||'')
+        ),
+        ce('div',{style:{padding:'4px 8px'}},
+          [['Origem','SMTT'],
+           ['Destino','SEFAZ'],
+           ['Assunto','Taxa \u2013 '+(d.cn||d.sn||'Serviço')],
+           ['Endereço',(d.rua||'Não informado')+(d.num?' nº '+d.num:'')+(d.ref?' \u2014 '+d.ref:'')],
+           ['Data',fmtD(today())],
+           ['Valor',d.taxa?(d.taxa.toString().indexOf('R$')>=0?d.taxa:'R$ '+parseFloat(d.taxa).toFixed(2).replace('.',',')):'Não informado']
+          ].map(function(row,i){
+            return ce('div',{key:i,style:{display:'flex',gap:4,padding:'2px 0',
+              borderBottom:'1px solid #f1f5f9'}},
+              ce('span',{style:{fontWeight:700,color:'#64748b',width:52,flexShrink:0,fontSize:9}},row[0]),
+              ce('span',{style:{color:'#1e293b',fontSize:9,lineHeight:1.4}},row[1])
+            );
+          })
+        ),
+        ce('div',{style:{display:'flex',gap:8,padding:'6px 8px',borderTop:'1px solid #e2e8f0'}},
+          ce('div',{style:{flex:1,textAlign:'center'}},
+            ce('div',{style:{borderTop:'1px solid #64748b',paddingTop:2,fontSize:8,color:'#64748b'}},'Resp. SMTT')),
+          ce('div',{style:{flex:1,textAlign:'center'}},
+            ce('div',{style:{borderTop:'1px solid #64748b',paddingTop:2,fontSize:8,color:'#64748b'}},'Ciente SEFAZ'))
+        )
       )
     ),
     ce('div',{className:'no-print',style:{textAlign:'right',marginTop:8}},
