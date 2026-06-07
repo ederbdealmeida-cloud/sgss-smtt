@@ -3547,9 +3547,10 @@ function Documentos2(p){
           w.document.close();
         }},_tw('\ud83d\udda8\ufe0f Imprimir')),
         ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700},
+          onTouchStart:function(){alert('touch SEFAZ');},
           onClick:function(ev){
             var _btn=ev.currentTarget;
-            alert('SEFAZ clicado. _pdfFile='+(!!_btn._pdfFile)+' share='+(!!navigator.share)+' canShare='+(!!navigator.canShare));
+            alert('SEFAZ OK. pdfFile='+(!!_btn._pdfFile));
             if(_btn._pdfFile){
               if(!navigator.share||!navigator.canShare){alert('share indisponivel');return;}
               if(!navigator.canShare({files:[_btn._pdfFile]})){alert('canShare false');return;}
