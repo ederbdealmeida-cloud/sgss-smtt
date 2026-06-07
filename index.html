@@ -3363,7 +3363,27 @@ function Solicitacoes(){
               ce('button',{className:'btn btn-s',style:{padding:'3px 7px',fontSize:11,marginLeft:3},onClick:function(){setEditId(null);setEditD({});}},'\u2715')
             ):ce(React.Fragment,null,
               ce('button',{className:'btn-icon',title:'Compartilhar PDF',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3,fontSize:13},
-                onClick:function(){var _gp2=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];sgssCompartilharHtml(gerarHtmlComprovanteServico(r,_gp2),'comprovante_'+(r.prot||r.id)+'.pdf',function(e){notify(e);});}},'\ud83d\udce4'),
+                onClick:function(){
+  var html='<!DOCTYPE html><html><body><h1>Teste PDF</h1><p>Protocolo: '+r.prot+'</p><p>Solicitante: '+r.nom+'</p></body></html>';
+  if(!window.html2canvas||!window.jspdf){alert('libs faltando');return;}
+  if(!navigator.share){alert('share nao disponivel');return;}
+  var div=document.createElement('div');
+  div.style.cssText='position:fixed;left:-9999px;top:0;width:400px;background:#fff;padding:20px;';
+  div.innerHTML='<h2>'+r.prot+'</h2><p>'+r.nom+'</p>';
+  document.body.appendChild(div);
+  notify('Gerando...');
+  setTimeout(function(){
+    html2canvas(div,{scale:1,logging:false}).then(function(canvas){
+      document.body.removeChild(div);
+      var pdf=new window.jspdf.jsPDF();
+      pdf.addImage(canvas.toDataURL('image/jpeg',0.9),'JPEG',0,0,210,canvas.height*210/canvas.width);
+      var blob=pdf.output('blob');
+      var file=new File([blob],'comprovante.pdf',{type:'application/pdf'});
+      if(!navigator.canShare({files:[file]})){notify('canShare false');return;}
+      navigator.share({title:'Comprovante',files:[file]}).catch(function(e){if(e.name!=='AbortError')notify(e.message);});
+    }).catch(function(e){document.body.removeChild(div);notify('Erro: '+e.message);});
+  },300);
+}},'\ud83d\udce4'),
               ce('button',{className:'btn-icon',title:'Visualizar / Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd',marginRight:3},onClick:function(){setDocItem(r);}},'\ud83d\udc41\ufe0f'),
               ce('button',{className:'btn-icon',title:'Imprimir Comprovante',style:{background:'#fdf4ff',color:'#7c3aed',border:'1px solid #d8b4fe',marginRight:3,fontSize:13},onClick:function(){var _gp=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];imprimirComprovanteServico(r,_gp);}},'\ud83d\udda8\ufe0f'),
               ce('button',{className:'btn-icon',title:'Editar campos',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},onClick:function(){setEditId(r.id);setEditD(Object.assign({},r));}},'\u270f\ufe0f'),
