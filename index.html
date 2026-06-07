@@ -2877,75 +2877,52 @@ function compartilharComprovanteServico(r,allReqs,btnEl){
   var _prot=(main.prot||'comprovante').replace(/[^a-zA-Z0-9-]/g,'_');
   var _nome='comprovante_'+_prot+'.pdf';
   if(btnEl){btnEl.textContent='Gerando...';btnEl.disabled=true;}
-  /* Montar HTML do comprovante num div oculto na janela principal */
-  /* CSS sem @import externo - html2canvas nao processa fontes externas */
-  /* Usar PRINT_CSS removendo apenas o @import inicial */
-  var _css=PRINT_CSS.replace(/^@import[^;]+;/,'');
-  _css+='body{font-family:Arial,Helvetica,sans-serif!important}';
-  /* Cabecalho inline - brasao redimensionado via canvas antes de inserir */
-  var _brasaoSrc=_BRASAO;
-  /* Redimensionar brasao para 46x46 via canvas offscreen */
-  var _bc=document.createElement('canvas');_bc.width=46;_bc.height=46;
-  var _bctx=_bc.getContext('2d');
+  /* Redimensionar brasao via canvas aguardando onload */
   var _bimg=new Image();
-  _bimg.src=_brasaoSrc;
-  _bctx.drawImage(_bimg,0,0,46,46);
-  var _brasao46=_bc.toDataURL('image/png');
-  var _header='<div style="display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:3px solid #1e3a5f;margin-bottom:18px">'
-    +'<div style="width:58px;height:58px;min-width:58px;max-width:58px;flex-shrink:0;overflow:hidden;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px">'
-    +'<img src="'+_brasao46+'" style="width:46px;height:46px;max-width:46px;max-height:46px;display:block;">'
-    +'</div>'
-    +'<div style="flex:1;min-width:0">'
-    +'<div style="font-size:13px;font-weight:800;color:#1e3a5f;text-transform:uppercase">PREFEITURA MUNICIPAL DE CACEQUI &ndash; RS</div>'
-    +'<div style="font-size:11px;color:#475569;margin-top:2px">Secretaria Municipal de Transporte e Tr&acirc;nsito</div>'
-    +'<div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:5px">Comprovante de Solicita&ccedil;&atilde;o'+(parts.length>1?' - '+parts.length+' servi&ccedil;os':'')+'</div>'
-    +'<div style="font-size:10px;color:#94a3b8;margin-top:2px">Emitido em: '+(new Date()).toLocaleDateString('pt-BR')+'</div>'
-    +'</div></div>';
-  var _inner=_header
-    +b.svcCards+b.card2+b.card3
-    +'<div style="width:100%;margin-top:24px;padding-top:14px;border-top:1px solid #e2e8f0">'
-    +'<table style="width:100%;border-collapse:collapse"><tr>'
-    +'<td style="width:50%;padding-right:14px;text-align:center"><div style="height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px"></div><span style="font-size:10px;color:#64748b;font-weight:600">Assinatura e Carimbo - SMTT</span></td>'
-    +'<td style="width:50%;padding-left:14px;text-align:center"><div style="height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px"></div><span style="font-size:10px;color:#64748b;font-weight:600">Recebido pelo Solicitante</span></td>'
-    +'</tr></table></div>'
-    +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px">SMTT CACEQUI - SGSS - PROTOCOLO EMITIDO ELETRONICAMENTE</div>';
-  var _div=document.createElement('div');
-  _div.style.cssText='position:fixed;left:0;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;opacity:0;pointer-events:none;z-index:-9999;';
-  var _styleEl=document.createElement('style');_styleEl.textContent=_css;
-  _div.appendChild(_styleEl);
-  var _content=document.createElement('div');
-  _content.className='wrap';
-  /* Usar textContent+insertAdjacentHTML garante encoding correto */
-  _content.insertAdjacentHTML('beforeend',_inner);
-  _div.appendChild(_content);
-  document.body.appendChild(_div);
-  /* Aguardar imagens carregarem antes do canvas */
-  var _imgs=_content.querySelectorAll('img');
-  var _imgPromises=Array.from(_imgs).map(function(img){
-    return new Promise(function(res){if(img.complete)res();else{img.onload=res;img.onerror=res;}});
-  });
-  Promise.all(_imgPromises).then(function(){
-  html2canvas(_content,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680,foreignObjectRendering:false}).then(function(canvas){
-    document.body.removeChild(_div);
-    var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
-    var img=canvas.toDataURL('image/jpeg',0.92);
-    var ih=pW*canvas.height/canvas.width;
-    pdf.addImage(img,'JPEG',0,0,pW,Math.min(ih,pH));
-    var pos=0;
-    while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,'JPEG',0,-pos,pW,ih);}
-    var blob=pdf.output('blob');
-    var file=new File([blob],_nome,{type:'application/pdf'});
-    if(btnEl){btnEl.textContent='📤 Compartilhar';btnEl.disabled=false;}
-    if(!navigator.canShare({files:[file]})){alert('Dispositivo nao suporta compartilhamento de PDF.');return;}
-    navigator.share({title:'Comprovante SMTT - '+_prot,files:[file]})
-      .catch(function(e){if(e.name!=='AbortError')alert('Erro: '+e.message);});
-  }).catch(function(e){
-    if(document.body.contains(_div))document.body.removeChild(_div);
-    if(btnEl){btnEl.textContent='📤 Compartilhar';btnEl.disabled=false;}
-    alert('Erro ao gerar PDF: '+e.message);
-  });
-  });/* fim Promise.all imgs */
+  _bimg.onload=function(){
+    var _bc=document.createElement('canvas');_bc.width=46;_bc.height=46;
+    _bc.getContext('2d').drawImage(_bimg,0,0,46,46);
+    var _brasao46=_bc.toDataURL('image/png');
+    _gerarECompartilhar(_brasao46);
+  };
+  _bimg.onerror=function(){_gerarECompartilhar('');};
+  _bimg.src=_BRASAO;
+
+  function _gerarECompartilhar(_brasao46){
+    var _assinaturas='<div style="margin-top:28px;padding-top:14px;border-top:1px solid #e2e8f0">'      +'<table width="100%" style="border-collapse:collapse;width:100%"><tr>'      +'<td width="50%" style="width:50%;padding:0 12px 0 0;text-align:center;vertical-align:top">'      +'<div style="height:1px;background:#1e293b;margin:36px 0 5px 0"></div>'      +'<span style="font-size:10px;color:#64748b;font-weight:600">Assinatura e Carimbo - SMTT</span></td>'      +'<td width="50%" style="width:50%;padding:0 0 0 12px;text-align:center;vertical-align:top">'      +'<div style="height:1px;background:#1e293b;margin:36px 0 5px 0"></div>'      +'<span style="font-size:10px;color:#64748b;font-weight:600">Recebido pelo Solicitante</span></td>'      +'</tr></table></div>'      +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px">SMTT CACEQUI - SGSS - PROTOCOLO EMITIDO ELETRONICAMENTE</div>';
+    var _brasaoHtml=_brasao46
+      ?'<img src="'+_brasao46+'" style="width:46px;height:46px;display:block;">'
+      :'';
+    var _header='<table width="100%" style="border-collapse:collapse;width:100%;margin-bottom:18px;padding-bottom:14px;border-bottom:3px solid #1e3a5f"><tr>'      +'<td width="58" style="width:58px;vertical-align:middle;padding-right:14px">'      +(_brasaoHtml?'<div style="width:58px;height:58px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px;overflow:hidden">'+_brasaoHtml+'</div>':'')+'</td>'      +'<td style="vertical-align:middle">'      +'<div style="font-size:13px;font-weight:800;color:#1e3a5f;text-transform:uppercase">PREFEITURA MUNICIPAL DE CACEQUI &ndash; RS</div>'      +'<div style="font-size:11px;color:#475569;margin-top:2px">Secretaria Municipal de Transporte e Tr&acirc;nsito</div>'      +'<div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:5px">Comprovante de Solicita&ccedil;&atilde;o'+(parts.length>1?' - '+parts.length+' servi&ccedil;os':'')+'</div>'      +'<div style="font-size:10px;color:#94a3b8;margin-top:2px">Emitido em: '+(new Date()).toLocaleDateString('pt-BR')+'</div>'      +'</td></tr></table>';
+    var _inner=_header+b.svcCards+b.card2+b.card3+_assinaturas;
+    var _div=document.createElement('div');
+    _div.style.cssText='position:fixed;left:0;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;opacity:0;pointer-events:none;z-index:-9999;';
+    _div.innerHTML='<div style="background:#fff;padding:0;font-family:Arial,Helvetica,sans-serif;">'+_inner+'</div>';
+    document.body.appendChild(_div);
+    var _content=_div.firstChild;
+    setTimeout(function(){
+      html2canvas(_content,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680}).then(function(canvas){
+        document.body.removeChild(_div);
+        var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+        var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
+        var img=canvas.toDataURL('image/jpeg',0.92);
+        var ih=pW*canvas.height/canvas.width;
+        pdf.addImage(img,'JPEG',0,0,pW,Math.min(ih,pH));
+        var pos=0;
+        while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,'JPEG',0,-pos,pW,ih);}
+        var blob=pdf.output('blob');
+        var file=new File([blob],_nome,{type:'application/pdf'});
+        if(btnEl){btnEl.textContent='📤 Compartilhar';btnEl.disabled=false;}
+        if(!navigator.canShare({files:[file]})){alert('Dispositivo nao suporta compartilhamento de PDF.');return;}
+        navigator.share({title:'Comprovante SMTT - '+_prot,files:[file]})
+          .catch(function(e){if(e.name!=='AbortError')alert('Erro: '+e.message);});
+      }).catch(function(e){
+        if(document.body.contains(_div))document.body.removeChild(_div);
+        if(btnEl){btnEl.textContent='📤 Compartilhar';btnEl.disabled=false;}
+        alert('Erro ao gerar PDF: '+e.message);
+      });
+    },300);
+  }
 }
 
 function Solicitacoes(){
