@@ -3699,11 +3699,6 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Dados do Solicitante'),ce('div',{className:'doc-fields-stack'},ce(FL,{label:'Nome',value:d.nom}),ce(FL,{label:'Logradouro',value:d.rua}),ce(FL,{label:'N\xfamero',value:d.num}),ce(FL,{label:'Bairro',value:d.bairro}),ce(FL,{label:'Ponto de Refer\xeancia',value:d.ref}),ce(FL,{label:'Telefone',value:d.tel}))),
       ce('div',{className:'doc-sec'},ce('div',{className:'doc-st'},'Servi\xe7o e Taxa'),ce(FI,{label:'Tipo de Servi\xe7o',value:d.cn}),ce(FI,{label:'Subcategoria',value:d.sn}),ce('div',{className:'doc-taxa'},ce('span',null,'VALOR A RECOLHER'),ce('strong',null,fmt(d.taxa)))),
       ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura e Carimbo SMTT')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Recebido por (SEFAZ)'))),
-    ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,width:'100%',marginTop:12},
-      onClick:function(){
-        if(pdfStore.sefaz){_share(pdfStore.sefaz,'comprovante_sefaz.pdf');return;}
-        _gerarPdf('sefaz','comprovante_sefaz.pdf');
-      }},pdfStore.sefazTxt),
     /* ── MEMORANDO ── folha extra compacta vertical */
     ce('div',{style:{pageBreakBefore:'always',breakBefore:'page',
         borderTop:'3px dashed #cbd5e1',paddingTop:20,marginTop:40,
@@ -3758,7 +3753,12 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
             ce('div',{style:{borderTop:'1px solid #64748b',paddingTop:2,fontSize:8,color:'#64748b'}},'Ciente SEFAZ'))
         )
       )
-    )    ):null
+    )    ):null,
+    doc==='sefaz'&&isPago?ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,width:'100%',marginTop:12},
+      onClick:function(){
+        if(pdfStore.sefaz){_share(pdfStore.sefaz,'comprovante_sefaz.pdf');return;}
+        _gerarPdf('sefaz','comprovante_sefaz.pdf');
+      }},pdfStore.sefazTxt):null
   );
 }
 
