@@ -2865,17 +2865,20 @@ function imprimirComprovanteServico(r,allReqs){
     +'</body></html>';
   w.document.write(html);
   w.document.close();
-  w.document.getElementById('btn-share-sol').addEventListener('click',function(){
-    var _h=w.document.documentElement.outerHTML;
-    var _hs='<!DOCTYPE html><html>'+_h+'</html>';
-    var _prot=(main.prot||'comprovante').replace(/[^a-zA-Z0-9\-]/g,'_');
-    var _nome='comprovante_'+_prot+'.pdf';
-    if(!w.navigator.share||!w.navigator.canShare){alert('Compartilhamento nao disponivel neste dispositivo.');return;}
-    var _blob=new w.Blob([_hs],{type:'text/html'});
-    var _file=new w.File([_blob],_nome,{type:'text/html'});
-    if(!w.navigator.canShare({files:[_file]})){alert('Seu dispositivo nao suporta compartilhamento de arquivos.');return;}
-    w.navigator.share({title:'Comprovante SMTT - '+_prot,files:[_file]}).catch(function(e){if(e.name!=='AbortError')alert('Erro: '+e.message);});
-  });
+  /* Injetar handler via referencia direta a janela pai */
+  var _prot=main.prot||'comprovante';
+  var _nome='comprovante_'+_prot.replace(/[^a-zA-Z0-9-]/g,'_')+'.pdf';
+  var _btnSh=w.document.getElementById('btn-share-sol');
+  if(_btnSh){
+    _btnSh.addEventListener('click',function(){
+      var _hs=w.document.documentElement.outerHTML;
+      if(typeof sgssCompartilharHtml==='function'){
+        sgssCompartilharHtml(_hs,_nome,function(e){w.alert(e);});
+      } else {
+        w.alert('Compartilhamento indisponivel.');
+      }
+    });
+  }
 }
 
 function Solicitacoes(){
