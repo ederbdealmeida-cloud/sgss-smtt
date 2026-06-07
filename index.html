@@ -2798,12 +2798,10 @@ function TiposServico(){
 }
 
 /* ‚îÄ‚îÄ SOLICITA√á√ïES ‚îÄ‚îÄ */
-function imprimirComprovanteServico(r,allReqs){
+function _buildComprovanteHtml(r,allReqs){
   var parts=allReqs&&allReqs.length?allReqs:[r];
   var main=parts[0];
-  var w=window.open('','_blank','width=820,height=750,scrollbars=yes');
-  if(!w){alert('Permita pop-ups!');return;}
-  var dt=main.dt?main.dt.split('-').reverse().join('/'):new Date().toLocaleDateString('pt-BR');
+  var dt=main.dt?main.dt.split('-').reverse().join('/'):(new Date()).toLocaleDateString('pt-BR');
   function card(title,color,rows){
     return '<div style="border:1px solid '+color+';border-left:4px solid '+color+';border-radius:8px;padding:14px 16px;margin:10px 0;">'
       +'<div style="font-size:10px;font-weight:700;color:'+color+';text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">'+title+'</div>'
@@ -2817,33 +2815,40 @@ function imprimirComprovanteServico(r,allReqs){
   var svcCards=parts.map(function(s,i){
     var sn=s.cn||s.sn||'-';
     var st=s.status||'Pendente';
-    var sc=st==='Conclu√≠do'?'#16a34a':'#d97706';
-    return card('Solicita√ß√£o'+(parts.length>1?' #'+(i+1):''),'#1d4ed8',
-      rw('N¬∫ Protocolo','<b style="color:#1d4ed8;font-size:14px">'+(s.prot||'-')+'</b>')
+    var sc=st==='ConcluÌdo'?'#16a34a':'#d97706';
+    return card('SolicitaÁ„o'+(parts.length>1?' #'+(i+1):''),'#1d4ed8',
+      rw('N∫ Protocolo','<b style="color:#1d4ed8;font-size:14px">'+(s.prot||'-')+'</b>')
       +rw('Data',dt)
-      +rw('Tipo de Servi√ßo',sn)
-      +(s.subSvc?rw('Subservi√ßo',s.subSvc):'')
+      +rw('Tipo de ServiÁo',sn)
+      +(s.subSvc?rw('SubserviÁo',s.subSvc):'')
       +rw('Status','<span style="color:'+sc+';font-weight:700">'+st+'</span>')
-      +(s.urg==='Sim'?rw('Urg√™ncia','<span style="color:#dc2626">URGENTE</span>'):'')
+      +(s.urg==='Sim'?rw('UrgÍncia','<span style="color:#dc2626">URGENTE</span>'):'')
     )
     +((s.foto||s.descricao)?'<div style="display:grid;grid-template-columns:'+(s.foto&&s.descricao?'1fr 1fr':'1fr')+';gap:10px;margin:8px 0 4px">'
-      +(s.foto?'<div><img src="'+s.foto+'" style="width:100%;height:160px;object-fit:contain;border-radius:8px;border:1px solid #e2e8f0;display:block;background:#f8fafc"></div>':'')
-      +(s.descricao?'<div style="padding:10px 12px;background:#f8fafc;border-left:3px solid #1d4ed8;border-radius:0 6px 6px 0;font-size:11px;color:#374151"><b style="font-size:11px;color:#1d4ed8;display:block;margin-bottom:4px">Descri√ß√£o</b>'+s.descricao+'</div>':'')
-      +'</div>':'')
-    +'</div>';
+      +(s.foto?'<div><img src="'+s.foto+'" style="width:100%;height:160px;object-fit:contain;border-radius:8px;border:1px solid #e2e8f0;display:block;background:#f8fafc"></div>':'')+
+      +(s.descricao?'<div style="padding:10px 12px;background:#f8fafc;border-left:3px solid #1d4ed8;border-radius:0 6px 6px 0;font-size:11px;color:#374151"><b style="font-size:11px;color:#1d4ed8;display:block;margin-bottom:4px">DescriÁ„o</b>'+s.descricao+'</div>':'')+
+      '</div>':'')+'</div>';
   }).join('');
   var endStr=(main.rua||'')+(main.num?', '+main.num:'')+(main.bairro?' - '+main.bairro:'');
   var card2=card('Dados do Solicitante','#0891b2',
-    rw('Nome',main.nom||'N√£o informado')
-    +rw('Endere√ßo',endStr||'N√£o informado')
-    +rw('Telefone',main.tel||'N√£o informado')
-    +rw('E-mail',main.email||'N√£o informado')
+    rw('Nome',main.nom||'N„o informado')
+    +rw('EndereÁo',endStr||'N„o informado')
+    +rw('Telefone',main.tel||'N„o informado')
+    +rw('E-mail',main.email||'N„o informado')
   );
-  var card3=card('Execu√ß√£o e Pagamento','#059669',
-    rw('Funcion√°rio',main.func||'A designar')
+  var card3=card('ExecuÁ„o e Pagamento','#059669',
+    rw('Funcion·rio',main.func||'A designar')
     +rw('Forma de Pagamento',main.fp||'A definir')
     +(main.taxa?rw('Taxa','R$ '+parseFloat(main.taxa).toFixed(2).replace('.',',')):'')
   );
+  return {parts:parts,main:main,svcCards:svcCards,card2:card2,card3:card3};
+}
+
+function imprimirComprovanteServico(r,allReqs){
+  var b=_buildComprovanteHtml(r,allReqs);
+  var parts=b.parts;var main=b.main;
+  var w=window.open('','_blank','width=820,height=750,scrollbars=yes');
+  if(!w){alert('Permita pop-ups!');return;}
   var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
     +PRINT_CSS
     +'body{padding:20px;background:#f8fafc;font-family:"Plus Jakarta Sans",Arial,sans-serif}'
@@ -2851,68 +2856,68 @@ function imprimirComprovanteServico(r,allReqs){
     +'.sg{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;padding-top:14px;border-top:1px solid #e2e8f0}'
     +'.sl{height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px}'
     +'.slb{font-size:10px;color:#64748b;text-align:center;font-weight:600}'
-    +'.btn-pr{display:block;margin:14px auto 4px;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
-    +'.btn-sh{display:block;margin:4px auto 0;padding:9px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
-    +'@media print{.btn-pr{display:none!important}.btn-sh{display:none!important}}'
+    +'.btn-pr{display:block;margin:14px auto 0;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
+    +'@media print{.btn-pr{display:none!important}}'
     +'</style></head><body><div class="wrap">'
-    +buildHeader('Comprovante de Solicita√ß√£o'+(parts.length>1?' - '+parts.length+' servi√ßos':''),'Emitido em: '+new Date().toLocaleDateString('pt-BR'))
-    +svcCards+card2+card3
+    +buildHeader('Comprovante de SolicitaÁ„o'+(parts.length>1?' - '+parts.length+' serviÁos':''),('Emitido em: '+(new Date()).toLocaleDateString('pt-BR')))
+    +b.svcCards+b.card2+b.card3
     +'<div class="sg"><div><div class="sl"></div><div class="slb">Assinatura e Carimbo - SMTT</div></div>'
     +'<div><div class="sl"></div><div class="slb">Recebido pelo Solicitante</div></div></div>'
     +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px">SMTT CACEQUI - SGSS - PROTOCOLO EMITIDO ELETRONICAMENTE</div>'
-    +'</div><button class="btn-pr" onclick="window.print()">üñ®Ô∏è Imprimir / Salvar PDF</button>'
-    +'<button class="btn-sh" id="btn-share-sol">üì§ Compartilhar</button>'
-    +'</body></html>';
+    +'</div><button class="btn-pr" onclick="window.print()">üñ®Ô∏è Imprimir / Salvar PDF</button></body></html>';
   w.document.write(html);
   w.document.close();
-  /* Compartilhar: pre-gera PDF imediatamente apos abrir o popup */
-  /* Assim o clique no botao chama navigator.share de forma sincrona (sem Promise) */
-  var _prot=main.prot||'comprovante';
-  var _nome='comprovante_'+_prot.replace(/[^a-zA-Z0-9-]/g,'_')+'.pdf';
-  var _btnSh=w.document.getElementById('btn-share-sol');
-  var _pdfFile=null;
-  if(_btnSh){
-    var op=window;
-    var h2c=op.html2canvas;
-    var jspdf=op.jspdf;
-    if(h2c&&jspdf){
-      _btnSh.textContent='üìÑ Preparando...';
-      _btnSh.disabled=true;
-      var _wrap=w.document.querySelector('.wrap')||w.document.body;
-      var _div=document.createElement('div');
-      _div.style.cssText='position:fixed;left:-9999px;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;font-family:Arial,sans-serif;';
-      _div.innerHTML=_wrap.innerHTML;
-      _div.querySelectorAll('.btn-pr,.btn-sh,button').forEach(function(b){b.style.display='none';});
-      document.body.appendChild(_div);
-      h2c(_div,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680}).then(function(canvas){
-        document.body.removeChild(_div);
-        var pdf=new jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-        var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
-        var img=canvas.toDataURL('image/jpeg',0.92);
-        var ih=pW*canvas.height/canvas.width;
-        pdf.addImage(img,'JPEG',0,0,pW,Math.min(ih,pH));
-        var pos=0;
-        while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,'JPEG',0,-pos,pW,ih);}
-        var blob=pdf.output('blob');
-        _pdfFile=new File([blob],_nome,{type:'application/pdf'});
-        _btnSh.textContent='üì§ Compartilhar';
-        _btnSh.disabled=false;
-      }).catch(function(){
-        document.body.removeChild(_div);
-        _btnSh.style.display='none';
-      });
-      /* Clique: share eh chamado diretamente pelo gesto do usuario, blob ja esta pronto */
-      _btnSh.onclick=function(){
-        if(!_pdfFile){w.alert('PDF ainda sendo gerado, aguarde.');return;}
-        if(!navigator.share||!navigator.canShare){w.alert('Compartilhamento nao disponivel neste dispositivo.');return;}
-        if(!navigator.canShare({files:[_pdfFile]})){w.alert('Dispositivo nao suporta compartilhamento de PDF.');return;}
-        navigator.share({title:'Comprovante SMTT - '+_prot,files:[_pdfFile]})
-          .catch(function(e){if(e.name!=='AbortError')w.alert('Erro: '+e.message);});
-      };
-    } else {
-      _btnSh.style.display='none';
-    }
-  }
+}
+
+function compartilharComprovanteServico(r,allReqs,btnEl){
+  if(!window.html2canvas||!window.jspdf){alert('Bibliotecas n„o carregadas. Recarregue o SGSS.');return;}
+  if(!navigator.share||!navigator.canShare){alert('Compartilhamento n„o disponÌvel neste dispositivo.');return;}
+  var b=_buildComprovanteHtml(r,allReqs);
+  var parts=b.parts;var main=b.main;
+  var _prot=(main.prot||'comprovante').replace(/[^a-zA-Z0-9-]/g,'_');
+  var _nome='comprovante_'+_prot+'.pdf';
+  if(btnEl){btnEl.textContent='üìÑ Gerando...';btnEl.disabled=true;}
+  /* Montar HTML do comprovante num div oculto na janela principal */
+  var _css=PRINT_CSS
+    +'body{padding:20px;background:#f8fafc;font-family:Arial,sans-serif}'
+    +'.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:680px;margin:0 auto}'
+    +'.sg{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;padding-top:14px;border-top:1px solid #e2e8f0}'
+    +'.sl{height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px}'
+    +'.slb{font-size:10px;color:#64748b;text-align:center;font-weight:600}';
+  var _inner=buildHeader('Comprovante de SolicitaÁ„o'+(parts.length>1?' - '+parts.length+' serviÁos':''),('Emitido em: '+(new Date()).toLocaleDateString('pt-BR')))
+    +b.svcCards+b.card2+b.card3
+    +'<div class="sg"><div><div class="sl"></div><div class="slb">Assinatura e Carimbo - SMTT</div></div>'
+    +'<div><div class="sl"></div><div class="slb">Recebido pelo Solicitante</div></div></div>'
+    +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px">SMTT CACEQUI - SGSS - PROTOCOLO EMITIDO ELETRONICAMENTE</div>';
+  var _div=document.createElement('div');
+  _div.style.cssText='position:fixed;left:-9999px;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;';
+  /* Injetar estilos inline */
+  var _styleEl=document.createElement('style');_styleEl.textContent=_css;
+  _div.appendChild(_styleEl);
+  var _content=document.createElement('div');
+  _content.className='wrap';_content.innerHTML=_inner;
+  _div.appendChild(_content);
+  document.body.appendChild(_div);
+  html2canvas(_content,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680}).then(function(canvas){
+    document.body.removeChild(_div);
+    var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
+    var img=canvas.toDataURL('image/jpeg',0.92);
+    var ih=pW*canvas.height/canvas.width;
+    pdf.addImage(img,'JPEG',0,0,pW,Math.min(ih,pH));
+    var pos=0;
+    while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,'JPEG',0,-pos,pW,ih);}
+    var blob=pdf.output('blob');
+    var file=new File([blob],_nome,{type:'application/pdf'});
+    if(btnEl){btnEl.textContent='üì§ Compartilhar';btnEl.disabled=false;}
+    if(!navigator.canShare({files:[file]})){alert('Dispositivo n„o suporta compartilhamento de PDF.');return;}
+    navigator.share({title:'Comprovante SMTT - '+_prot,files:[file]})
+      .catch(function(e){if(e.name!=='AbortError')alert('Erro: '+e.message);});
+  }).catch(function(e){
+    if(document.body.contains(_div))document.body.removeChild(_div);
+    if(btnEl){btnEl.textContent='üì§ Compartilhar';btnEl.disabled=false;}
+    alert('Erro ao gerar PDF: '+e.message);
+  });
 }
 
 function Solicitacoes(){
@@ -3414,7 +3419,7 @@ function Solicitacoes(){
               ce('button',{className:'btn btn-s',style:{padding:'3px 7px',fontSize:11,marginLeft:3},onClick:function(){setEditId(null);setEditD({});}},'\u2715')
             ):ce(React.Fragment,null,
               ce('button',{className:'btn-icon',title:'Visualizar / Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd',marginRight:3},onClick:function(){setDocItem(r);}},'\ud83d\udc41\ufe0f'),
-              ce('button',{className:'btn-icon',title:'Imprimir Comprovante',style:{background:'#fdf4ff',color:'#7c3aed',border:'1px solid #d8b4fe',marginRight:3,fontSize:13},onClick:function(){var _gp=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];imprimirComprovanteServico(r,_gp);}},'\ud83d\udda8\ufe0f'),
+              ce('button',{className:'btn-icon',title:'Imprimir Comprovante',style:{background:'#fdf4ff',color:'#7c3aed',border:'1px solid #d8b4fe',marginRight:3,fontSize:13},onClick:function(){var _gp=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];imprimirComprovanteServico(r,_gp);}},'\ud83d\udda8\ufe0f'),ce('button',{className:'btn-icon',title:'Compartilhar Comprovante',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3,fontSize:13},onClick:function(e){var _gp=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];compartilharComprovanteServico(r,_gp,e.currentTarget);}},'\ud83d\udce4'),
               ce('button',{className:'btn-icon',title:'Editar campos',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},onClick:function(){setEditId(r.id);setEditD(Object.assign({},r));}},'\u270f\ufe0f'),
               ce('button',{className:'btn-icon',title:'Editar (form completo)',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},onClick:function(){setSubcats(SUBS[r.catId]||[]);setSubInfo(null);setHoras(1);setLocked(false);setForm(Object.assign({},r));}},'\ud83d\udcdd'),
               ce('button',{className:'btn-icon',title:'Excluir',style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},onClick:function(){showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir solicita\u00e7\u00e3o?',corpo:'O registro permanecer\u00e1 acess\u00edvel no Hist\u00f3rico.',lblOk:'Excluir',cor:'red',onOk:function(){
