@@ -1744,6 +1744,7 @@ function sgssCompartilharHtml(htmlCompleto,nomeArquivo,onErr){
 
 /* Pre-gera PDF e armazena para compartilhar no clique (evita erro de gesto) */
 function sgssPreGerarPdf(htmlCompleto,nomeArquivo,onReady,onErr){
+  alert('PreGerarPdf: inicio. h2c='+(!!window.html2canvas)+' jspdf='+(!!window.jspdf));
   if(!window.html2canvas||!window.jspdf){if(onErr)onErr('Bibliotecas nao carregadas.');return;}
   var div=document.createElement('div');
   div.style.cssText='position:fixed;left:0;top:0;width:680px;background:#fff;font-family:Arial,Helvetica,sans-serif;opacity:0;pointer-events:none;z-index:-1;';
@@ -1752,7 +1753,9 @@ function sgssPreGerarPdf(htmlCompleto,nomeArquivo,onReady,onErr){
   div.querySelectorAll('.btn-pr,.btn-sh,button').forEach(function(b){b.style.display='none';});
   document.body.appendChild(div);
   var _h=div.scrollHeight||div.offsetHeight||800;
+  alert('PreGerarPdf: div criado. scrollHeight='+div.scrollHeight+' offsetHeight='+div.offsetHeight+' html len='+htmlCompleto.length);
   setTimeout(function(){
+    alert('PreGerarPdf: chamando html2canvas. h='+_h);
     html2canvas(div,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680,height:_h,scrollY:0,scrollX:0}).then(function(canvas){
       document.body.removeChild(div);
       var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
