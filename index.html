@@ -3363,7 +3363,7 @@ function Solicitacoes(){
               ce('button',{className:'btn btn-s',style:{padding:'3px 7px',fontSize:11,marginLeft:3},onClick:function(){setEditId(null);setEditD({});}},'\u2715')
             ):ce(React.Fragment,null,
               ce('button',{className:'btn-icon',title:'Compartilhar PDF',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3,fontSize:13},
-                onClick:function(){alert('h2c:'+(!!window.html2canvas)+' jspdf:'+(!!window.jspdf)+' share:'+(!!navigator.share));}},'\ud83d\udce4'),
+                onClick:function(){var _gp2=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];sgssCompartilharHtml(gerarHtmlComprovanteServico(r,_gp2),'comprovante_'+(r.prot||r.id)+'.pdf',function(e){notify(e);});}},'\ud83d\udce4'),
               ce('button',{className:'btn-icon',title:'Visualizar / Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd',marginRight:3},onClick:function(){setDocItem(r);}},'\ud83d\udc41\ufe0f'),
               ce('button',{className:'btn-icon',title:'Imprimir Comprovante',style:{background:'#fdf4ff',color:'#7c3aed',border:'1px solid #d8b4fe',marginRight:3,fontSize:13},onClick:function(){var _gp=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];imprimirComprovanteServico(r,_gp);}},'\ud83d\udda8\ufe0f'),
               ce('button',{className:'btn-icon',title:'Editar campos',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},onClick:function(){setEditId(r.id);setEditD(Object.assign({},r));}},'\u270f\ufe0f'),
