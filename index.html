@@ -2882,12 +2882,20 @@ function compartilharComprovanteServico(r,allReqs,btnEl){
   /* Usar PRINT_CSS removendo apenas o @import inicial */
   var _css=PRINT_CSS.replace(/^@import[^;]+;/,'');
   _css+='body{font-family:Arial,Helvetica,sans-serif!important}';
-  /* Cabecalho inline com brasao fixo 58px para html2canvas */
+  /* Cabecalho inline - brasao redimensionado via canvas antes de inserir */
+  var _brasaoSrc=_BRASAO;
+  /* Redimensionar brasao para 46x46 via canvas offscreen */
+  var _bc=document.createElement('canvas');_bc.width=46;_bc.height=46;
+  var _bctx=_bc.getContext('2d');
+  var _bimg=new Image();
+  _bimg.src=_brasaoSrc;
+  _bctx.drawImage(_bimg,0,0,46,46);
+  var _brasao46=_bc.toDataURL('image/png');
   var _header='<div style="display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:3px solid #1e3a5f;margin-bottom:18px">'
-    +'<div style="width:58px;height:58px;flex-shrink:0;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px;box-shadow:0 1px 4px rgba(0,0,0,.08)">'
-    +'<img src="'+_BRASAO+'" width="46" height="46" style="width:46px;height:46px;object-fit:contain;">'
+    +'<div style="width:58px;height:58px;min-width:58px;max-width:58px;flex-shrink:0;overflow:hidden;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px">'
+    +'<img src="'+_brasao46+'" style="width:46px;height:46px;max-width:46px;max-height:46px;display:block;">'
     +'</div>'
-    +'<div>'
+    +'<div style="flex:1;min-width:0">'
     +'<div style="font-size:13px;font-weight:800;color:#1e3a5f;text-transform:uppercase">PREFEITURA MUNICIPAL DE CACEQUI &ndash; RS</div>'
     +'<div style="font-size:11px;color:#475569;margin-top:2px">Secretaria Municipal de Transporte e Tr&acirc;nsito</div>'
     +'<div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:5px">Comprovante de Solicita&ccedil;&atilde;o'+(parts.length>1?' - '+parts.length+' servi&ccedil;os':'')+'</div>'
