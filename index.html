@@ -2903,10 +2903,11 @@ function compartilharComprovanteServico(r,allReqs,btnEl){
     +'</div></div>';
   var _inner=_header
     +b.svcCards+b.card2+b.card3
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:24px;padding-top:14px;border-top:1px solid #e2e8f0">'
-    +'<div><div style="height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px"></div><div style="font-size:10px;color:#64748b;text-align:center;font-weight:600">Assinatura e Carimbo - SMTT</div></div>'
-    +'<div><div style="height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px"></div><div style="font-size:10px;color:#64748b;text-align:center;font-weight:600">Recebido pelo Solicitante</div></div>'
-    +'</div>'
+    +'<div style="width:100%;margin-top:24px;padding-top:14px;border-top:1px solid #e2e8f0">'
+    +'<table style="width:100%;border-collapse:collapse"><tr>'
+    +'<td style="width:50%;padding-right:14px;text-align:center"><div style="height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px"></div><span style="font-size:10px;color:#64748b;font-weight:600">Assinatura e Carimbo - SMTT</span></td>'
+    +'<td style="width:50%;padding-left:14px;text-align:center"><div style="height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px"></div><span style="font-size:10px;color:#64748b;font-weight:600">Recebido pelo Solicitante</span></td>'
+    +'</tr></table></div>'
     +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px">SMTT CACEQUI - SGSS - PROTOCOLO EMITIDO ELETRONICAMENTE</div>';
   var _div=document.createElement('div');
   _div.style.cssText='position:fixed;left:0;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;opacity:0;pointer-events:none;z-index:-9999;';
