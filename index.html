@@ -3365,29 +3365,54 @@ function Solicitacoes(){
               ce('button',{className:'btn-icon',title:'Compartilhar PDF',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3,fontSize:13},
                 onClick:function(){
   var _gp2=r.grupo?INIT_REQS.filter(function(x){return x.grupo===r.grupo;}):[r];
-  var _html=gerarHtmlComprovanteServico(r,_gp2);
-  var div=document.createElement('div');
-  div.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:#fff;z-index:-1;font-family:Arial,sans-serif;';
-  var bm=_html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-  div.innerHTML=bm?bm[1]:_html;
-  div.querySelectorAll('button').forEach(function(b){b.style.display='none';});
-  document.body.appendChild(div);
+  var _parts=_gp2.length?_gp2:[r];
+  var _m=_parts[0];
+  var _dt=_m.dt?_m.dt.split('-').reverse().join('/'):(new Date()).toLocaleDateString('pt-BR');
+  function _card(t,col,rows){return '<div style="border:1px solid '+col+';border-left:4px solid '+col+';border-radius:8px;padding:12px 14px;margin:8px 0"><div style="font-size:10px;font-weight:700;color:'+col+';text-transform:uppercase;margin-bottom:6px">'+t+'</div>'+rows+'</div>';}
+  function _rw(l,v){return '<div style="padding:3px 0;border-bottom:1px solid #f1f5f9"><div style="font-size:10px;color:#64748b">'+l+'</div><div style="font-size:12px;font-weight:700;color:#1e293b">'+v+'</div></div>';}
+  var _svcCards=_parts.map(function(s,i){
+    var sn=s.cn||s.sn||'-';var st=s.status||'Pendente';var sc=st==='Conclu\xc3\xaddo'?'#16a34a':'#d97706';
+    return _card('Solicita\xc3\xa7\xc3\xa3o'+(_parts.length>1?' #'+(i+1):''),'#1d4ed8',
+      _rw('N\xc2\xba Protocolo','<b style="color:#1d4ed8;font-size:13px">'+(s.prot||'-')+'</b>')
+      +_rw('Data',_dt)+_rw('Servi\xc3\xa7o',sn)
+      +_rw('Status','<span style="color:'+sc+';font-weight:700">'+st+'</span>'));
+  }).join('');
+  var _endStr=(_m.rua||'')+(_m.num?', '+_m.num:'')+(_m.bairro?' - '+_m.bairro:'');
+  var _card2=_card('Dados do Solicitante','#0891b2',_rw('Nome',_m.nom||'N\xc3\xa3o informado')+_rw('Endere\xc3\xa7o',_endStr||'-')+_rw('Telefone',_m.tel||'-')+_rw('E-mail',_m.email||'-'));
+  var _card3=_card('Execu\xc3\xa7\xc3\xa3o e Pagamento','#059669',_rw('Funcion\xc3\xa1rio',_m.func||'A designar')+_rw('Pagamento',_m.fp||'A definir')+(_m.taxa?_rw('Taxa','R$ '+parseFloat(_m.taxa).toFixed(2).replace('.',',')):''));
+  var _html='<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    +'<style>body{font-family:Arial,sans-serif;padding:20px;background:#f8fafc;margin:0}'
+    +'.wrap{background:#fff;border-radius:10px;padding:20px;max-width:680px;margin:0 auto}'
+    +'.hdr{text-align:center;border-bottom:3px solid #1e3a5f;padding-bottom:12px;margin-bottom:12px}'
+    +'.hdr h2{color:#1e3a5f;font-size:14px;margin:4px 0}'
+    +'.hdr p{color:#64748b;font-size:11px;margin:2px 0}'
+    +'</style></head><body><div class="wrap">'
+    +'<div class="hdr"><h2>PREFEITURA MUNICIPAL DE CACEQUI - RS</h2>'
+    +'<h2>SECRETARIA MUNICIPAL DE TRANSPORTE E TR\xc3\x82NSITO</h2>'
+    +'<p>Comprovante de Solicita\xc3\xa7\xc3\xa3o'+(_parts.length>1?' - '+_parts.length+' servi\xc3\xa7os':'')+'</p>'
+    +'<p>Emitido em: '+(new Date()).toLocaleDateString('pt-BR')+'</p></div>'
+    +_svcCards+_card2+_card3+'</div></body></html>';
+  var _div=document.createElement('div');
+  _div.style.cssText='position:fixed;left:-9999px;top:0;width:720px;background:#fff;z-index:-1;';
+  var _bm=_html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  _div.innerHTML=_bm?_bm[1]:_html;
+  document.body.appendChild(_div);
   notify('Gerando PDF...');
   setTimeout(function(){
-    html2canvas(div,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:794,windowWidth:794}).then(function(canvas){
-      document.body.removeChild(div);
-      var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-      var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
-      var img=canvas.toDataURL('image/jpeg',0.92);
-      var ih=pW*canvas.height/canvas.width;
-      var pos=0;
-      pdf.addImage(img,'JPEG',0,0,pW,Math.min(ih,pH));
-      while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,'JPEG',0,-pos,pW,ih);}
-      var blob=pdf.output('blob');
-      var file=new File([blob],'comprovante_'+(r.prot||r.id)+'.pdf',{type:'application/pdf'});
-      if(!navigator.canShare({files:[file]})){notify('Compartilhamento nao suportado.');return;}
-      navigator.share({title:'Comprovante SMTT - '+(r.prot||''),files:[file]}).catch(function(e){if(e.name!=='AbortError')notify(e.message);});
-    }).catch(function(e){document.body.removeChild(div);notify('Erro: '+e.message);});
+    html2canvas(_div,{scale:1.5,useCORS:true,logging:false,width:720,windowWidth:720}).then(function(canvas){
+      document.body.removeChild(_div);
+      var _pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+      var pW=_pdf.internal.pageSize.getWidth(),pH=_pdf.internal.pageSize.getHeight();
+      var _img=canvas.toDataURL('image/jpeg',0.92);
+      var _ih=pW*canvas.height/canvas.width;
+      _pdf.addImage(_img,'JPEG',0,0,pW,Math.min(_ih,pH));
+      var _pos=0;
+      while(_pos+pH<_ih){_pos+=pH;_pdf.addPage();_pdf.addImage(_img,'JPEG',0,-_pos,pW,_ih);}
+      var _blob=_pdf.output('blob');
+      var _file=new File([_blob],'comprovante_'+(_m.prot||r.id)+'.pdf',{type:'application/pdf'});
+      if(!navigator.canShare({files:[_file]})){notify('Nao suportado neste navegador.');return;}
+      navigator.share({title:'Comprovante SMTT',files:[_file]}).catch(function(e){if(e.name!=='AbortError')notify(e.message);});
+    }).catch(function(e){document.body.removeChild(_div);notify('Erro: '+e.message);});
   },500);
 }},'\ud83d\udce4'),
               ce('button',{className:'btn-icon',title:'Visualizar / Imprimir',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd',marginRight:3},onClick:function(){setDocItem(r);}},'\ud83d\udc41\ufe0f'),
