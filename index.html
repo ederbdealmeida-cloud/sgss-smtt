@@ -3547,28 +3547,12 @@ function Documentos2(p){
           w.document.close();
         }},_tw('\ud83d\udda8\ufe0f Imprimir')),
         ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700},
-          onTouchStart:function(){alert('touch SEFAZ');},
-          onClick:function(ev){
-            var _btn=ev.currentTarget;
-            alert('SEFAZ OK. pdfFile='+(!!_btn._pdfFile));
-            if(_btn._pdfFile){
-              if(!navigator.share||!navigator.canShare){alert('share indisponivel');return;}
-              if(!navigator.canShare({files:[_btn._pdfFile]})){alert('canShare false');return;}
-              navigator.share({title:'comprovante_sefaz.pdf',files:[_btn._pdfFile]}).catch(function(e){if(e.name!=='AbortError')notify(e.message);});
-              return;
-            }
+          onClick:function(){
             var el=document.querySelector('.doc-paper');
-            alert('el='+!!el);
-            if(!el){notify('Documento nao visivel.');return;}
-            _btn.textContent='\u23f3 Gerando...';
+            if(!el){notify('Documento n\u00e3o vis\u00edvel.');return;}
+            var _nome=doc==='sefaz'?'comprovante_sefaz.pdf':'comprovante_func.pdf';
             var _hs='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS+'</style></head><body>'+el.outerHTML+'</body></html>';
-            sgssPreGerarPdf(_hs,'comprovante_sefaz.pdf',function(file){
-              alert('PDF gerado! Abrindo share...');
-              _btn._pdfFile=file;_btn.textContent='\ud83d\udce4 Compartilhar';
-              if(!navigator.share||!navigator.canShare){alert('share indisponivel apos gerar');return;}
-              if(!navigator.canShare({files:[file]})){alert('canShare false apos gerar');return;}
-              navigator.share({title:'comprovante_sefaz.pdf',files:[file]}).catch(function(e){if(e.name!=='AbortError')notify(e.message);});
-            },function(e){_btn.textContent='\ud83d\udce4 Compartilhar';alert('ERRO: '+e);});
+            sgssCompartilharHtml(_hs,_nome,function(e){notify(e);});
           }},'\ud83d\udce4 Compartilhar')
       )
     ),
