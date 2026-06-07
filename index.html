@@ -3760,11 +3760,11 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
         ),
       )
     ),
-    ce('div',{className:'no-print',style:{textAlign:'right',marginTop:8,maxWidth:260}},
+    ce('div',{className:'no-print',style:{textAlign:'right',marginTop:8}},
       ce('button',{style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,fontSize:11,padding:'5px 12px',borderRadius:6,cursor:'pointer'},
         onClick:function(){
           if(pdfStore.sefaz){_share(pdfStore.sefaz,'comprovante_sefaz.pdf');return;}
-          _gerarPdf('sefaz','comprovante_sefaz.pdf','sefaz-block');
+          _gerarPdf('sefaz','comprovante_sefaz.pdf','sefaz-container');
         }},pdfStore.sefazTxt)
     )
     )):null,
