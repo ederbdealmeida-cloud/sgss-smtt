@@ -2865,23 +2865,22 @@ function imprimirComprovanteServico(r,allReqs){
     +'</body></html>';
   w.document.write(html);
   w.document.close();
-  /* Compartilhar: gera PDF na janela pai (onde html2canvas/jspdf estao carregados) */
+  /* Compartilhar: pre-gera PDF imediatamente apos abrir o popup */
+  /* Assim o clique no botao chama navigator.share de forma sincrona (sem Promise) */
   var _prot=main.prot||'comprovante';
   var _nome='comprovante_'+_prot.replace(/[^a-zA-Z0-9-]/g,'_')+'.pdf';
   var _btnSh=w.document.getElementById('btn-share-sol');
+  var _pdfFile=null;
   if(_btnSh){
-    _btnSh.onclick=function(){
-      var op=w.opener||window;
-      var h2c=op.html2canvas;
-      var jspdf=op.jspdf;
-      if(!h2c||!jspdf){w.alert('Bibliotecas PDF nao carregadas. Recarregue o SGSS.');return;}
-      if(!navigator.share||!navigator.canShare){w.alert('Compartilhamento nao disponivel neste dispositivo.');return;}
-      _btnSh.textContent='📄 Gerando PDF...';
+    var op=window;
+    var h2c=op.html2canvas;
+    var jspdf=op.jspdf;
+    if(h2c&&jspdf){
+      _btnSh.textContent='📄 Preparando...';
       _btnSh.disabled=true;
-      /* Renderizar o conteudo do popup via html2canvas na janela pai */
       var _wrap=w.document.querySelector('.wrap')||w.document.body;
       var _div=document.createElement('div');
-      _div.style.cssText='position:fixed;left:-9999px;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;';
+      _div.style.cssText='position:fixed;left:-9999px;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;font-family:Arial,sans-serif;';
       _div.innerHTML=_wrap.innerHTML;
       _div.querySelectorAll('.btn-pr,.btn-sh,button').forEach(function(b){b.style.display='none';});
       document.body.appendChild(_div);
@@ -2895,20 +2894,24 @@ function imprimirComprovanteServico(r,allReqs){
         var pos=0;
         while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,'JPEG',0,-pos,pW,ih);}
         var blob=pdf.output('blob');
-        var file=new File([blob],_nome,{type:'application/pdf'});
-        if(!navigator.canShare({files:[file]})){w.alert('Dispositivo nao suporta compartilhamento de PDF.');_btnSh.textContent='📤 Compartilhar';_btnSh.disabled=false;return;}
-        navigator.share({title:'Comprovante SMTT - '+_prot,files:[file]}).then(function(){
-          _btnSh.textContent='📤 Compartilhar';_btnSh.disabled=false;
-        }).catch(function(e){
-          _btnSh.textContent='📤 Compartilhar';_btnSh.disabled=false;
-          if(e.name!=='AbortError')w.alert('Erro: '+e.message);
-        });
-      }).catch(function(e){
+        _pdfFile=new File([blob],_nome,{type:'application/pdf'});
+        _btnSh.textContent='📤 Compartilhar';
+        _btnSh.disabled=false;
+      }).catch(function(){
         document.body.removeChild(_div);
-        _btnSh.textContent='📤 Compartilhar';_btnSh.disabled=false;
-        w.alert('Erro ao gerar PDF: '+e.message);
+        _btnSh.style.display='none';
       });
-    };
+      /* Clique: share eh chamado diretamente pelo gesto do usuario, blob ja esta pronto */
+      _btnSh.onclick=function(){
+        if(!_pdfFile){w.alert('PDF ainda sendo gerado, aguarde.');return;}
+        if(!navigator.share||!navigator.canShare){w.alert('Compartilhamento nao disponivel neste dispositivo.');return;}
+        if(!navigator.canShare({files:[_pdfFile]})){w.alert('Dispositivo nao suporta compartilhamento de PDF.');return;}
+        navigator.share({title:'Comprovante SMTT - '+_prot,files:[_pdfFile]})
+          .catch(function(e){if(e.name!=='AbortError')w.alert('Erro: '+e.message);});
+      };
+    } else {
+      _btnSh.style.display='none';
+    }
   }
 }
 
