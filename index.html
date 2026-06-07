@@ -3505,9 +3505,9 @@ function Documentos2(p){
   /* PDFs pre-gerados para compartilhar */
   var spdf=useState({comp:null,sefaz:null,compTxt:'\ud83d\udce4 Compartilhar',sefazTxt:'\ud83d\udce4 Compartilhar'});
   var pdfStore=spdf[0];var setPdfStore=spdf[1];
-  function _gerarPdf(tipo,nome){
+  function _gerarPdf(tipo,nome,elId){
     setPdfStore(function(s){var u={};u[tipo+'Txt']='\u23f3 Gerando...';return Object.assign({},s,u);});
-    var el=document.querySelector('.doc-paper');
+    var el=elId?document.getElementById(elId):document.querySelector('.doc-paper');
     if(!el){setPdfStore(function(s){var u={};u[tipo+'Txt']='\ud83d\udce4 Compartilhar';return Object.assign({},s,u);});notify('Documento n\u00e3o vis\u00edvel.');return;}
     /* Usar mesma abordagem do comprovante de solicitacao */
     var _bimg=new Image();
@@ -3682,7 +3682,7 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
         _gerarPdf('comp','comprovante_func.pdf');
       }},pdfStore.compTxt)
     ):null,
-    doc==='sefaz'&&isPago?ce('div',{className:'doc-paper'},
+    doc==='sefaz'&&isPago?ce('div',{id:'sefaz-block'},ce('div',{className:'doc-paper',id:'sefaz-container'},
       ce('div',{className:'doc-head'},ce('div',{style:{
             width:58,height:58,background:'#fff',
             border:'1.5px solid #cbd5e1',borderRadius:10,
@@ -3753,11 +3753,11 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
             ce('div',{style:{borderTop:'1px solid #64748b',paddingTop:2,fontSize:8,color:'#64748b'}},'Ciente SEFAZ'))
         )
       )
-    )    ):null,
+    )    )):null,
     doc==='sefaz'&&isPago?ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,width:'100%',marginTop:12},
       onClick:function(){
         if(pdfStore.sefaz){_share(pdfStore.sefaz,'comprovante_sefaz.pdf');return;}
-        _gerarPdf('sefaz','comprovante_sefaz.pdf');
+        _gerarPdf('sefaz','comprovante_sefaz.pdf','sefaz-block');
       }},pdfStore.sefazTxt):null
   );
 }
