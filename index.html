@@ -3494,6 +3494,56 @@ setAll(function(prev){return prev.filter(function(x){return x.id!==r.id;});});no
 }
 
 /* ── DOCUMENTOS (inline) ── */
+function compartilharDocumento(elId,nome,btnEl){
+  if(!window.html2canvas||!window.jspdf){alert('Bibliotecas nao carregadas.');return;}
+  if(!navigator.share||!navigator.canShare){alert('Compartilhamento nao disponivel neste dispositivo.');return;}
+  var el=elId?document.getElementById(elId):document.querySelector('.doc-paper');
+  if(!el){alert('Documento nao visivel.');return;}
+  if(btnEl){btnEl.textContent='📄 Gerando...';btnEl.disabled=true;}
+  var _bimg=new Image();
+  _bimg.onload=function(){
+    var _bc=document.createElement('canvas');_bc.width=46;_bc.height=46;
+    _bc.getContext('2d').drawImage(_bimg,0,0,46,46);
+    var _b46=_bc.toDataURL('image/png');
+    var wrap=document.createElement('div');
+    wrap.style.cssText='position:absolute;left:'+window.scrollX+'px;top:'+window.scrollY+'px;width:680px;background:#fff;font-family:Arial,Helvetica,sans-serif;';
+    var clone=el.cloneNode(true);
+    clone.querySelectorAll('img').forEach(function(img){if(img.src===_BRASAO||img.src.length>500)img.src=_b46;});
+    clone.querySelectorAll('.btn-pr,.btn-sh,.no-print,button').forEach(function(b){b.style.display='none';});
+    wrap.appendChild(clone);
+    var _origVis=el.style.visibility;
+    el.style.visibility='hidden';
+    document.body.appendChild(wrap);
+    var _h=wrap.offsetHeight||800;
+    setTimeout(function(){
+      html2canvas(wrap,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680,height:_h,scrollY:0,scrollX:0}).then(function(canvas){
+        document.body.removeChild(wrap);
+        el.style.visibility=_origVis;
+        var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+        var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
+        var img=canvas.toDataURL('image/jpeg',0.92);
+        var ih=pW*canvas.height/canvas.width;
+        var pos=0;
+        pdf.addImage(img,'JPEG',0,0,pW,Math.min(ih,pH));
+        while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,'JPEG',0,-pos,pW,ih);}
+        var blob=pdf.output('blob');
+        var file=new File([blob],nome,{type:'application/pdf'});
+        if(btnEl){btnEl.textContent='📤 Compartilhar';btnEl.disabled=false;}
+        if(!navigator.canShare({files:[file]})){alert('Dispositivo nao suporta PDF.');return;}
+        navigator.share({title:nome,files:[file]}).catch(function(e){if(e.name!=='AbortError')alert('Erro: '+e.message);});
+      }).catch(function(e){
+        if(document.body.contains(wrap))document.body.removeChild(wrap);
+        el.style.visibility=_origVis;
+        if(btnEl){btnEl.textContent='📤 Compartilhar';btnEl.disabled=false;}
+        alert('Erro ao gerar PDF: '+e.message);
+      });
+    },300);
+  };
+  _bimg.onerror=function(){
+    if(btnEl){btnEl.textContent='📤 Compartilhar';btnEl.disabled=false;}
+  };
+  _bimg.src=_BRASAO;
+}
 function Documentos2(p){
   var sd=useState('comp');var doc=sd[0];var setDoc=sd[1];
   var t=useToast();var toast=t[0];var notify=t[1];
@@ -3502,69 +3552,6 @@ function Documentos2(p){
   var sfot=useState(d.foto||null);var eFoto=sfot[0];var setEFoto=sfot[1];
   var sds=useState(d.descricao||'');var eDesc=sds[0];var setEDesc=sds[1];
   var sem=useState(false);var editMode=sem[0];var setEditMode=sem[1];
-  /* PDFs pre-gerados para compartilhar */
-  var spdf=useState({comp:null,sefaz:null,compTxt:'\ud83d\udce4 Compartilhar',sefazTxt:'\ud83d\udce4 Compartilhar'});
-  var pdfStore=spdf[0];var setPdfStore=spdf[1];
-  /* Pre-gerar PDFs automaticamente apos renderizacao */
-  useEffect(function(){
-    setTimeout(function(){
-      _gerarPdf('comp','comprovante_func.pdf');
-      if(isPago)_gerarPdf('sefaz','comprovante_sefaz.pdf','sefaz-container');
-    },800);
-  },[]);
-  function _gerarPdf(tipo,nome,elId){
-    setPdfStore(function(s){var u={};u[tipo+'Txt']='\u23f3 Gerando...';return Object.assign({},s,u);});
-    var el=elId?document.getElementById(elId):document.querySelector('.doc-paper');
-    if(!el){setPdfStore(function(s){var u={};u[tipo+'Txt']='\ud83d\udce4 Compartilhar';return Object.assign({},s,u);});notify('Documento n\u00e3o vis\u00edvel.');return;}
-    /* Usar mesma abordagem do comprovante de solicitacao */
-    var _bimg=new Image();
-    _bimg.onload=function(){
-      var _bc=document.createElement('canvas');_bc.width=46;_bc.height=46;
-      _bc.getContext('2d').drawImage(_bimg,0,0,46,46);
-      var _b46=_bc.toDataURL('image/png');
-      /* Substituir imagens do brasao no clone por versao redimensionada */
-      var wrap=document.createElement('div');
-      wrap.style.cssText='position:absolute;left:'+window.scrollX+'px;top:'+window.scrollY+'px;width:680px;background:#fff;font-family:Arial,Helvetica,sans-serif;';
-      var clone=el.cloneNode(true);
-      clone.querySelectorAll('img').forEach(function(img){if(img.src===_BRASAO||img.src.length>500)img.src=_b46;});
-      clone.querySelectorAll('.btn-pr,.btn-sh,button').forEach(function(b){b.style.display='none';});
-      clone.querySelectorAll('.no-print').forEach(function(b){b.style.display='none';});
-      wrap.appendChild(clone);
-      /* Ocultar o original durante captura para evitar duplicacao */
-      var _origVis=el.style.visibility;
-      el.style.visibility='hidden';
-      document.body.appendChild(wrap);
-      var _h=wrap.scrollHeight||wrap.offsetHeight||800;
-      setTimeout(function(){
-        html2canvas(wrap,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680,height:_h,scrollY:0,scrollX:0}).then(function(canvas){
-          document.body.removeChild(wrap);
-          el.style.visibility=_origVis;
-          var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-          var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
-          var img=canvas.toDataURL('image/jpeg',0.92);
-          var ih=pW*canvas.height/canvas.width;
-          var pos=0;
-          pdf.addImage(img,'JPEG',0,0,pW,Math.min(ih,pH));
-          while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,'JPEG',0,-pos,pW,ih);}
-          var blob=pdf.output('blob');
-          var file=new File([blob],nome,{type:'application/pdf'});
-          setPdfStore(function(s){var u={};u[tipo]=file;u[tipo+'Txt']='\ud83d\udce4 Compartilhar';return Object.assign({},s,u);});
-        }).catch(function(e){
-          if(document.body.contains(wrap))document.body.removeChild(wrap);
-          el.style.visibility=_origVis;
-          setPdfStore(function(s){var u={};u[tipo+'Txt']='\ud83d\udce4 Compartilhar';return Object.assign({},s,u);});
-          notify('Erro ao gerar: '+e.message);
-        });
-      },300);
-    };
-    _bimg.onerror=function(){setPdfStore(function(s){var u={};u[tipo+'Txt']='\ud83d\udce4 Compartilhar';return Object.assign({},s,u);});notify('Erro ao carregar brasao.');};
-    _bimg.src=_BRASAO;
-  }
-  function _share(file,nome){
-    if(!navigator.share||!navigator.canShare){notify('Compartilhamento n\u00e3o dispon\u00edvel.');return;}
-    if(!navigator.canShare({files:[file]})){notify('Dispositivo n\u00e3o suporta PDF.');return;}
-    navigator.share({title:nome,files:[file]}).catch(function(e){if(e.name!=='AbortError')notify(e.message);});
-  }
   function saveFD(){
     var idx=INIT_REQS.findIndex(function(x){return x.id===d.id;});
     if(idx>=0)INIT_REQS[idx]=Object.assign({},INIT_REQS[idx],{foto:eFoto,descricao:eDesc});
@@ -3690,10 +3677,9 @@ function Documentos2(p){
       })(),
 ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Funcion\xe1rio')),ce('div',{className:'doc-sig'},ce('div',{className:'doc-line'}),ce('p',null,'Assinatura do Chefe de Divis\xe3o'))),
     ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,width:'100%',marginTop:12},
-      onClick:function(){
-        if(pdfStore.comp){_share(pdfStore.comp,'comprovante_func.pdf');return;}
-        notify('PDF ainda sendo gerado, aguarde...');
-      }},pdfStore.compTxt)
+      onClick:function(e){
+        compartilharDocumento(null,'comprovante_func.pdf',e.currentTarget);
+      }},'📤')
     ):null,
     doc==='sefaz'&&isPago?ce('div',{id:'sefaz-block'},ce('div',{className:'doc-paper',id:'sefaz-container'},
       ce('div',{className:'doc-head'},ce('div',{style:{
@@ -3768,11 +3754,9 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
       )
     ),
     ce('div',{className:'no-print',style:{textAlign:'right',marginTop:8}},
-      ce('button',{style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,fontSize:11,padding:'5px 12px',borderRadius:6,cursor:'pointer'},
-        onClick:function(){
-          if(pdfStore.sefaz){_share(pdfStore.sefaz,'comprovante_sefaz.pdf');return;}
-          notify('PDF ainda sendo gerado, aguarde...');
-        }},pdfStore.sefazTxt)
+      ce('button',{className:'btn-icon',title:'Compartilhar SEFAZ',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontSize:13},
+        onClick:function(e){compartilharDocumento('sefaz-container','comprovante_sefaz.pdf',e.currentTarget);}
+      },'📤')
     )
     )):null,
   );
