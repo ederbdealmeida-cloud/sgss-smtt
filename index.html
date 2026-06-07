@@ -2851,17 +2851,31 @@ function imprimirComprovanteServico(r,allReqs){
     +'.sg{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;padding-top:14px;border-top:1px solid #e2e8f0}'
     +'.sl{height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px}'
     +'.slb{font-size:10px;color:#64748b;text-align:center;font-weight:600}'
-    +'.btn-pr{display:block;margin:14px auto 0;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
-    +'@media print{.btn-pr{display:none!important}}'
+    +'.btn-pr{display:block;margin:14px auto 4px;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
+    +'.btn-sh{display:block;margin:4px auto 0;padding:9px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
+    +'@media print{.btn-pr{display:none!important}.btn-sh{display:none!important}}'
     +'</style></head><body><div class="wrap">'
     +buildHeader('Comprovante de Solicitação'+(parts.length>1?' - '+parts.length+' serviços':''),'Emitido em: '+new Date().toLocaleDateString('pt-BR'))
     +svcCards+card2+card3
     +'<div class="sg"><div><div class="sl"></div><div class="slb">Assinatura e Carimbo - SMTT</div></div>'
     +'<div><div class="sl"></div><div class="slb">Recebido pelo Solicitante</div></div></div>'
     +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px">SMTT CACEQUI - SGSS - PROTOCOLO EMITIDO ELETRONICAMENTE</div>'
-    +'</div><button class="btn-pr" onclick="window.print()">Imprimir / Salvar PDF</button></body></html>';
+    +'</div><button class="btn-pr" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>'
+    +'<button class="btn-sh" id="btn-share-sol">📤 Compartilhar</button>'
+    +'</body></html>';
   w.document.write(html);
   w.document.close();
+  w.document.getElementById('btn-share-sol').addEventListener('click',function(){
+    var _h=w.document.documentElement.outerHTML;
+    var _hs='<!DOCTYPE html><html>'+_h+'</html>';
+    var _prot=(main.prot||'comprovante').replace(/[^a-zA-Z0-9\-]/g,'_');
+    var _nome='comprovante_'+_prot+'.pdf';
+    if(!w.navigator.share||!w.navigator.canShare){alert('Compartilhamento nao disponivel neste dispositivo.');return;}
+    var _blob=new w.Blob([_hs],{type:'text/html'});
+    var _file=new w.File([_blob],_nome,{type:'text/html'});
+    if(!w.navigator.canShare({files:[_file]})){alert('Seu dispositivo nao suporta compartilhamento de arquivos.');return;}
+    w.navigator.share({title:'Comprovante SMTT - '+_prot,files:[_file]}).catch(function(e){if(e.name!=='AbortError')alert('Erro: '+e.message);});
+  });
 }
 
 function Solicitacoes(){
