@@ -2896,11 +2896,12 @@ function compartilharComprovanteServico(r,allReqs,btnEl){
     var _header='<table width="100%" style="border-collapse:collapse;width:100%;margin-bottom:18px;padding-bottom:14px;border-bottom:3px solid #1e3a5f"><tr>'      +'<td width="58" style="width:58px;vertical-align:middle;padding-right:14px">'      +(_brasaoHtml?'<div style="width:58px;height:58px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px;overflow:hidden">'+_brasaoHtml+'</div>':'')+'</td>'      +'<td style="vertical-align:middle">'      +'<div style="font-size:13px;font-weight:800;color:#1e3a5f;text-transform:uppercase">PREFEITURA MUNICIPAL DE CACEQUI &ndash; RS</div>'      +'<div style="font-size:11px;color:#475569;margin-top:2px">Secretaria Municipal de Transporte e Tr&acirc;nsito</div>'      +'<div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:5px">Comprovante de Solicita&ccedil;&atilde;o'+(parts.length>1?' - '+parts.length+' servi&ccedil;os':'')+'</div>'      +'<div style="font-size:10px;color:#94a3b8;margin-top:2px">Emitido em: '+(new Date()).toLocaleDateString('pt-BR')+'</div>'      +'</td></tr></table>';
     var _inner=_header+b.svcCards+b.card2+b.card3+_assinaturas;
     var _div=document.createElement('div');
-    _div.style.cssText='position:fixed;left:0;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;opacity:0;pointer-events:none;z-index:-9999;';
+    _div.style.cssText='position:absolute;left:-9999px;top:'+window.scrollY+'px;width:680px;background:#fff;padding:24px;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;';
     _div.innerHTML=_inner;
     document.body.appendChild(_div);
+    var _h=_div.offsetHeight;
     setTimeout(function(){
-      html2canvas(_div,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680,height:_div.scrollHeight,windowHeight:_div.scrollHeight}).then(function(canvas){
+      html2canvas(_div,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680,height:_h,scrollY:0,scrollX:0}).then(function(canvas){
         document.body.removeChild(_div);
         var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
         var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
