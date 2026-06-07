@@ -3505,6 +3505,13 @@ function Documentos2(p){
   /* PDFs pre-gerados para compartilhar */
   var spdf=useState({comp:null,sefaz:null,compTxt:'\ud83d\udce4 Compartilhar',sefazTxt:'\ud83d\udce4 Compartilhar'});
   var pdfStore=spdf[0];var setPdfStore=spdf[1];
+  /* Pre-gerar PDFs automaticamente apos renderizacao */
+  useEffect(function(){
+    setTimeout(function(){
+      _gerarPdf('comp','comprovante_func.pdf');
+      if(isPago)_gerarPdf('sefaz','comprovante_sefaz.pdf','sefaz-container');
+    },800);
+  },[]);
   function _gerarPdf(tipo,nome,elId){
     setPdfStore(function(s){var u={};u[tipo+'Txt']='\u23f3 Gerando...';return Object.assign({},s,u);});
     var el=elId?document.getElementById(elId):document.querySelector('.doc-paper');
@@ -3685,7 +3692,7 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
     ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,width:'100%',marginTop:12},
       onClick:function(){
         if(pdfStore.comp){_share(pdfStore.comp,'comprovante_func.pdf');return;}
-        _gerarPdf('comp','comprovante_func.pdf');
+        notify('PDF ainda sendo gerado, aguarde...');
       }},pdfStore.compTxt)
     ):null,
     doc==='sefaz'&&isPago?ce('div',{id:'sefaz-block'},ce('div',{className:'doc-paper',id:'sefaz-container'},
@@ -3764,7 +3771,7 @@ ce('div',{className:'doc-foot'},ce('div',{className:'doc-sig'},ce('div',{classNa
       ce('button',{style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700,fontSize:11,padding:'5px 12px',borderRadius:6,cursor:'pointer'},
         onClick:function(){
           if(pdfStore.sefaz){_share(pdfStore.sefaz,'comprovante_sefaz.pdf');return;}
-          _gerarPdf('sefaz','comprovante_sefaz.pdf','sefaz-container');
+          notify('PDF ainda sendo gerado, aguarde...');
         }},pdfStore.sefazTxt)
     )
     )):null,
