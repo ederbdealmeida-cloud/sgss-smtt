@@ -2878,27 +2878,39 @@ function compartilharComprovanteServico(r,allReqs,btnEl){
   var _nome='comprovante_'+_prot+'.pdf';
   if(btnEl){btnEl.textContent='Gerando...';btnEl.disabled=true;}
   /* Montar HTML do comprovante num div oculto na janela principal */
-  var _css=PRINT_CSS
-    +'body{padding:20px;background:#f8fafc;font-family:Arial,sans-serif}'
+  /* CSS sem @import externo - html2canvas nao processa fontes externas */
+  var _css='*,*::before,*::after{-webkit-print-color-adjust:exact!important;box-sizing:border-box}'
+    +'body{padding:0;margin:0;background:#f8fafc;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#1e293b}'
     +'.wrap{background:#fff;border-radius:12px;padding:24px 28px;max-width:680px;margin:0 auto}'
     +'.sg{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;padding-top:14px;border-top:1px solid #e2e8f0}'
     +'.sl{height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px}'
-    +'.slb{font-size:10px;color:#64748b;text-align:center;font-weight:600}';
+    +'.slb{font-size:10px;color:#64748b;text-align:center;font-weight:600}'
+    +'.doc-head{display:flex;align-items:center;gap:14px;padding-bottom:12px;border-bottom:2px solid #1e3a5f;margin-bottom:16px}'
+    +'.doc-org{font-size:11px;color:#64748b;margin:1px 0}'
+    +'.doc-title{font-size:15px;font-weight:700;color:#1e293b;margin:2px 0}'
+    +'.doc-sub{font-size:10px;color:#94a3b8;margin-top:2px}';
   var _inner=buildHeader('Comprovante de Solicita\u00e7\u00e3o'+(parts.length>1?' - '+parts.length+' servi\u00e7os':''),('Emitido em: '+(new Date()).toLocaleDateString('pt-BR')))
     +b.svcCards+b.card2+b.card3
     +'<div class="sg"><div><div class="sl"></div><div class="slb">Assinatura e Carimbo - SMTT</div></div>'
     +'<div><div class="sl"></div><div class="slb">Recebido pelo Solicitante</div></div></div>'
     +'<div style="text-align:center;font-size:9px;color:#cbd5e1;margin-top:12px">SMTT CACEQUI - SGSS - PROTOCOLO EMITIDO ELETRONICAMENTE</div>';
   var _div=document.createElement('div');
-  _div.style.cssText='position:fixed;left:-9999px;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;';
-  /* Injetar estilos inline */
+  _div.style.cssText='position:fixed;left:-9999px;top:0;width:680px;background:#fff;padding:24px;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;';
   var _styleEl=document.createElement('style');_styleEl.textContent=_css;
   _div.appendChild(_styleEl);
   var _content=document.createElement('div');
-  _content.className='wrap';_content.innerHTML=_inner;
+  _content.className='wrap';
+  /* Usar textContent+insertAdjacentHTML garante encoding correto */
+  _content.insertAdjacentHTML('beforeend',_inner);
   _div.appendChild(_content);
   document.body.appendChild(_div);
-  html2canvas(_content,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680}).then(function(canvas){
+  /* Aguardar imagens carregarem antes do canvas */
+  var _imgs=_content.querySelectorAll('img');
+  var _imgPromises=Array.from(_imgs).map(function(img){
+    return new Promise(function(res){if(img.complete)res();else{img.onload=res;img.onerror=res;}});
+  });
+  Promise.all(_imgPromises).then(function(){
+  html2canvas(_content,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:680,windowWidth:680,foreignObjectRendering:false}).then(function(canvas){
     document.body.removeChild(_div);
     var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
     var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
@@ -2918,6 +2930,7 @@ function compartilharComprovanteServico(r,allReqs,btnEl){
     if(btnEl){btnEl.textContent='📤 Compartilhar';btnEl.disabled=false;}
     alert('Erro ao gerar PDF: '+e.message);
   });
+  });/* fim Promise.all imgs */
 }
 
 function Solicitacoes(){
