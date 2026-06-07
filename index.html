@@ -1712,17 +1712,21 @@ function Dashboard(){
   var maxB=Math.max.apply(null,BARS.map(function(b){return b.v;}));
   
 function sgssCompartilharHtml(htmlCompleto,nomeArquivo,onErr){
-  if(!window.html2canvas||!window.jspdf){onErr("Recarregue a pagina e tente novamente.");return;}
-  if(!navigator.share||!navigator.canShare){onErr("Compartilhamento nao suportado neste navegador.");return;}
+  if(!window.html2canvas||!window.jspdf){alert("P1 FALHOU: libs");return;}
+  alert("P1 OK");
+  if(!navigator.share||!navigator.canShare){alert("P2 FALHOU: share api");return;}
+  alert("P2 OK");
   var div=document.createElement("div");
   div.style.cssText="position:fixed;left:-9999px;top:0;width:794px;background:#fff;z-index:-1;";
   var bm=htmlCompleto.match(/<body[^>]*>([\s\S]*)<\/body>/i);
   div.innerHTML=bm?bm[1]:htmlCompleto;
   div.querySelectorAll(".btn-pr,button").forEach(function(b){b.style.display="none";});
   document.body.appendChild(div);
+  alert("P3: chamando html2canvas");
   setTimeout(function(){
     html2canvas(div,{scale:1.5,useCORS:true,allowTaint:true,logging:false,width:794,windowWidth:794}).then(function(canvas){
       document.body.removeChild(div);
+      alert("P4 OK: canvas gerado");
       var pdf=new window.jspdf.jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
       var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
       var img=canvas.toDataURL("image/jpeg",0.92);
@@ -1732,9 +1736,11 @@ function sgssCompartilharHtml(htmlCompleto,nomeArquivo,onErr){
       while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,"JPEG",0,-pos,pW,ih);}
       var blob=pdf.output("blob");
       var file=new File([blob],nomeArquivo||"documento.pdf",{type:"application/pdf"});
-      if(!navigator.canShare({files:[file]})){onErr("PDF nao suportado para compartilhar.");return;}
-      navigator.share({title:nomeArquivo,files:[file]}).catch(function(e){if(e.name!=="AbortError")onErr(e.message);});
-    }).catch(function(e){document.body.removeChild(div);onErr(e.message);});
+      alert("P5: verificando canShare");
+      if(!navigator.canShare({files:[file]})){alert("P5 FALHOU: canShare false");return;}
+      alert("P5 OK: chamando share");
+      navigator.share({title:nomeArquivo,files:[file]}).catch(function(e){if(e.name!=="AbortError")alert("SHARE ERR: "+e.message);});
+    }).catch(function(e){document.body.removeChild(div);alert("CANVAS ERR: "+e.message);});
   },500);
 }
 function gerarHtmlComprovanteServico(r,allReqs){
