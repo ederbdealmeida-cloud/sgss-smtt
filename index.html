@@ -3549,22 +3549,25 @@ function Documentos2(p){
         ce('button',{className:'btn btn-s',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',fontWeight:700},
           onClick:function(ev){
             var _btn=ev.currentTarget;
+            alert('SEFAZ clicado. _pdfFile='+(!!_btn._pdfFile)+' share='+(!!navigator.share)+' canShare='+(!!navigator.canShare));
             if(_btn._pdfFile){
-              if(!navigator.share||!navigator.canShare)return;
-              if(!navigator.canShare({files:[_btn._pdfFile]}))return;
+              if(!navigator.share||!navigator.canShare){alert('share indisponivel');return;}
+              if(!navigator.canShare({files:[_btn._pdfFile]})){alert('canShare false');return;}
               navigator.share({title:'comprovante_sefaz.pdf',files:[_btn._pdfFile]}).catch(function(e){if(e.name!=='AbortError')notify(e.message);});
               return;
             }
             var el=document.querySelector('.doc-paper');
-            if(!el){notify('Documento n\u00e3o vis\u00edvel.');return;}
+            alert('el='+!!el);
+            if(!el){notify('Documento nao visivel.');return;}
             _btn.textContent='\u23f3 Gerando...';
             var _hs='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS+'</style></head><body>'+el.outerHTML+'</body></html>';
             sgssPreGerarPdf(_hs,'comprovante_sefaz.pdf',function(file){
+              alert('PDF gerado! Abrindo share...');
               _btn._pdfFile=file;_btn.textContent='\ud83d\udce4 Compartilhar';
-              if(!navigator.share||!navigator.canShare)return;
-              if(!navigator.canShare({files:[file]}))return;
+              if(!navigator.share||!navigator.canShare){alert('share indisponivel apos gerar');return;}
+              if(!navigator.canShare({files:[file]})){alert('canShare false apos gerar');return;}
               navigator.share({title:'comprovante_sefaz.pdf',files:[file]}).catch(function(e){if(e.name!=='AbortError')notify(e.message);});
-            },function(e){_btn.textContent='\ud83d\udce4 Compartilhar';notify(e);});
+            },function(e){_btn.textContent='\ud83d\udce4 Compartilhar';alert('ERRO: '+e);});
           }},'\ud83d\udce4 Compartilhar')
       )
     ),
