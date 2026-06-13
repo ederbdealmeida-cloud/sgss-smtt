@@ -2301,7 +2301,7 @@ function imprimirDash(titulo,corpo,landscape){
   )
     ),
     ce('div',{style:{display:'flex',flexDirection:'column',gap:14,minWidth:0}},
-      ce('div',{className:'card meta-card'},
+      ce('div',{className:'card meta-card',onClick:function(){setExpandedCard(expandedCard==='metas'?null:'metas');},style:{background:expandedCard==='metas'?'#dbeafe':'',border:expandedCard==='metas'?'2px solid #2563eb':'2px solid transparent',boxShadow:expandedCard==='metas'?'0 16px 48px rgba(37,99,235,.25)':'',transform:expandedCard==='metas'?'scale(1.02)':'scale(1)',zIndex:expandedCard==='metas'?20:1,position:'relative',cursor:'pointer',transition:'all .3s ease'}},
       ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}},
         ce('h3',{style:{margin:0,fontSize:14,fontWeight:700,color:'#1e3a5f'}},'\ud83c\udfaf Metas de Desempenho'),
         ce('span',{style:{fontSize:11,color:'#64748b'}},['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][new Date().getMonth()]+'/'+new Date().getFullYear())
