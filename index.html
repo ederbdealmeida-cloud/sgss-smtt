@@ -7150,42 +7150,46 @@ function Anotacoes(){
 function Graficos(){
   var useState=React.useState,useRef=React.useRef,useEffect=React.useEffect;
   var EIXOS=[
-    {v:'mes',l:'Mês'},{v:'bairro',l:'Bairro'},
-    {v:'func',l:'Funcionário'},{v:'cn',l:'Tipo de Serviço'},
-    {v:'status',l:'Status'},{v:'fp',l:'Forma de Pagamento'},{v:'urg',l:'Urgência'}
+    {v:'mes',l:'M\u00eas'},{v:'bairro',l:'Bairro'},
+    {v:'func',l:'Funcion\u00e1rio'},{v:'cn',l:'Tipo de Servi\u00e7o'},
+    {v:'status',l:'Status'},{v:'fp',l:'Forma de Pagamento'},{v:'urg',l:'Urg\u00eancia'}
   ];
   var METRICAS=[
-    {v:'qtd',l:'Qtd de Serviços'},
+    {v:'qtd',l:'Qtd de Servi\u00e7os'},
     {v:'taxa',l:'Total Arrecadado (R$)'},
-    {v:'media',l:'Média (R$)'}
+    {v:'media',l:'M\u00e9dia (R$)'}
   ];
   var TIPOS=[
     {v:'bar',   l:'Barras Verticais',   info:'Comparar quantidades entre categorias'},
-    {v:'barH',  l:'Barras Horizontais', info:'Ideal para bairros e funcionários'},
-    {v:'barS',  l:'Barras Empilhadas',  info:'Proporções dentro de cada grupo'},
-    {v:'line',  l:'Linhas',             info:'Evolução ao longo do tempo'},
-    {v:'area',  l:'Área Preenchida',      info:'Evolução com volume visual'},
-    {v:'pie',   l:'Pizza',              info:'Distribuição percentual'},
-    {v:'donut', l:'Rosca',              info:'Distribuição com total central'},
+    {v:'barH',  l:'Barras Horizontais', info:'Ideal para bairros e funcion\u00e1rios'},
+    {v:'barS',  l:'Barras Empilhadas',  info:'Propor\u00e7\u00f5es dentro de cada grupo'},
+    {v:'line',  l:'Linhas',             info:'Evolu\u00e7\u00e3o ao longo do tempo'},
+    {v:'area',  l:'\u00c1rea Preenchida', info:'Evolu\u00e7\u00e3o com volume visual'},
+    {v:'pie',   l:'Pizza',              info:'Distribui\u00e7\u00e3o percentual'},
+    {v:'donut', l:'Rosca',              info:'Distribui\u00e7\u00e3o com total central'},
     {v:'funnel',l:'Funil',              info:'Pipeline de status ou etapas'},
-    {v:'treemap',l:'Mapa de Árvore', info:'Hierarquia e proporção visual'},
+    {v:'treemap',l:'Mapa de \u00c1rvore', info:'Hierarquia e propor\u00e7\u00e3o visual'},
     {v:'heatmap',l:'Mapa de Calor',     info:'Cruzar dois agrupamentos',needs2:true}
   ];
-  var CORES=['#2563eb','#7c3aed','#059669','#dc2626','#d97706',
-             '#0891b2','#be185d','#65a30d','#9333ea','#0f766e'];
+  var CORES=['#2563eb','#7c3aed','#059669','#dc2626','#d97706','#0891b2','#be185d','#65a30d','#9333ea','#0f766e'];
   var FT='Space Grotesk,sans-serif',FB='Inter,sans-serif';
-  var sEx=useState('mes');    var eixo=sEx[0];     var setEixo=sEx[1];
-  var sEx2=useState('status');var eixo2=sEx2[0];   var setEixo2=sEx2[1];
-  var sMet=useState('qtd');   var metrica=sMet[0]; var setMetrica=sMet[1];
-  var sTp=useState('bar');    var tipo=sTp[0];     var setTipo=sTp[1];
-  var sDe=useState('');       var dtDe=sDe[0];     var setDtDe=sDe[1];
-  var sAt=useState('');       var dtAte=sAt[0];    var setDtAte=sAt[1];
-  var sFn=useState('');       var fFunc=sFn[0];    var setFFunc=sFn[1];
-  var sCt=useState('');       var fCat=sCt[0];     var setFCat=sCt[1];
-  var sSt=useState('');       var fSt=sSt[0];      var setFSt=sSt[1];
-  var sMs=useState('');       var msg=sMs[0];      var setMsg=sMs[1];
-  var sHs=useState(false);    var hasChart=sHs[0]; var setHasChart=sHs[1];
-  var sRK=useState(0);        var rk=sRK[0];       var setRK=sRK[1];
+  var sEx=useState('mes');    var eixo=sEx[0];       var setEixo=sEx[1];
+  var sEx2=useState('status');var eixo2=sEx2[0];     var setEixo2=sEx2[1];
+  var sMet=useState('qtd');   var metrica=sMet[0];   var setMetrica=sMet[1];
+  var sTp=useState('bar');    var tipo=sTp[0];       var setTipo=sTp[1];
+  var sDe=useState('');       var dtDe=sDe[0];       var setDtDe=sDe[1];
+  var sAt=useState('');       var dtAte=sAt[0];      var setDtAte=sAt[1];
+  var sFn=useState('');       var fFunc=sFn[0];      var setFFunc=sFn[1];
+  var sCt=useState('');       var fCat=sCt[0];       var setFCat=sCt[1];
+  var sSt=useState('');       var fSt=sSt[0];        var setFSt=sSt[1];
+  var sMs=useState('');       var msg=sMs[0];        var setMsg=sMs[1];
+  var sHs=useState(false);    var hasChart=sHs[0];   var setHasChart=sHs[1];
+  var sRK=useState(0);        var rk=sRK[0];         var setRK=sRK[1];
+  var sStat=useState(null);   var stats=sStat[0];    var setStats=sStat[1];
+  var sAnim=useState(false);  var animating=sAnim[0];var setAnimating=sAnim[1];
+  var sCmp=useState(false);   var compareMode=sCmp[0];var setCompareMode=sCmp[1];
+  var sCmpD=useState(null);   var compareData=sCmpD[0];var setCompareData=sCmpD[1];
+  var sDet=useState(null);    var detalhe=sDet[0];   var setDetalhe=sDet[1];
   var plotRef=useRef(null);
   var tipoDef=TIPOS.find(function(t){return t.v===tipo;})||{};
   var needs2=!!tipoDef.needs2;
@@ -7194,324 +7198,310 @@ function Graficos(){
     var t=setTimeout(function(){setMsg('');},3500);
     return function(){clearTimeout(t);};
   },[msg]);
+  useEffect(function(){
+    if(hasChart)gerar();
+  },[eixo,eixo2,metrica,tipo,dtDe,dtAte,fFunc,fCat,fSt]);
   function getLbl(r,c){
     var M=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    if(c==='mes'){
-      var p=r.dt?r.dt.split('-'):[];
-      return p.length>=2?(M[parseInt(p[1])-1]||p[1])+'/'+p[0].slice(2):'S/D';
-    }
-    if(c==='func'){
-      var fn=FUNC_LIST.find(function(f){return f.nome===(r.func||'');});
-      return fn?fn.nome:(r.func||'Sem func.');
-    }
-    if(c==='cn') return r.cn||r.sn||'Não classif.';
+    if(c==='mes'){var p=r.dt?r.dt.split('-'):[];return p.length>=2?(M[parseInt(p[1])-1]||p[1])+'/'+p[0].slice(2):'S/D';}
+    if(c==='func'){var fn=FUNC_LIST.find(function(f){return f.nome===(r.func||'');});return fn?fn.nome:(r.func||'Sem func.');}
+    if(c==='bairro') return r.bairro||'S/B';
+    if(c==='cn') return r.cn||r.sn||'Outros';
+    if(c==='status') return r.status||'Pendente';
+    if(c==='fp') return r.fp||'N/I';
     if(c==='urg') return r.urg==='Sim'?'Urgente':'Normal';
-    return r[c]||'N/A';
+    return String(r[c]||'');
   }
-  function getSK(r,c){
-    return c==='mes'?(r.dt?r.dt.slice(0,7):'0000-00'):getLbl(r,c);
-  }
-  function getVal(m){
-    if(metrica==='qtd') return m.qtd;
-    if(metrica==='taxa') return Math.round(m.taxa*100)/100;
-    return m.qtd>0?Math.round(m.taxa/m.qtd*100)/100:0;
+  function eixL(v){return(EIXOS.find(function(e){return e.v===v;})||{l:v}).l;}
+  function metL(){return(METRICAS.find(function(m){return m.v===metrica;})||{l:metrica}).l;}
+  function parseTaxa(v){return parseFloat(String(v||0).replace(',','.'))||0;}
+  function getVal(g){
+    if(metrica==='taxa') return Math.round(g.taxa*100)/100;
+    if(metrica==='media') return g.count>0?Math.round(g.taxa/g.count*100)/100:0;
+    return g.count;
   }
   function fmtV(v){
-    return metrica==='qtd'?v+' serviços':
-      'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2});
+    if(metrica==='taxa'||metrica==='media') return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2});
+    return v;
   }
-  function metL(){return (METRICAS.find(function(m){return m.v===metrica;})||{}).l||''}
-  function eixL(e){return (EIXOS.find(function(x){return x.v===e;})||{}).l||''}
   function filtrar(){
     return INIT_REQS.filter(function(r){
       if(r.enc===1) return false;
       if(dtDe&&r.dt<dtDe) return false;
       if(dtAte&&r.dt>dtAte) return false;
       if(fFunc&&r.func!==fFunc) return false;
-      if(fCat&&String(r.catId)!==String(fCat)) return false;
+      if(fCat&&String(r.catId)!==fCat) return false;
       if(fSt&&r.status!==fSt) return false;
       return true;
     });
   }
   function ag1(reqs){
-    var map={};
+    var map={},keys=[];
     reqs.forEach(function(r){
-      var sk=getSK(r,eixo);
-      if(!map[sk]) map[sk]={lbl:getLbl(r,eixo),qtd:0,taxa:0};
-      map[sk].qtd++;
-      map[sk].taxa+=parseFloat(String(r.taxa||0).replace(',','.'))||0;
+      var k=getLbl(r,eixo);
+      if(!map[k]){map[k]={lbl:k,count:0,taxa:0};keys.push(k);}
+      map[k].count++;map[k].taxa+=parseTaxa(r.taxa);
     });
-    var keys=Object.keys(map);
-    if(eixo==='mes') keys.sort();
-    else keys.sort(function(a,b){
-      return metrica==='qtd'?map[b].qtd-map[a].qtd:map[b].taxa-map[a].taxa;
-    });
-    return {keys:keys,map:map};
+    return{map:map,keys:keys};
   }
   function ag2(reqs){
-    var xs={},ys={},mat={};
+    var xs={},ys={},mat={},xkeys=[],ykeys=[];
     reqs.forEach(function(r){
-      var xk=getSK(r,eixo),yk=getSK(r,eixo2);
-      xs[xk]=getLbl(r,eixo); ys[yk]=getLbl(r,eixo2);
-      var key=xk+'|||'+yk;
-      if(!mat[key]) mat[key]={qtd:0,taxa:0};
-      mat[key].qtd++;
-      mat[key].taxa+=parseFloat(String(r.taxa||0).replace(',','.'))||0;
+      var x=getLbl(r,eixo),y=getLbl(r,eixo2);
+      if(!xs[x]){xs[x]=x;xkeys.push(x);}
+      if(!ys[y]){ys[y]=y;ykeys.push(y);}
+      var k=x+'|||'+y;
+      if(!mat[k])mat[k]={count:0,taxa:0};
+      mat[k].count++;mat[k].taxa+=parseTaxa(r.taxa);
     });
-    return {
-      xkeys:Object.keys(xs).sort(),ykeys:Object.keys(ys).sort(),
-      xs:xs,ys:ys,mat:mat
-    };
+    return{xs:xs,ys:ys,mat:mat,xkeys:xkeys,ykeys:ykeys};
+  }
+  function calcStats(V){
+    if(!V||!V.length) return null;
+    var sum=V.reduce(function(a,b){return a+b;},0);
+    var mn=Math.min.apply(null,V),mx=Math.max.apply(null,V),avg=sum/V.length;
+    var sorted=V.slice().sort(function(a,b){return a-b;});
+    var med=sorted.length%2===0?(sorted[sorted.length/2-1]+sorted[sorted.length/2])/2:sorted[Math.floor(sorted.length/2)];
+    return{sum:sum,min:mn,max:mx,avg:avg,med:med,count:V.length};
   }
   function gerar(){
     if(!window.Plotly){setMsg('Plotly ainda carregando.');return;}
     if(needs2&&eixo===eixo2){setMsg('Eixo X e Y precisam ser diferentes.');return;}
     var reqs=filtrar();
     if(!reqs.length){setMsg('Nenhum dado para os filtros.');return;}
+    setAnimating(true);setTimeout(function(){setAnimating(false);},600);
     var tArr=[eixL(eixo)+(needs2?' x '+eixL(eixo2):'')+' - '+metL()];
     if(fFunc) tArr.push('Func.: '+fFunc);
     if(fSt) tArr.push(fSt);
     if(dtDe||dtAte) tArr.push((dtDe||'...')+' a '+(dtAte||'...'));
-    var LY={
-      font:{family:FB,size:12,color:'#374151'},
-      paper_bgcolor:'#fff',plot_bgcolor:'#f8fafc',
+    var LY={font:{family:FB,size:12,color:'#374151'},paper_bgcolor:'#fff',plot_bgcolor:'#f8fafc',
       title:{text:tArr.join(' | '),font:{family:FT,size:13,color:'#1e3a5f'}},
-      margin:{l:65,r:20,t:55,b:65},showlegend:false,colorway:CORES
-    };
-    var CFG={
-      responsive:true,displaylogo:false,
+      margin:{l:65,r:20,t:55,b:65},showlegend:false,colorway:CORES};
+    var CFG={responsive:true,displaylogo:false,
       toImageButtonOptions:{format:'png',filename:'grafico-sgss',scale:2},
-      modeBarButtonsToRemove:['sendDataToCloud','lasso2d','select2d']
-    };
+      modeBarButtonsToRemove:['sendDataToCloud','lasso2d','select2d']};
     var traces=[],layout=Object.assign({},LY);
-    var AX={
-      xaxis:{title:{text:eixL(eixo),font:{family:FB,size:11}},tickangle:-30,gridcolor:'#e2e8f0'},
-      yaxis:{title:{text:metL(),font:{family:FB,size:11}},gridcolor:'#e2e8f0',zeroline:false}
-    };
+    var AX={xaxis:{title:{text:eixL(eixo),font:{family:FB,size:11}},tickangle:-30,gridcolor:'#e2e8f0'},
+      yaxis:{title:{text:metL(),font:{family:FB,size:11}},gridcolor:'#e2e8f0',zeroline:false}};
+    var V_global=[],L_global=[];
     if(!needs2){
       var g=ag1(reqs);
       var L=g.keys.map(function(k){return g.map[k].lbl;});
       var V=g.keys.map(function(k){return getVal(g.map[k]);});
-      var HT=L.map(function(l,i){
-        return '<b>'+l+'</b><br>'+metL()+': <b>'+fmtV(V[i])+'</b>';
-      });
+      V_global=V;L_global=L;
+      var HT=L.map(function(l,i){return '<b>'+l+'</b><br>'+metL()+': <b>'+fmtV(V[i])+'</b>';});
       if(tipo==='bar'){
-        traces=[{type:'bar',x:L,y:V,text:V,textposition:'outside',
-          marker:{color:CORES,opacity:.88,line:{width:0}},
-          hovertext:HT,hoverinfo:'text'}];
-        Object.assign(layout,AX); layout.bargap=.35;
+        var mainT={type:'bar',x:L,y:V,name:metL(),text:V.map(function(v){return fmtV(v);}),textposition:'outside',
+          marker:{color:compareMode&&compareData?CORES[0]:CORES,opacity:.88,line:{width:0}},hovertext:HT,hoverinfo:'text'};
+        if(compareMode&&compareData){
+          traces=[mainT,{type:'bar',x:compareData.L,y:compareData.V,name:compareData.label,
+            marker:{color:'#94a3b8',opacity:.7,line:{width:0}},
+            hovertext:compareData.L.map(function(l,i){return '<b>'+l+'</b><br>'+compareData.label+': <b>'+fmtV(compareData.V[i])+'</b>';}),
+            hoverinfo:'text'}];
+          layout.showlegend=true;layout.barmode='group';
+        }else{traces=[mainT];}
+        Object.assign(layout,AX);layout.bargap=.35;
       }else if(tipo==='barH'){
-        traces=[{type:'bar',orientation:'h',x:V,y:L,
-          marker:{color:CORES,opacity:.88,line:{width:0}},
-          hovertext:HT,hoverinfo:'text'}];
+        traces=[{type:'bar',orientation:'h',x:V,y:L,marker:{color:CORES,opacity:.88,line:{width:0}},hovertext:HT,hoverinfo:'text'}];
         layout.xaxis={title:{text:metL(),font:{family:FB,size:11}},gridcolor:'#e2e8f0'};
         layout.yaxis={title:{text:eixL(eixo),font:{family:FB,size:11}},automargin:true};
         layout.margin={l:130,r:20,t:55,b:50};
       }else if(tipo==='barS'){
-        traces=[{type:'bar',x:L,y:V,
-          marker:{color:CORES[0],opacity:.88},hovertext:HT,hoverinfo:'text'}];
-        layout.barmode='stack'; Object.assign(layout,AX);
+        traces=[{type:'bar',x:L,y:V,marker:{color:CORES[0],opacity:.88},hovertext:HT,hoverinfo:'text'}];
+        layout.barmode='stack';Object.assign(layout,AX);
       }else if(tipo==='line'){
         traces=[{type:'scatter',mode:'lines+markers',x:L,y:V,
           line:{color:CORES[0],width:3,shape:'spline'},
-          marker:{color:CORES[0],size:8,line:{width:2,color:'#fff'}},
-          hovertext:HT,hoverinfo:'text'}];
-        Object.assign(layout,AX); layout.plot_bgcolor='#fff';
+          marker:{color:CORES[0],size:8,line:{width:2,color:'#fff'}},hovertext:HT,hoverinfo:'text'}];
+        Object.assign(layout,AX);layout.plot_bgcolor='#fff';
       }else if(tipo==='area'){
         traces=[{type:'scatter',mode:'lines',x:L,y:V,fill:'tozeroy',
-          fillcolor:CORES[0]+'33',line:{color:CORES[0],width:2.5,shape:'spline'},
-          hovertext:HT,hoverinfo:'text'}];
-        Object.assign(layout,AX); layout.plot_bgcolor='#fff';
+          fillcolor:CORES[0]+'33',line:{color:CORES[0],width:2.5,shape:'spline'},hovertext:HT,hoverinfo:'text'}];
+        Object.assign(layout,AX);layout.plot_bgcolor='#fff';
       }else if(tipo==='pie'){
-        traces=[{type:'pie',labels:L,values:V,hole:0,
-          marker:{colors:CORES,line:{color:'#fff',width:1.5}},
+        traces=[{type:'pie',labels:L,values:V,hole:0,marker:{colors:CORES,line:{color:'#fff',width:1.5}},
           textinfo:'label+percent',textfont:{family:FB,size:11},
           hovertemplate:'<b>%{label}</b><br>'+metL()+': %{value}<br>%{percent}<extra></extra>'}];
-        layout.showlegend=true;
-        layout.legend={font:{family:FB,size:11}};
-        layout.margin={l:20,r:120,t:55,b:20};
+        layout.showlegend=true;layout.legend={font:{family:FB,size:11}};layout.margin={l:20,r:120,t:55,b:20};
       }else if(tipo==='donut'){
         var tot=V.reduce(function(a,b){return a+b;},0);
-        traces=[{type:'pie',labels:L,values:V,hole:.42,
-          marker:{colors:CORES,line:{color:'#fff',width:1.5}},
+        traces=[{type:'pie',labels:L,values:V,hole:.42,marker:{colors:CORES,line:{color:'#fff',width:1.5}},
           textinfo:'label+percent',textfont:{family:FB,size:11},
           hovertemplate:'<b>%{label}</b><br>'+metL()+': %{value}<br>%{percent}<extra></extra>'}];
-        layout.showlegend=true;
-        layout.legend={font:{family:FB,size:11}};
-        layout.annotations=[{
-          text:'<b>'+tot.toLocaleString('pt-BR')+'</b>',
-          x:.5,y:.5,showarrow:false,
-          font:{size:14,family:FT,color:'#1e3a5f'}
-        }];
+        layout.showlegend=true;layout.legend={font:{family:FB,size:11}};
+        layout.annotations=[{text:'<b>'+tot.toLocaleString('pt-BR')+'</b>',x:.5,y:.5,showarrow:false,font:{size:14,family:FT,color:'#1e3a5f'}}];
         layout.margin={l:20,r:120,t:55,b:20};
       }else if(tipo==='funnel'){
         var si=V.map(function(_,i){return i;}).sort(function(a,b){return V[b]-V[a];});
-        traces=[{
-          type:'funnel',
-          y:si.map(function(i){return L[i];}),
-          x:si.map(function(i){return V[i];}),
+        traces=[{type:'funnel',y:si.map(function(i){return L[i];}),x:si.map(function(i){return V[i];}),
           textinfo:'value+percent initial',textposition:'inside',
           marker:{color:si.map(function(_,i){return CORES[i%CORES.length];}),line:{width:0}},
-          connector:{fillcolor:'#f1f5f9',line:{color:'#cbd5e1',width:1}},
-          hoverinfo:'y+x+percent initial'
-        }];
+          connector:{fillcolor:'#f1f5f9',line:{color:'#cbd5e1',width:1}},hoverinfo:'y+x+percent initial'}];
         layout.margin={l:160,r:20,t:55,b:30};
       }else if(tipo==='treemap'){
-        traces=[{
-          type:'treemap',
-          labels:L,parents:L.map(function(){return'';}),values:V,
-          textinfo:'label+value+percent root',
-          textfont:{family:FB,size:11},branchvalues:'total',
-          marker:{colors:V,colorscale:[[0,CORES[0]+'44'],[1,CORES[0]]],
-            showscale:false,line:{color:'#fff',width:2}},
-          hovertemplate:'<b>%{label}</b><br>'+metL()+': %{value}<extra></extra>'
-        }];
+        traces=[{type:'treemap',labels:L,parents:L.map(function(){return'';}),values:V,
+          textinfo:'label+value+percent root',textfont:{family:FB,size:11},branchvalues:'total',
+          marker:{colors:V,colorscale:[[0,CORES[0]+'44'],[1,CORES[0]]],showscale:false,line:{color:'#fff',width:2}},
+          hovertemplate:'<b>%{label}</b><br>'+metL()+': %{value}<extra></extra>'}];
         layout.margin={l:5,r:5,t:55,b:5};
       }
     }else{
       var g2=ag2(reqs);
       var xL2=g2.xkeys.map(function(k){return g2.xs[k];});
       var yL2=g2.ykeys.map(function(k){return g2.ys[k];});
-      var zM=g2.ykeys.map(function(yk){
-        return g2.xkeys.map(function(xk){
-          var m=g2.mat[xk+'|||'+yk];
-          return m?getVal(m):0;
-        });
-      });
-      traces=[{
-        type:'heatmap',x:xL2,y:yL2,z:zM,
+      var zM=g2.ykeys.map(function(yk){return g2.xkeys.map(function(xk){var m=g2.mat[xk+'|||'+yk];return m?getVal(m):0;});});
+      traces=[{type:'heatmap',x:xL2,y:yL2,z:zM,
         colorscale:[[0,'#eff6ff'],[.5,CORES[0]+'cc'],[1,'#1e3a5f']],
         hovertemplate:'<b>%{x} x %{y}</b><br>'+metL()+': <b>%{z}</b><extra></extra>',
-        showscale:true,xgap:2,ygap:2
-      }];
+        showscale:true,xgap:2,ygap:2}];
       layout.xaxis={title:{text:eixL(eixo),font:{family:FB,size:11}},tickangle:-30};
       layout.yaxis={title:{text:eixL(eixo2),font:{family:FB,size:11}},automargin:true};
       layout.margin={l:110,r:70,t:55,b:80};
     }
     if(!traces.length){setMsg('Sem dados suficientes.');return;}
-    var _pel=plotRef.current||document.getElementById('plotly-container');window.Plotly.react(_pel,traces,layout,CFG);
+    if(V_global.length) setStats({s:calcStats(V_global),L:L_global,V:V_global,reqs:reqs});
+    var _pel=plotRef.current||document.getElementById('plotly-container');
+    layout.transition={duration:500,easing:'cubic-in-out'};
+    window.Plotly.react(_pel,traces,layout,CFG);
+    _pel.removeAllListeners&&_pel.removeAllListeners('plotly_click');
+    _pel.on('plotly_click',function(evtData){
+      if(!evtData||!evtData.points||!evtData.points.length) return;
+      var pt=evtData.points[0];
+      var lbl=pt.x||pt.y||pt.label;
+      if(!lbl) return;
+      var grpReqs=reqs.filter(function(r){return getLbl(r,eixo)===String(lbl);});
+      setDetalhe({lbl:String(lbl),reqs:grpReqs});
+    });
     setHasChart(true);
+  }
+  function salvarComparacao(){
+    if(!stats) return;
+    setCompareData({L:stats.L,V:stats.V,label:eixL(eixo)+' - '+metL()+' (anterior)'});
+    setCompareMode(true);
+    setMsg('Compara\u00e7\u00e3o salva! Mude os filtros e gere novamente.');
   }
   function exportPNG(){
     if(!hasChart||!plotRef.current) return;
-    window.Plotly.downloadImage(plotRef.current,{
-      format:'png',
-      filename:'grafico-sgss-'+new Date().toISOString().slice(0,10),
-      width:1200,height:600,scale:2
-    });
+    window.Plotly.downloadImage(plotRef.current,{format:'png',filename:'grafico-sgss-'+new Date().toISOString().slice(0,10),width:1200,height:600,scale:2});
   }
   function limpar(){
-    setDtDe('');setDtAte('');setFFunc('');setFCat('');setFSt('');
-    if(hasChart&&plotRef.current||document.getElementById('plotly-container'))window.Plotly.purge(plotRef.current||document.getElementById('plotly-container'));
-    setHasChart(false);
-    setRK(function(k){return k+1;});
+    var _pp=plotRef.current||document.getElementById('plotly-container');
+    if(_pp)window.Plotly.purge(_pp);
+    setHasChart(false);setRK(function(k){return k+1;});
+    setStats(null);setDetalhe(null);setAnimating(false);setCompareMode(false);setCompareData(null);
   }
-  var nI={width:'100%',padding:'8px 10px',border:'1.5px solid #cbd5e1',
-    borderRadius:6,fontSize:13,fontFamily:"'Inter',sans-serif",
-    background:'#fff',outline:'none',boxSizing:'border-box'};
-  var nL={fontSize:11,fontWeight:700,color:'#475569',display:'block',
-    marginBottom:4,textTransform:'uppercase',letterSpacing:'.4px'};
+  var nI={width:'100%',padding:'8px 10px',border:'1.5px solid #cbd5e1',borderRadius:7,fontFamily:'inherit',fontSize:13,background:'#fff',outline:'none',color:'#1e293b'};
+  var nL={fontSize:11,fontWeight:700,color:'#64748b',textTransform:'uppercase',letterSpacing:'.4px',display:'block',marginBottom:4};
   return ce('div',{className:'page'},
-    msg?ce('div',{style:{position:'fixed',top:70,right:20,
-      background:'#1e293b',color:'#fff',padding:'10px 18px',
-      borderRadius:8,fontSize:13,zIndex:9999,
-      boxShadow:'0 4px 12px rgba(0,0,0,.2)'}},msg):null,
+    msg?ce('div',{style:{position:'fixed',top:70,right:20,background:'#1e293b',color:'#fff',padding:'10px 18px',borderRadius:8,fontSize:13,zIndex:9999,boxShadow:'0 4px 12px rgba(0,0,0,.2)'}},msg):null,
+    detalhe?ce('div',{style:{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.55)',zIndex:2000,display:'flex',alignItems:'center',justifyContent:'center'},onClick:function(){setDetalhe(null);}},
+      ce('div',{style:{background:'#fff',borderRadius:12,padding:'20px 24px',width:'min(95vw,560px)',maxHeight:'80vh',overflowY:'auto',boxShadow:'0 20px 60px rgba(0,0,0,.3)'},onClick:function(e){e.stopPropagation();}},
+        ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}},
+          ce('h3',{style:{margin:0,fontSize:15,fontWeight:700,color:'#1e3a5f'}},'\ud83d\udcc2 '+detalhe.lbl+' \u2014 '+detalhe.reqs.length+' solicita\u00e7\u00f5es'),
+          ce('button',{onClick:function(){setDetalhe(null);},style:{background:'#f1f5f9',border:'none',borderRadius:6,padding:'4px 10px',cursor:'pointer',fontSize:16}},'\xd7')
+        ),
+        detalhe.reqs.length?detalhe.reqs.map(function(r,i){
+          return ce('div',{key:i,style:{padding:'8px 10px',borderRadius:8,background:i%2===0?'#f8fafc':'#fff',border:'1px solid #f1f5f9',marginBottom:4,fontSize:12}},
+            ce('div',{style:{fontWeight:700,color:'#1e293b'}},r.prot||'S/N'),
+            ce('div',{style:{color:'#64748b',marginTop:2}},(r.nom||'-')+' \u2022 '+(r.cn||r.sn||'-')+' \u2022 '+(r.status||'Pendente'))
+          );
+        }):ce('p',{style:{color:'#94a3b8',fontSize:13}},'Nenhuma solicita\u00e7\u00e3o encontrada.')
+      )
+    ):null,
     ce('div',{className:'page-header'},
-      ce('h2',{className:'page-title'},_tw('📈'),' Gráficos'),
+      ce('h2',{className:'page-title'},_tw('\ud83d\udcc8'),' Gr\u00e1ficos'),
       ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap'}},
-        ce('button',{className:'btn',
-          style:{background:'#2563eb',color:'#fff',border:'none'},
-          onClick:gerar},'📊 Gerar'),
-        hasChart?ce('button',{className:'btn btn-s',onClick:exportPNG},
-          '🖨 Exportar PNG'):null,
-        ce('button',{className:'btn btn-s',onClick:limpar},'× Limpar')
+        ce('button',{className:'btn',style:{background:'#2563eb',color:'#fff',border:'none'},onClick:function(){gerar();}},'\ud83d\udcca Gerar'),
+        hasChart?ce('button',{className:'btn btn-s',onClick:exportPNG},'\ud83d\udda8 Exportar PNG'):null,
+        hasChart&&stats&&!compareMode?ce('button',{className:'btn btn-s',style:{background:'#7c3aed',color:'#fff',border:'none'},onClick:salvarComparacao},'\ud83d\udcca Salvar para Comparar'):null,
+        compareMode?ce('button',{className:'btn btn-s',style:{background:'#dc2626',color:'#fff',border:'none'},onClick:function(){setCompareData(null);setCompareMode(false);}},'\xd7 Limpar Compara\u00e7\u00e3o'):null,
+        ce('button',{className:'btn btn-s',onClick:limpar},'\xd7 Limpar')
       )
     ),
     ce('div',{className:'card',style:{marginBottom:16}},
-      ce('div',{style:{display:'grid',
-        gridTemplateColumns:'repeat(auto-fit,minmax(155px,1fr))',
-        gap:14,marginBottom:tipoDef.info?8:16}},
-        ce('div',null,
-          ce('label',{style:nL},'Tipo de Gráfico'),
+      ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(155px,1fr))',gap:14,marginBottom:tipoDef.info?8:16}},
+        ce('div',null,ce('label',{style:nL},'Tipo de Gr\u00e1fico'),
           ce('select',{style:nI,value:tipo,onChange:function(e){setTipo(e.target.value);}},
-            TIPOS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))
-        ),
-        ce('div',null,
-          ce('label',{style:nL},'Agrupar por'),
+            TIPOS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))),
+        ce('div',null,ce('label',{style:nL},'Agrupar por'),
           ce('select',{style:nI,value:eixo,onChange:function(e){setEixo(e.target.value);}},
-            EIXOS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))
-        ),
-        needs2?ce('div',null,
-          ce('label',{style:nL},'2º Agrupamento'),
+            EIXOS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))),
+        needs2?ce('div',null,ce('label',{style:nL},'2\u00ba Agrupamento'),
           ce('select',{style:nI,value:eixo2,onChange:function(e){setEixo2(e.target.value);}},
-            EIXOS.filter(function(o){return o.v!==eixo;})
-              .map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))
-        ):null,
-        ce('div',null,
-          ce('label',{style:nL},'Métrica'),
+            EIXOS.filter(function(o){return o.v!==eixo;}).map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))):null,
+        ce('div',null,ce('label',{style:nL},'M\u00e9trica'),
           ce('select',{style:nI,value:metrica,onChange:function(e){setMetrica(e.target.value);}},
-            METRICAS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);}))
-        )
+            METRICAS.map(function(o){return ce('option',{key:o.v,value:o.v},o.l);})))
       ),
-      tipoDef.info?ce('p',{style:{fontSize:11,color:'#64748b',
-        marginBottom:14,paddingLeft:2}},'ℹ️ ',tipoDef.info):null,
+      tipoDef.info?ce('p',{style:{fontSize:11,color:'#64748b',marginBottom:14,paddingLeft:2}},'\u2139\ufe0f ',tipoDef.info):null,
       ce('div',{key:'fg-'+rk,style:{borderTop:'1px solid #f1f5f9',paddingTop:12}},
-        ce('p',{style:{fontSize:11,fontWeight:700,color:'#94a3b8',
-          marginBottom:10,textTransform:'uppercase',letterSpacing:'.4px'}},'🔍 Filtros'),
-        ce('div',{style:{display:'grid',
-          gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))',gap:10}},
-          ce('div',null,ce('label',{style:nL},'De'),
-            ce('input',{type:'date',style:nI,value:dtDe,
-              onChange:function(e){setDtDe(e.target.value);}})),
-          ce('div',null,ce('label',{style:nL},'Até'),
-            ce('input',{type:'date',style:nI,value:dtAte,
-              onChange:function(e){setDtAte(e.target.value);}})),
-          ce('div',null,
-            ce('label',{style:nL},'Funcionário'),
+        ce('p',{style:{fontSize:11,fontWeight:700,color:'#94a3b8',marginBottom:10,textTransform:'uppercase',letterSpacing:'.4px'}},'\ud83d\udd0d Filtros'),
+        ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))',gap:10}},
+          ce('div',null,ce('label',{style:nL},'De'),ce('input',{type:'date',style:nI,value:dtDe,onChange:function(e){setDtDe(e.target.value);}})),
+          ce('div',null,ce('label',{style:nL},'At\u00e9'),ce('input',{type:'date',style:nI,value:dtAte,onChange:function(e){setDtAte(e.target.value);}})),
+          ce('div',null,ce('label',{style:nL},'Funcion\u00e1rio'),
             ce('select',{style:nI,value:fFunc,onChange:function(e){setFFunc(e.target.value);}},
               ce('option',{value:''},'Todos'),
-              FUNC_LIST.filter(function(f){return f.ativo!==false;})
-                .map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);}))
-          ),
-          ce('div',null,
-            ce('label',{style:nL},'Tipo de Serviço'),
+              FUNC_LIST.filter(function(f){return f.ativo!==false;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);}))),
+          ce('div',null,ce('label',{style:nL},'Tipo de Servi\u00e7o'),
             ce('select',{style:nI,value:fCat,onChange:function(e){setFCat(e.target.value);}},
               ce('option',{value:''},'Todos'),
-              CATS.map(function(c){return ce('option',{key:c.id,value:String(c.id)},c.nome);}))
-          ),
-          ce('div',null,
-            ce('label',{style:nL},'Status'),
+              CATS.map(function(c){return ce('option',{key:c.id,value:String(c.id)},c.nome);}))),
+          ce('div',null,ce('label',{style:nL},'Status'),
             ce('select',{style:nI,value:fSt,onChange:function(e){setFSt(e.target.value);}},
               ce('option',{value:''},'Todos'),
-              ['Pendente','Em andamento','Concluído','Cancelado']
-                .map(function(s){return ce('option',{key:s,value:s},s);}))
-          ),
+              ['Pendente','Em andamento','Conclu\u00eddo','Cancelado'].map(function(s){return ce('option',{key:s,value:s},s);}))),
           ce('div',{style:{display:'flex',alignItems:'flex-end'}},
-            ce('button',{className:'btn btn-s',style:{width:'100%'},onClick:limpar},'× Limpar'))
+            ce('button',{className:'btn btn-s',style:{width:'100%'},onClick:limpar},'\xd7 Limpar'))
         )
       )
     ),
-    ce('div',{className:'card'},
-      needs2?ce('div',{style:{padding:'8px 12px',marginBottom:12,
-        background:'#eff6ff',borderRadius:6,
-        border:'1px solid #bfdbfe',fontSize:12,color:'#1d4ed8'}},
-        'ℹ️ Mapa de Calor cruza: ',
-        ce('b',null,eixL(eixo)),' (colunas) x ',ce('b',null,eixL(eixo2)),' (linhas)'
-      ):null,
-      !hasChart?ce('div',{style:{display:'flex',flexDirection:'column',
-        alignItems:'center',justifyContent:'center',
-        height:300,color:'#94a3b8',gap:10}},
-        ce('span',{style:{fontSize:52}},'📈'),
+    ce('div',{className:'card',style:{transition:'opacity .3s ease,transform .3s ease',opacity:animating?.4:1,transform:animating?'scale(0.98)':'scale(1)'}},
+      compareMode&&compareData?ce('div',{style:{padding:'8px 12px',marginBottom:10,background:'#faf5ff',borderRadius:6,border:'1px solid #d8b4fe',fontSize:12,color:'#7c3aed',display:'flex',alignItems:'center',gap:8}},
+        '\ud83d\udcca Modo compara\u00e7\u00e3o ativo \u2014 cinza = ',ce('b',null,compareData.label),'. Azul = sele\u00e7\u00e3o atual.'):null,
+      needs2?ce('div',{style:{padding:'8px 12px',marginBottom:12,background:'#eff6ff',borderRadius:6,border:'1px solid #bfdbfe',fontSize:12,color:'#1d4ed8'}},
+        '\u2139\ufe0f Mapa de Calor cruza: ',ce('b',null,eixL(eixo)),' (colunas) x ',ce('b',null,eixL(eixo2)),' (linhas)'):null,
+      !hasChart?ce('div',{style:{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:300,color:'#94a3b8',gap:10}},
+        ce('span',{style:{fontSize:52}},'\ud83d\udcc8'),
         ce('span',{style:{fontSize:14,fontWeight:500}},'Configure e clique em Gerar'),
-        ce('button',{className:'btn',
-          style:{background:'#2563eb',color:'#fff',border:'none',marginTop:4},
-          onClick:gerar},'📊 Gerar agora')
-      ):null,
+        ce('button',{className:'btn',style:{background:'#2563eb',color:'#fff',border:'none',marginTop:4},onClick:function(){gerar();}},'\ud83d\udcca Gerar agora')):null,
       ce('div',{ref:plotRef,id:'plotly-container',style:{width:'100%',minHeight:hasChart?460:200}})
-    )
+    ),
+    stats&&hasChart?ce('div',{className:'card',style:{marginTop:12}},
+      ce('h3',{style:{margin:'0 0 12px',fontSize:13,fontWeight:700,color:'#1e3a5f'}},'\ud83d\udcca Resumo Estat\u00edstico \u2014 '+eixL(eixo)+' / '+metL()),
+      ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(100px,1fr))',gap:8}},
+        [{l:'Total',v:fmtV(stats.s.sum),c:'#2563eb'},
+         {l:'M\u00e9dia',v:fmtV(Math.round(stats.s.avg*100)/100),c:'#7c3aed'},
+         {l:'M\u00eddiana',v:fmtV(stats.s.med),c:'#0891b2'},
+         {l:'M\u00ednimo',v:fmtV(stats.s.min),c:'#059669'},
+         {l:'M\u00e1ximo',v:fmtV(stats.s.max),c:'#dc2626'},
+         {l:'Grupos',v:stats.s.count,c:'#d97706'}
+        ].map(function(item){
+          return ce('div',{key:item.l,style:{background:item.c+'11',border:'1.5px solid '+item.c+'44',borderRadius:8,padding:'10px 12px',textAlign:'center'}},
+            ce('div',{style:{fontSize:18,fontWeight:800,color:item.c}},item.v),
+            ce('div',{style:{fontSize:10,color:'#64748b',fontWeight:600,textTransform:'uppercase',marginTop:2}},item.l));
+        })
+      ),
+      stats.V.length>1?ce('div',{style:{marginTop:12,paddingTop:12,borderTop:'1px solid #f1f5f9'}},
+        ce('p',{style:{fontSize:11,fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.4px',marginBottom:8}},'\ud83c\udfc6 Top 3'),
+        ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap'}},
+          stats.V.map(function(v,i){return{v:v,l:stats.L[i]};})
+            .sort(function(a,b){return b.v-a.v;}).slice(0,3)
+            .map(function(item,i){
+              return ce('div',{key:i,style:{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:8,padding:'8px 12px',display:'flex',alignItems:'center',gap:8,flex:1,minWidth:100}},
+                ce('span',{style:{fontSize:20}},['\ud83e\udd47','\ud83e\udd48','\ud83e\udd49'][i]),
+                ce('div',null,
+                  ce('div',{style:{fontWeight:700,fontSize:12,color:'#1e293b'}},item.l),
+                  ce('div',{style:{fontSize:11,color:'#64748b'}},fmtV(item.v))));
+            })
+        )
+      ):null,
+      (tipo==='bar'||tipo==='barH'||tipo==='barS')?
+        ce('p',{style:{fontSize:11,color:'#94a3b8',marginTop:10,marginBottom:0}},
+          '\ud83d\udca1 Clique numa barra para ver as solicita\u00e7\u00f5es daquele grupo.'):null
+    ):null
   );
 }
-
 
 
 function App(){
