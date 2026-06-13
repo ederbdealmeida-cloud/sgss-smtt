@@ -2994,7 +2994,13 @@ return ce('div',{className:'page'},
           ),
           /* Ultimas solicitacoes */
           ce('div',{style:{background:'#fff',borderRadius:8,padding:'12px 14px'}},
-            ce('div',{style:{fontWeight:700,fontSize:12,color:'#64748b',marginBottom:8,textTransform:'uppercase'}},'\ud83d\udccb \u00daltimas Solicita\u00e7\u00f5es'),
+            ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}},
+            ce('div',{style:{fontWeight:700,fontSize:12,color:'#64748b',textTransform:'uppercase'}},'\ud83d\udccb \u00daltimas Solicita\u00e7\u00f5es'),
+            ce('button',{className:'btn btn-s',style:{fontSize:11,padding:'3px 10px'},
+              onClick:function(){
+                if(window._setPage)window._setPage('historico');
+              }},'\ud83d\udd0d Ver todas')
+          ),
             (function(){
               var reqs=INIT_REQS.filter(function(r){return String(r.catId)===String(detCat.id);})
                 .sort(function(a,b){return b.dt>a.dt?1:-1;}).slice(0,4);
@@ -9188,6 +9194,7 @@ function App(){
     return function(){delete window._forceAppReload;delete window._setPrevSession;};
   },[]);
   var sp=useState('dashboard');var page=sp[0];var setPage=sp[1];
+  window._setPage=setPage;
   var scol=useState(false);var collapsed=scol[0];var setCollapsed=scol[1];
   var sprev=useState({reqs:[],acoes:[],user:null});
   var prevSession=sprev[0];var setPrevSession=sprev[1];
