@@ -4248,7 +4248,7 @@ function Controle(p){
       })
     ):null,
     /* LISTA */
-    viewMode==='lista'?(cloading?ce(Spinner):ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl tbl-ctrl'},
+    viewMode==='lista'?(cloading?ce(Spinner):ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl tbl-ctrl',style:{tableLayout:'fixed',width:'100%'}},ce('colgroup',null,ce('col',{style:{width:32}}),ce('col',{style:{width:90}}),ce('col',{style:{width:72}}),ce('col',{style:{width:130}}),ce('col',{style:{width:110}}),ce('col',{style:{width:80}}),ce('col',{style:{width:100}}),ce('col',{style:{width:70}}),ce('col',{style:{width:45}}),ce('col',{style:{width:50}}),ce('col',{style:{width:90}}),ce('col',{style:{width:100}}),ce('col',{style:{width:110}})),
 
         ce('thead',null,ce('tr',null,
           [ce('th',{key:'chk',style:{width:32}},ce('input',{type:'checkbox',
