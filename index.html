@@ -7529,7 +7529,7 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
     ),
 
     ce('div',{className:'card'},
-      ce('div',{style:{display:'flex',gap:10,flexWrap:'wrap',marginBottom:12}},
+      view!=='resumo'?ce('div',{style:{display:'flex',gap:10,flexWrap:'wrap',marginBottom:12}},
         ce('select',{value:ffunc,onChange:function(e){
           var nv=e.target.value;
           setFfunc(nv);setListPg(1);setDayPg(1);setSelDia(null);
@@ -7560,7 +7560,7 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
           ce('option',{value:'Conclu\u00eddo'},'Conclu\u00eddo'),
           ce('option',{value:'Agendado'},'Agendado')
         )
-      ),
+      ):null,
       stats,
       /* Busca na lista */
       view==='list'?ce('input',{className:'srch',style:{marginBottom:10},
