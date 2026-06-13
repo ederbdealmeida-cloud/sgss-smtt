@@ -6,10 +6,12 @@
 <script>
 /* Auto-actualiza quando SW detecta nova versao */
 if('serviceWorker' in navigator){
+  /* Limpar caches antigos */
+  caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='sgss-v21')caches.delete(k);});});
   navigator.serviceWorker.addEventListener('message',function(e){
     if(e.data&&e.data.type==='SW_UPDATED'){window.location.reload(true);}
   });
-  navigator.serviceWorker.register('/sgss-smtt/sw.js').then(function(reg){
+  navigator.serviceWorker.register('/sgss-smtt/sw.js?v=21').then(function(reg){
     reg.addEventListener('updatefound',function(){
       var nw=reg.installing;
       nw.addEventListener('statechange',function(){
