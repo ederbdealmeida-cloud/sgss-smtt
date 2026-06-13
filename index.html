@@ -6953,7 +6953,7 @@ function Comunicados(){
               ce('button',{className:'btn-icon',title:'Compartilhar',onClick:function(){compartilhar(c);}},'\ud83d\udce4'),
               isAdmin?ce('button',{className:'btn-icon',title:c.pinned?'Desafixar':'Fixar',
                 style:{opacity:c.pinned?1:.5},onClick:function(){togglePin(c);}},'\ud83d\udccc'):null,
-              isAdmin?ce('button',{className:'btn-icon',title:'Editar',onClick:function(){edit_(c);}},'\\u270f\ufe0f'):null,
+              isAdmin?ce('button',{className:'btn-icon',title:'Editar',onClick:function(){edit_(c);}},'✏️'):null,
               isAdmin?ce('button',{className:'btn-icon',title:'Excluir',style:{color:'#dc2626'},onClick:function(){del_(c);}},'\ud83d\uddd1\ufe0f'):null
             )
           ),
