@@ -23,6 +23,7 @@ if('serviceWorker' in navigator){
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&family=Rubik:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -3809,6 +3810,12 @@ function Controle(p){
   var spm=useState(false);var showPrint=spm[0];var setShowPrint=spm[1];
   var spc=useState({});var printCards=spc[0];var setPrintCards=spc[1];
   var svw=useState('lista');var viewMode=svw[0];var setViewMode=svw[1];
+  var sfta=useState('');var fTaxaDe=sfta[0];var setFTaxaDe=sfta[1];
+  var sftb=useState('');var fTaxaAte=sftb[0];var setFTaxaAte=sftb[1];
+  var sfbr=useState('');var fBairro=sfbr[0];var setFBairro=sfbr[1];
+  var sfsl=useState('');var fSLA=sfsl[0];var setFSLA=sfsl[1];
+  var sshist=useState(null);var histItem=sshist[0];var setHistItem=sshist[1];
+  var sadvf=useState(false);var showAdvFilter=sadvf[0];var setShowAdvFilter=sadvf[1];
   var sba=useState(null);var bulkAction=sba[0];var setBulkAction=sba[1];
   var sbaf=useState('');var bulkFunc=sbaf[0];var setBulkFunc=sbaf[1];
   var sbas=useState('');var bulkStatus=sbas[0];var setBulkStatus=sbas[1];
@@ -3826,7 +3833,7 @@ function Controle(p){
       if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
     },400);
   },[_hlId]);
-  var filtered=all.filter(function(r){if(r.enc===1)return false;if(fst&&r.status!==fst)return false;if(furg&&r.urg!==furg)return false;if(ffunc&&(r.func||'')!==ffunc)return false;if(ftipo&&String(r.catId)!==String(ftipo))return false;if(fde&&r.dt<fde)return false;if(fate&&r.dt>fate)return false;if(srch){var q=srch.toLowerCase();if(r.nom.toLowerCase().indexOf(q)<0&&r.prot.toLowerCase().indexOf(q)<0&&r.bairro.toLowerCase().indexOf(q)<0)return false;}return true;});
+  var filtered=all.filter(function(r){if(r.enc===1)return false;if(fst&&r.status!==fst)return false;if(furg&&r.urg!==furg)return false;if(ffunc&&(r.func||'')!==ffunc)return false;if(ftipo&&String(r.catId)!==String(ftipo))return false;if(fde&&r.dt<fde)return false;if(fate&&r.dt>fate)return false;if(fBairro&&(r.bairro||'')!==fBairro)return false;if(fTaxaDe&&parseFloat(r.taxa||0)<parseFloat(fTaxaDe))return false;if(fTaxaAte&&parseFloat(r.taxa||0)>parseFloat(fTaxaAte))return false;if(fSLA){var _d=diasAberto(r);if(fSLA==='5'&&_d<5)return false;if(fSLA==='10'&&_d<10)return false;if(fSLA==='sem'&&_d>0)return false;}if(srch){var q=srch.toLowerCase();if(r.nom.toLowerCase().indexOf(q)<0&&r.prot.toLowerCase().indexOf(q)<0&&(r.bairro||'').toLowerCase().indexOf(q)<0&&(r.cn||'').toLowerCase().indexOf(q)<0)return false;}return true;});
   var sorted=!sortBy?filtered.slice():filtered.slice().sort(function(a,b){
     if(sortBy==='alfabetico')return a.nom.localeCompare(b.nom,'pt-BR');
     var ua=(a.urg==='Sim'&&a.status!=='Conclu\u00eddo')?0:1;
@@ -3850,6 +3857,28 @@ function Controle(p){
     setAll(function(prev){return prev.map(function(r){return r.id===encItem.id?Object.assign({},r,{enc:1,status:'Conclu\u00eddo'}):r;});});
     INIT_REQS.forEach(function(r,i){if(r.id===encItem.id)INIT_REQS[i]=Object.assign({},INIT_REQS[i],{enc:1,status:'Conclu\u00eddo'});});
     setEncItem(null);logAudit('Encerrou','Controle','Protocolo: '+(encItem?encItem.prot:''));notify('\u2705 Encerrada!');sgssSave();
+  }
+  /* Exportar XLSX */
+  function exportXLSX(){
+    var alvo=selIds.length>0?selItems:sorted;
+    if(!alvo.length){notify('Sem dados.');return;}
+    if(!window.XLSX){notify('SheetJS n\u00e3o carregado.');return;}
+    var ws_data=[['Protocolo','Data','Solicitante','Endere\u00e7o','Bairro','Servi\u00e7o','Funcion\u00e1rio','Taxa','Urg.','Status','Dias Aberto']];
+    alvo.forEach(function(r){
+      ws_data.push([r.prot,fmtD(r.dt),r.nom||'',(r.rua||'')+(r.num?' '+r.num:''),r.bairro||'',r.cn||r.sn||'',r.func||'',parseFloat(r.taxa||0),r.urg||'N\u00e3o',r.status||'',diasAberto(r)]);
+    });
+    var wb=window.XLSX.utils.book_new();
+    var ws=window.XLSX.utils.aoa_to_sheet(ws_data);
+    ws['!cols']=[{wch:18},{wch:10},{wch:22},{wch:24},{wch:14},{wch:22},{wch:18},{wch:10},{wch:8},{wch:14},{wch:10}];
+    window.XLSX.utils.book_append_sheet(wb,ws,'Controle SMTT');
+    window.XLSX.writeFile(wb,'controle-smtt-'+today()+'.xlsx');
+    notify('\u2705 Excel exportado!');
+  }
+  /* Historico de alteracoes do protocolo */
+  function getHistorico(prot){
+    return AUDIT_LOG.filter(function(a){
+      return a.detalhe&&a.detalhe.indexOf(prot)>=0;
+    }).slice(0,20);
   }
   /* SLA - dias em aberto */
   function diasAberto(r){
@@ -4050,6 +4079,68 @@ function Controle(p){
         )
       )
     ):null,
+    /* Filtro avancado */
+    showAdvFilter?ce('div',{className:'card',style:{marginBottom:12,padding:'12px 14px',border:'2px solid #2563eb33',background:'#eff6ff'}},
+      ce('div',{style:{fontWeight:700,fontSize:12,color:'#1e3a5f',marginBottom:10}},'\ud83d\udd0d Filtro Avan\u00e7ado'),
+      ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:10}},
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Bairro espec\u00edfico'),
+          ce('select',{className:'inp',value:fBairro,onChange:function(e){setFBairro(e.target.value);}},
+            ce('option',{value:''},'Todos os bairros'),
+            [...new Set(all.filter(function(r){return r.enc!==1&&r.bairro;}).map(function(r){return r.bairro;}))].sort()
+              .map(function(b){return ce('option',{key:b,value:b},b);})
+          )
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Taxa de (R$)'),
+          ce('input',{className:'inp',type:'number',min:'0',placeholder:'0,00',value:fTaxaDe,onChange:function(e){setFTaxaDe(e.target.value);}})
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Taxa at\u00e9 (R$)'),
+          ce('input',{className:'inp',type:'number',min:'0',placeholder:'999,99',value:fTaxaAte,onChange:function(e){setFTaxaAte(e.target.value);}})
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'SLA (dias aberto)'),
+          ce('select',{className:'inp',value:fSLA,onChange:function(e){setFSLA(e.target.value);}},
+            ce('option',{value:''},'Todos'),
+            ce('option',{value:'sem'},'Sem pendentes'),
+            ce('option',{value:'5'},'5+ dias aberto'),
+            ce('option',{value:'10'},'10+ dias aberto')
+          )
+        ),
+        ce('div',{style:{display:'flex',alignItems:'flex-end'}},
+          ce('button',{className:'btn btn-s',style:{width:'100%'},onClick:function(){
+            setFBairro('');setFTaxaDe('');setFTaxaAte('');setFSLA('');
+          }},'\u00d7 Limpar filtros')
+        )
+      )
+    ):null,
+    /* Modal historico de alteracoes */
+    histItem?ce('div',{style:{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.55)',zIndex:2000,display:'flex',alignItems:'center',justifyContent:'center'},onClick:function(){setHistItem(null);}},
+      ce('div',{style:{background:'#fff',borderRadius:12,padding:'20px 24px',width:'min(95vw,500px)',maxHeight:'80vh',overflowY:'auto',boxShadow:'0 20px 60px rgba(0,0,0,.3)'},onClick:function(e){e.stopPropagation();}},
+        ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}},
+          ce('h3',{style:{margin:0,fontSize:15,fontWeight:700,color:'#1e3a5f'}},'\ud83d\udcdc Hist\u00f3rico \u2014 '+histItem.prot),
+          ce('button',{onClick:function(){setHistItem(null);},style:{background:'#f1f5f9',border:'none',borderRadius:6,padding:'4px 10px',cursor:'pointer',fontSize:16}},'\xd7')
+        ),
+        (function(){
+          var hist=getHistorico(histItem.prot);
+          if(!hist.length)return ce('p',{style:{color:'#94a3b8',fontSize:13}},'Nenhuma altera\u00e7\u00e3o registrada ainda.');
+          return ce('div',{style:{display:'flex',flexDirection:'column',gap:8}},
+            hist.map(function(h,i){
+              return ce('div',{key:i,style:{padding:'10px 12px',borderRadius:8,background:i%2===0?'#f8fafc':'#fff',border:'1px solid #f1f5f9'}},
+                ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}},
+                  ce('span',{style:{fontWeight:700,fontSize:12,color:'#2563eb'}},h.acao),
+                  ce('span',{style:{fontSize:11,color:'#94a3b8'}},h.dt+' '+h.hora)
+                ),
+                ce('div',{style:{fontSize:12,color:'#374151'}},h.detalhe),
+                h.usuario?ce('div',{style:{fontSize:11,color:'#64748b',marginTop:2}},'\ud83d\udc64 '+h.usuario):null
+              );
+            })
+          );
+        })()
+      )
+    ):null,
+
     ce('div',{className:'page-header'},
       ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83c\udf9b\ufe0f Controle de Solicita\u00e7\u00f5es')}}),
       ce('div',{style:{display:'flex',gap:6,alignItems:'center',flexWrap:'wrap'}},
@@ -4059,6 +4150,8 @@ function Controle(p){
           ce('button',{onClick:function(){setViewMode('kanban');},style:{padding:'5px 12px',border:'none',borderRadius:6,cursor:'pointer',fontWeight:700,fontSize:12,background:viewMode==='kanban'?'#fff':'transparent',color:viewMode==='kanban'?'#2563eb':'#64748b',boxShadow:viewMode==='kanban'?'0 1px 4px rgba(0,0,0,.1)':''}},'\ud83d\udccc Kanban')
         ),
         selIds.length>0?ce('button',{className:'btn btn-s',style:{background:'#7c3aed',color:'#fff',border:'none'},onClick:function(){setBulkAction('status');}},'\ud83d\udce6 Lote ('+selIds.length+')'):null,
+        ce('button',{className:'btn btn-s',style:{background:'#16a34a',color:'#fff',border:'none'},onClick:exportXLSX},'\ud83d\udcca Excel'),
+        ce('button',{className:'btn btn-s',style:{background:showAdvFilter?'#2563eb':'',color:showAdvFilter?'#fff':''},onClick:function(){setShowAdvFilter(function(v){return !v;});}},'\ud83d\udd0d Filtro Avan\u00e7ado'),
         ce('button',{className:'btn btn-s',onClick:function(){
           var alvo=selIds.length>0?selItems:sorted;
           if(!alvo.length){notify('Sem dados.');return;}
@@ -4203,6 +4296,7 @@ function Controle(p){
                 ce('button',{className:'btn btn-p',style:{padding:'3px 6px',fontSize:11},onClick:function(){saveStatus(r.id);}},'\u2714'),
                 ce('button',{className:'btn btn-s',style:{padding:'3px 6px',fontSize:11},onClick:function(){cancelEdit(r.id);}},'\u2715')
               ):ce(React.Fragment,null,
+                ce('button',{className:'btn-icon',title:'Hist\u00f3rico de altera\u00e7\u00f5es',style:{background:'#faf5ff',color:'#7c3aed',border:'1px solid #d8b4fe',marginRight:3},onClick:function(){setHistItem(r);}},'\ud83d\udcdc'),
                 ce('button',{className:'btn-icon',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},onClick:function(){startEdit(r);}},'\u270f\ufe0f'),
                 ce('button',{className:'btn-icon',title:'Encerrar',style:{background:'#f0fdf4',color:'#16a34a',border:'1px solid #86efac',marginRight:3},onClick:function(){setEncItem(r);}},'\u2705'),
                 ce('button',{className:'btn-icon',style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},
