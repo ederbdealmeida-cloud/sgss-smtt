@@ -3876,15 +3876,17 @@ function Controle(p){
   function execPrint(){
     var target=allSorted.filter(function(r){return printCards[r.id]===true;});
     if(!target.length){notify('\u26a0\ufe0f Nenhum card seleccionado.');return;}
-    var rows=[];for(var _i=0;_i<target.length;_i+=2){
-      rows.push('<tr><td style="width:50%;padding:5px;vertical-align:top">'+mkCard(target[_i])+'</td>'
-        +(target[_i+1]?'<td style="width:50%;padding:5px;vertical-align:top">'+mkCard(target[_i+1])+'</td>':'<td style="width:50%"></td>')
+    var rows=[];for(var _i=0;_i<target.length;_i+=3){
+      rows.push('<tr>'
+        +'<td style="width:33.3%;padding:4px;vertical-align:top">'+mkCard(target[_i])+'</td>'
+        +(target[_i+1]?'<td style="width:33.3%;padding:4px;vertical-align:top">'+mkCard(target[_i+1])+'</td>':'<td style="width:33.3%"></td>')
+        +(target[_i+2]?'<td style="width:33.3%;padding:4px;vertical-align:top">'+mkCard(target[_i+2])+'</td>':'<td style="width:33.3%"></td>')
         +'</tr>');
     }
-    var _pw=1020,_ph=780;
+    var _pw=820,_ph=650;
     var w=window.open('','_blank','width='+_pw+',height='+_ph+',scrollbars=yes');
     if(!w){notify('\u26a0\ufe0f Permita pop-ups.');return;}
-    w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>@page{size:A4 landscape;margin:8mm}body{font-family:"IBM Plex Sans",Arial,sans-serif;font-size:12px;}table{width:100%;border-collapse:separate;}</style></head><body>'
+    w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>@page{size:A4 portrait;margin:8mm}body{font-family:"IBM Plex Sans",Arial,sans-serif;font-size:12px;}table{width:100%;border-collapse:separate;}</style></head><body>'
       +'<table><tbody>'+rows.join('')+'</tbody></table>'
       +'<button onclick="window.print()" style="margin:10px;padding:6px 16px;">Imprimir</button>'
       +'</body></html>');
@@ -7364,7 +7366,7 @@ function Graficos(){
       layout.margin={l:110,r:70,t:55,b:80};
     }
     if(!traces.length){setMsg('Sem dados suficientes.');return;}
-    window.Plotly.react(plotRef.current,traces,layout,CFG);
+    var _pel=plotRef.current||document.getElementById('plotly-container');window.Plotly.react(_pel,traces,layout,CFG);
     setHasChart(true);
   }
   function exportPNG(){
@@ -7377,7 +7379,7 @@ function Graficos(){
   }
   function limpar(){
     setDtDe('');setDtAte('');setFFunc('');setFCat('');setFSt('');
-    if(hasChart&&plotRef.current) window.Plotly.purge(plotRef.current);
+    if(hasChart&&plotRef.current||document.getElementById('plotly-container'))window.Plotly.purge(plotRef.current||document.getElementById('plotly-container'));
     setHasChart(false);
     setRK(function(k){return k+1;});
   }
@@ -7482,7 +7484,7 @@ function Graficos(){
           style:{background:'#2563eb',color:'#fff',border:'none',marginTop:4},
           onClick:gerar},'📊 Gerar agora')
       ):null,
-      ce('div',{ref:plotRef,style:{width:'100%',minHeight:hasChart?460:0}})
+      ce('div',{ref:plotRef,id:'plotly-container',style:{width:'100%',minHeight:hasChart?460:200}})
     )
   );
 }
