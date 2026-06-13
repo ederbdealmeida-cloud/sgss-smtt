@@ -8009,12 +8009,14 @@ function Anotacoes(){
   var sload=useState(false);var loading=sload[0];var setLoading=sload[1];
   var sedit=useState(null);var editId=sedit[0];var setEditId=sedit[1];
   var ssids=useState([]);var selIds=ssids[0];var setSelIds=ssids[1];
+  var ssort=useState('id_desc');var sortMode=ssort[0];var setSortMode=ssort[1];
+  var sftag=useState('');var filtTag=sftag[0];var setFiltTag=sftag[1];
   /* Estado da solicitação vinculada */
   var ssol=useState(null);var solVinc=ssol[0];var setSolVinc=ssol[1];
   var spsugs=useState([]);var psugs=spsugs[0];var setPsugs=spsugs[1];
   var t=useToast();var toast=t[0];var notify=t[1];
 
-  var EMPTY={reqId:null,prot:'',nom:'',bairro:'',cn:'',dt_req:'',titulo:'',texto:'',tags:''};
+  var EMPTY={reqId:null,prot:'',nom:'',bairro:'',cn:'',dt_req:'',titulo:'',texto:'',tags:'',prioridade:'media',pinned:false};
 
   function setFld(k,v){setForm(function(f){var o=Object.assign({},f);o[k]=v;return o;});}
 
@@ -8035,13 +8037,42 @@ function Anotacoes(){
 
   /* Filtro */
   var filtered=NOTAS_LIST.filter(function(n){
-    if(!fq)return true;
-    var q=fq.toLowerCase();
-    return (n.prot||'').toLowerCase().indexOf(q)>=0
-      ||(n.nom||'').toLowerCase().indexOf(q)>=0
-      ||(n.titulo||'').toLowerCase().indexOf(q)>=0
-      ||(n.cn||'').toLowerCase().indexOf(q)>=0;
-  }).sort(function(a,b){return (b.id||0)-(a.id||0);});
+    if(fq){var q=fq.toLowerCase();
+      if((n.prot||'').toLowerCase().indexOf(q)<0
+        &&(n.nom||'').toLowerCase().indexOf(q)<0
+        &&(n.titulo||'').toLowerCase().indexOf(q)<0
+        &&(n.cn||'').toLowerCase().indexOf(q)<0
+        &&(n.tags||'').toLowerCase().indexOf(q)<0) return false;
+    }
+    if(filtTag&&(n.tags||'').toLowerCase().indexOf(filtTag.toLowerCase())<0) return false;
+    return true;
+  }).sort(function(a,b){
+    if(a.pinned&&!b.pinned)return -1;
+    if(!a.pinned&&b.pinned)return 1;
+    if(sortMode==='id_desc')return (b.id||0)-(a.id||0);
+    if(sortMode==='id_asc')return (a.id||0)-(b.id||0);
+    if(sortMode==='titulo')return (a.titulo||'').localeCompare(b.titulo||'');
+    if(sortMode==='prot')return (a.prot||'').localeCompare(b.prot||'');
+    if(sortMode==='prio'){var pm={alta:0,media:1,baixa:2};return (pm[a.prioridade||'media']||1)-(pm[b.prioridade||'media']||1);}
+    return (b.id||0)-(a.id||0);
+  });
+  /* Tags unicas para filtro */
+  var allTags=[];
+  NOTAS_LIST.forEach(function(n){(n.tags||'').split(',').forEach(function(t){var tt=t.trim();if(tt&&allTags.indexOf(tt)<0)allTags.push(tt);});});
+  /* KPIs */
+  var _kTotal=NOTAS_LIST.length;
+  var _kHoje=NOTAS_LIST.filter(function(n){return n.dtCad===new Date().toLocaleDateString('pt-BR');}).length;
+  var _kPin=NOTAS_LIST.filter(function(n){return n.pinned;}).length;
+  var _kAlta=NOTAS_LIST.filter(function(n){return n.prioridade==='alta';}).length;
+  function togglePin(n){
+    var idx=NOTAS_LIST.findIndex(function(x){return x.id===n.id;});
+    if(idx>=0){NOTAS_LIST[idx]=Object.assign({},NOTAS_LIST[idx],{pinned:!n.pinned});sgssSave();notify(n.pinned?'Fixado removido.':'\ud83d\udccc Nota fixada!');}
+  }
+  function duplicar(n){
+    var now=new Date().toLocaleDateString('pt-BR');
+    NOTAS_LIST.push(Object.assign({},n,{id:NOTAS_NEXT_ID++,titulo:'[Copia] '+n.titulo,dtCad:now,dtEd:null,pinned:false}));
+    sgssSave();notify('\ud83d\udccb Nota duplicada!');
+  }
 
   /* CRUD */
   function salvar(){
@@ -8202,11 +8233,25 @@ function Anotacoes(){
         ce('input',{value:form.titulo||'',onChange:function(e){setFld('titulo',e.target.value);},
           placeholder:'T\u00edtulo da anota\u00e7\u00e3o...',maxLength:120})
       ),
-      /* Tags */
-      ce('div',{className:'fg s2'},
+      /* Tags + Prioridade + Pin */
+      ce('div',{className:'fg'},
         ce('label',null,'Tags (separe por v\u00edrgula)'),
         ce('input',{value:form.tags||'',onChange:function(e){setFld('tags',e.target.value);},
           placeholder:'Ex: vistoria, urgente, pendente...'})
+      ),
+      ce('div',{className:'fg'},
+        ce('label',null,'Prioridade'),
+        ce('select',{value:form.prioridade||'media',onChange:function(e){setFld('prioridade',e.target.value);}},
+          ce('option',{value:'alta'},'\ud83d\udd34 Alta'),
+          ce('option',{value:'media'},'\ud83d\udfe1 M\u00e9dia'),
+          ce('option',{value:'baixa'},'\ud83d\udfe2 Baixa')
+        )
+      ),
+      ce('div',{className:'fg',style:{display:'flex',alignItems:'center',gap:8,paddingTop:20}},
+        ce('label',{style:{display:'flex',alignItems:'center',gap:6,cursor:'pointer',margin:0}},
+          ce('input',{type:'checkbox',checked:!!form.pinned,onChange:function(e){setFld('pinned',e.target.checked);}}),
+          '\ud83d\udccc Fixar esta nota'
+        )
       ),
       /* Texto */
       ce('div',{className:'fg s2'},
@@ -8214,7 +8259,9 @@ function Anotacoes(){
         ce('textarea',{value:form.texto||'',onChange:function(e){setFld('texto',e.target.value);},
           placeholder:'Digite a anota\u00e7\u00e3o detalhada...',
           style:{minHeight:110,resize:'vertical',padding:'8px 10px',border:'1.5px solid #e2e8f0',
-            borderRadius:8,fontSize:13,width:'100%',boxSizing:'border-box',fontFamily:'inherit'}})
+            borderRadius:8,fontSize:13,width:'100%',boxSizing:'border-box',fontFamily:'inherit'}}),
+        ce('div',{style:{textAlign:'right',fontSize:11,color:(form.texto||'').length>500?'#dc2626':'#94a3b8',marginTop:3}},
+          (form.texto||'').length+' caracteres')
       )
     ),
     ce('div',{className:'form-actions'},
@@ -8223,15 +8270,50 @@ function Anotacoes(){
     )
   ):null;
 
+  /* KPIs */
+  var kpis=ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}},
+    [{v:_kTotal,l:'Total',c:'#2563eb'},{v:_kPin,l:'Fixadas',c:'#7c3aed'},
+     {v:_kAlta,l:'Alta Prior.',c:'#dc2626'},{v:_kHoje,l:'Hoje',c:'#059669'}
+    ].map(function(k){
+      return ce('div',{key:k.l,style:{background:k.c+'11',border:'1.5px solid '+k.c+'33',
+        borderRadius:8,padding:'8px 12px',textAlign:'center',flex:1,minWidth:70}},
+        ce('div',{style:{fontSize:20,fontWeight:800,color:k.c}},k.v),
+        ce('div',{style:{fontSize:10,color:'#64748b',fontWeight:600,textTransform:'uppercase',marginTop:2}},k.l)
+      );
+    })
+  );
   /* TABELA */
   var tbl=ce('div',{className:'card'},
+    /* Tags rapidas */
+    allTags.length>0?ce('div',{style:{display:'flex',gap:6,flexWrap:'wrap',marginBottom:10}},
+      ce('button',{style:{fontSize:11,padding:'2px 8px',border:'1.5px solid '+(filtTag===''?'#2563eb':'#e2e8f0'),
+        borderRadius:999,cursor:'pointer',background:filtTag===''?'#eff6ff':'#f8fafc',color:filtTag===''?'#2563eb':'#64748b',fontWeight:filtTag===''?700:400},
+        onClick:function(){setFiltTag('');}},'\u2715 Todas'),
+      allTags.map(function(tag){
+        var active=filtTag===tag;
+        return ce('button',{key:tag,
+          style:{fontSize:11,padding:'2px 8px',border:'1.5px solid '+(active?'#7c3aed':'#e2e8f0'),
+            borderRadius:999,cursor:'pointer',background:active?'#faf5ff':'#f8fafc',color:active?'#7c3aed':'#64748b',fontWeight:active?700:400},
+          onClick:function(){setFiltTag(active?'':tag);}},
+          '#'+tag);
+      })
+    ):null,
     ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10,flexWrap:'wrap',gap:8}},
-      ce('div',{style:{display:'flex',gap:8}},
+      ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}},
         ce('button',{className:'btn btn-s',onClick:exportExcel},'\ud83d\udcca Excel'),
         ce('button',{className:'btn btn-s',onClick:imprimirLotes},
           '\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+' sel.)':filtered.length?' ('+filtered.length+')':''))
       ),
-      ce('span',{style:{fontSize:12,color:'#64748b'}},filtered.length+' anota\u00e7\u00e3o(es)')
+      ce('div',{style:{display:'flex',gap:8,alignItems:'center'}},
+        ce('select',{className:'inp',style:{fontSize:11,padding:'4px 8px'},value:sortMode,onChange:function(e){setSortMode(e.target.value);}},
+          ce('option',{value:'id_desc'},'Mais recentes'),
+          ce('option',{value:'id_asc'},'Mais antigas'),
+          ce('option',{value:'titulo'},'T\u00edtulo A-Z'),
+          ce('option',{value:'prot'},'Protocolo'),
+          ce('option',{value:'prio'},'Prioridade')
+        ),
+        ce('span',{style:{fontSize:12,color:'#64748b'}},filtered.length+' nota(s)')
+      )
     ),
     ce('div',{className:'tbl-wrap'},
       ce('table',{className:'tbl tbl-anot'},
@@ -8239,7 +8321,7 @@ function Anotacoes(){
           ce('th',{style:{width:32}},ce('input',{type:'checkbox',
             checked:filtered.length>0&&filtered.every(function(n){return selIds.includes(n.id);}),
             onChange:function(){setSelIds(filtered.every(function(n){return selIds.includes(n.id);})?[]:filtered.map(function(n){return n.id;}));}})),
-          ['#','Data','Protocolo','Solicitante','Servi\u00e7o','T\u00edtulo','A\u00e7\u00f5es'].map(function(c){return ce('th',{key:c},c);})
+          ['\ud83d\udccc','#','Data','Protocolo','T\u00edtulo','Prior.','A\u00e7\u00f5es'].map(function(c){return ce('th',{key:c},c);})
         )),
         ce('tbody',null,filtered.length===0
           ?ce('tr',null,ce('td',{colSpan:8,className:'empty'},'Nenhuma anota\u00e7\u00e3o encontrada.'))
@@ -8248,21 +8330,39 @@ function Anotacoes(){
               ce('td',null,ce('input',{type:'checkbox',checked:selIds.includes(n.id),onChange:function(){
                 setSelIds(function(prev){return prev.includes(n.id)?prev.filter(function(x){return x!==n.id;}):[].concat(prev,[n.id]);});
               }})),
+              ce('td',{style:{textAlign:'center'}},
+                ce('button',{title:n.pinned?'Desafixar':'Fixar',
+                  style:{background:'none',border:'none',cursor:'pointer',fontSize:14,opacity:n.pinned?1:.3},
+                  onClick:function(){togglePin(n);}},'\ud83d\udccc')
+              ),
               ce('td',null,i+1),
               ce('td',null,
                 ce('div',{style:{fontSize:11,color:'#64748b'}},n.dtCad||''),
                 n.dtEd?ce('div',{style:{fontSize:10,color:'#94a3b8'}},'ed: '+n.dtEd):null
               ),
-              ce('td',null,ce('code',{style:{fontSize:10}},n.prot||'\u2013')),
-              ce('td',null,n.nom||'\u2013'),
-              ce('td',{title:n.cn},(n.cn||'').slice(0,22)+((n.cn||'').length>22?'\u2026':'')),
-              ce('td',null,
-                ce('strong',{style:{fontSize:12}},n.titulo),
-                n.tags?ce('div',{style:{fontSize:10,color:'#7c3aed',marginTop:2}},'\ud83c\udff7\ufe0f '+n.tags):null
+              ce('td',{style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},
+                ce('div',null,ce('code',{style:{fontSize:10}},n.prot||'\u2013')),
+                ce('strong',{style:{fontSize:12,display:'block',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},n.titulo),
+                n.tags?ce('div',{style:{fontSize:10,color:'#7c3aed',marginTop:1}},
+                  (n.tags||'').split(',').slice(0,2).map(function(tag,ti){
+                    return ce('span',{key:ti,style:{background:'#faf5ff',border:'1px solid #e9d5ff',borderRadius:999,padding:'0 5px',marginRight:3,cursor:'pointer'},
+                      onClick:function(e){e.stopPropagation();setFiltTag(tag.trim());}},
+                      '#'+tag.trim());
+                  })
+                ):null
               ),
-              ce('td',{className:'no-print'},
+              ce('td',{style:{textAlign:'center'}},
+                (function(){
+                  var pm={alta:'\ud83d\udd34',media:'\ud83d\udfe1',baixa:'\ud83d\udfe2'};
+                  var pc={alta:'#dc2626',media:'#d97706',baixa:'#16a34a'};
+                  var p=n.prioridade||'media';
+                  return ce('span',{style:{fontSize:10,fontWeight:700,color:pc[p]}},(pm[p]||'')+' '+(p.charAt(0).toUpperCase()+p.slice(1)));
+                })()
+              ),
+              ce('td',{className:'no-print',style:{whiteSpace:'nowrap'}},
                 ce('button',{className:'btn-icon',title:'Visualizar',onClick:function(){visualizar(n);}},'\ud83d\udc41\ufe0f'),
                 ce('button',{className:'btn-icon',title:'Editar',onClick:function(){iniciarEdit(n);}},'\u270f\ufe0f'),
+                ce('button',{className:'btn-icon',title:'Duplicar',style:{color:'#7c3aed'},onClick:function(){duplicar(n);}},'\ud83d\udccb'),
                 ce('button',{className:'btn-icon',title:'Nova anota\u00e7\u00e3o para este protocolo',style:{color:'#2563eb',fontWeight:700,fontSize:15},
                   onClick:function(){
                     var _r=INIT_REQS.find(function(r){return r.id===n.reqId;});
@@ -8284,6 +8384,7 @@ function Anotacoes(){
 
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
+    form===null?kpis:null,
     ce('div',{className:'page-header'},
       ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udcdd Anota\u00e7\u00f5es')}}),
       ce('button',{className:'btn btn-p',
