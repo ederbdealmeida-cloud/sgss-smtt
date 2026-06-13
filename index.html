@@ -7510,7 +7510,6 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
         ce('button',{className:'btn btn-s',onClick:goHoje},'\ud83d\udcc6 Hoje'),
         ce('button',{className:'btn '+(view==='cal'?'btn-p':'btn-s'),onClick:function(){setView('cal');}},'\ud83d\uddd3\ufe0f Calend\u00e1rio'),
         ce('button',{className:'btn '+(view==='list'?'btn-p':'btn-s'),onClick:function(){setView('list');}},'\u2630 Lista'),
-        ce('button',{className:'btn '+(view==='week'?'btn-p':'btn-s'),onClick:function(){setView('week');}},'\ud83d\uddd3\ufe0f Semana'),
         ce('button',{className:'btn btn-s',style:{background:'#16a34a',color:'#fff',border:'none'},onClick:exportXLSXAg},'\ud83d\udcca Excel')
       )
     ),
@@ -7567,39 +7566,7 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
         placeholder:'\ud83d\udd0d Buscar agendamento...',value:listSrch,
         onChange:function(e){setListSrch(e.target.value);setListPg(1);}}):null,
       view==='cal'?ce('div',{style:{overflow:'hidden'}},calGrid,dayDetail,legenda):
-      view==='week'?ce('div',{style:{overflow:'auto'}},
-        /* Navegacao semana */
-        ce('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:10}},
-          ce('button',{className:'btn btn-s',onClick:prevWeek},'\u2190'),
-          ce('span',{style:{fontWeight:700,fontSize:13,flex:1,textAlign:'center'}},
-            _wDays[0].toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})+' \u2014 '+_wDays[6].toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})),
-          ce('button',{className:'btn btn-s',onClick:nextWeek},'\u2192')
-        ),
-        /* Grid semana */
-        ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:4}},
-          _wDays.map(function(day){
-            var isToday=day.toDateString()===new Date().toDateString();
-            var dayItens=_wDayItems(day);
-            return ce('div',{key:day.toISOString(),style:{
-              background:isToday?'#eff6ff':'#f8fafc',
-              border:'1.5px solid '+(isToday?'#2563eb':'#e2e8f0'),
-              borderRadius:8,padding:'6px 4px',minHeight:80}},
-              ce('div',{style:{fontWeight:700,fontSize:11,color:isToday?'#2563eb':'#64748b',
-                textAlign:'center',marginBottom:4}},
-                ['Dom','Seg','Ter','Qua','Qui','Sex','S\u00e1b'][day.getDay()]+' '+day.getDate()),
-              dayItens.length===0?ce('div',{style:{fontSize:10,color:'#cbd5e1',textAlign:'center',marginTop:8}},'\u2013'):
-              dayItens.map(function(r,i){
-                var c=r.urg==='Sim'?'#dc2626':r.status==='Conclu\u00eddo'?'#16a34a':'#2563eb';
-                return ce('div',{key:i,style:{background:c+'22',border:'1px solid '+c+'44',
-                  borderRadius:4,padding:'2px 4px',fontSize:10,color:c,fontWeight:600,
-                  marginBottom:2,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'},
-                  title:(r.nome||r.nom||'')+' \u2022 '+(r.cn||r.sn||'')},
-                  (r.nome||r.nom||'').split(' ')[0])
-              })
-            );
-          })
-        )
-      ):listaView
+listaView
     )
   );
 }
