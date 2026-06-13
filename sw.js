@@ -1,5 +1,5 @@
-/* SW v20 - Twemoji cached, HTML sempre fresh */
-const CACHE = 'sgss-v20';
+/* SW v21 - force cache clear */
+const CACHE = 'sgss-v21';
 
 self.addEventListener('install', e => {
   e.waitUntil(
