@@ -8317,14 +8317,25 @@ function Anotacoes(){
     ),
     ce('div',{className:'tbl-wrap'},
       ce('table',{className:'tbl tbl-anot'},
+        ce('colgroup',null,
+          ce('col',{style:{width:28}}),
+          ce('col',{style:{width:28}}),
+          ce('col',{style:{width:28}}),
+          ce('col',{style:{width:72}}),
+          ce('col',{style:{width:90}}),
+          ce('col',{style:{width:'auto'}}),
+          ce('col',{style:{width:120}}),
+          ce('col',{style:{width:65}}),
+          ce('col',{style:{width:90}})
+        ),
         ce('thead',null,ce('tr',null,
-          ce('th',{style:{width:32}},ce('input',{type:'checkbox',
+          ce('th',{style:{width:28}},ce('input',{type:'checkbox',
             checked:filtered.length>0&&filtered.every(function(n){return selIds.includes(n.id);}),
             onChange:function(){setSelIds(filtered.every(function(n){return selIds.includes(n.id);})?[]:filtered.map(function(n){return n.id;}));}})),
-          ['\ud83d\udccc','#','Data','Protocolo','T\u00edtulo','Prior.','A\u00e7\u00f5es'].map(function(c){return ce('th',{key:c},c);})
+          ['\ud83d\udccc','#','Data','Protocolo','T\u00edtulo','Tipo de Servi\u00e7o','Prior.','A\u00e7\u00f5es'].map(function(c){return ce('th',{key:c},c);})
         )),
         ce('tbody',null,filtered.length===0
-          ?ce('tr',null,ce('td',{colSpan:8,className:'empty'},'Nenhuma anota\u00e7\u00e3o encontrada.'))
+          ?ce('tr',null,ce('td',{colSpan:9,className:'empty'},'Nenhuma anota\u00e7\u00e3o encontrada.'))
           :filtered.map(function(n,i){
             return ce('tr',{key:n.id},
               ce('td',null,ce('input',{type:'checkbox',checked:selIds.includes(n.id),onChange:function(){
@@ -8335,21 +8346,27 @@ function Anotacoes(){
                   style:{background:'none',border:'none',cursor:'pointer',fontSize:14,opacity:n.pinned?1:.3},
                   onClick:function(){togglePin(n);}},'\ud83d\udccc')
               ),
-              ce('td',null,i+1),
-              ce('td',null,
-                ce('div',{style:{fontSize:11,color:'#64748b'}},n.dtCad||''),
+              ce('td',{style:{textAlign:'center',color:'#64748b',fontSize:12}},i+1),
+              ce('td',{style:{whiteSpace:'nowrap',fontSize:11,color:'#64748b'}},
+                ce('div',null,n.dtCad||'\u2013'),
                 n.dtEd?ce('div',{style:{fontSize:10,color:'#94a3b8'}},'ed: '+n.dtEd):null
               ),
               ce('td',{style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},
-                ce('div',null,ce('code',{style:{fontSize:10}},n.prot||'\u2013')),
+                ce('code',{style:{fontSize:10,color:'#2563eb'}},n.prot||'\u2013')
+              ),
+              ce('td',{style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},
                 ce('strong',{style:{fontSize:12,display:'block',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},n.titulo),
-                n.tags?ce('div',{style:{fontSize:10,color:'#7c3aed',marginTop:1}},
+                n.tags?ce('div',{style:{fontSize:10,color:'#7c3aed',marginTop:2}},
                   (n.tags||'').split(',').slice(0,2).map(function(tag,ti){
-                    return ce('span',{key:ti,style:{background:'#faf5ff',border:'1px solid #e9d5ff',borderRadius:999,padding:'0 5px',marginRight:3,cursor:'pointer'},
+                    return ce('span',{key:ti,style:{background:'#faf5ff',border:'1px solid #e9d5ff',
+                      borderRadius:999,padding:'0 4px',marginRight:3,cursor:'pointer'},
                       onClick:function(e){e.stopPropagation();setFiltTag(tag.trim());}},
                       '#'+tag.trim());
                   })
                 ):null
+              ),
+              ce('td',{style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontSize:11},title:n.cn||''},
+                n.cn||(n.nom?n.nom.split(' ')[0]+'...':'\u2013')
               ),
               ce('td',{style:{textAlign:'center'}},
                 (function(){
