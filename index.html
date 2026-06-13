@@ -4275,7 +4275,7 @@ function Controle(p){
                 title:'Data de conclusão',
                 onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{dtConclusao:ev.target.value});setEd(n);},
                 style:{display:'block',padding:'2px 4px',border:'1px solid #93c5fd',borderRadius:4,fontSize:11,width:'100%'}}):null
-            ):ce('span',{className:'badge '+(normSt(r.status)==='Concluído'?'b-gr':normSt(r.status)==='Em andamento'?'b-cy':r.status==='Agendado'?'b-yw':'b-or')},fmtStatusLabel(r),title:fmtStatusLabel(r),style:{whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'100%',display:'block'}},(normSt(r.status)||r.status))),
+            ):ce('span',{className:'badge '+(normSt(r.status)==='Concluído'?'b-gr':normSt(r.status)==='Em andamento'?'b-cy':r.status==='Agendado'?'b-yw':'b-or')},fmtStatusLabel(r),style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',display:'block'},title:fmtStatusLabel(r)},(normSt(r.status)||r.status))),
             ce('td',{style:{overflow:'hidden',maxWidth:95}},e?ce('select',{value:e.func||'',onChange:function(ev){var n=Object.assign({},ed);n[r.id]=Object.assign({},n[r.id],{func:ev.target.value});setEd(n);}},
               ce('option',{value:''},'\u2014 Nenhum'),
               FUNC_LIST.filter(function(f){return f.ativo;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);})):ce('span',null,r.func||'\u2013')),
