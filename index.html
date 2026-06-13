@@ -4119,8 +4119,9 @@ function Controle(p){
           ce('button',{className:'btn '+(sortBy==='alfabetico'?'btn-p':'btn-s'),style:{padding:'5px 9px',fontSize:11},onClick:function(){setSortBy('alfabetico');setPg(1);}},'\ud83d\udd24 Alfab\u00e9tico')
         ),
         selIds.length>0&&ce('span',{style:{color:'#2563eb',fontSize:12,fontWeight:600,alignSelf:'center'}},selIds.length+' selecionado(s)')
-      ),
-      /* KPIs */
+      )
+    ),
+    /* KPIs */
     ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}},
       [{v:_kTotal,l:'Total',c:'#2563eb'},{v:_kPend,l:'Pendentes',c:'#d97706'},
        {v:_kAndamento,l:'Andamento',c:'#0891b2'},{v:_kConcl,l:'Conclu\u00eddos',c:'#16a34a'},
@@ -4219,7 +4220,7 @@ function Controle(p){
           );
         }))
       ))
-    )):null,
+    ):null,
     ce(Pag,{total:sorted.length,pg:pg,set:function(v){setPg(v);},label:'solicita\u00e7\u00e3o(\u00f5es)'})
   );
 }
