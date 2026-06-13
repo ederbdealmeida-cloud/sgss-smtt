@@ -4596,7 +4596,7 @@ function Historico(){
     ),
     /* Filtros avancados */
     showFilters?ce('div',{className:'card',style:{marginBottom:12,padding:'12px 14px',border:'2px solid #2563eb33',background:'#eff6ff'}},
-      ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:10}},
+      ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10,marginBottom:10}},
         ce('div',null,
           ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Busca geral'),
           ce('input',{className:'inp',placeholder:'\ud83d\udd0d Nome, protocolo, bairro...', value:srch,onChange:function(e){setSrch(e.target.value);setPg(1);}})
@@ -4633,17 +4633,21 @@ function Historico(){
             ce('option',{value:'nao'},'N\u00e3o urgentes')
           )
         ),
+        ce('div',{style:{display:'flex',alignItems:'flex-end'}},
+          ce('button',{className:'btn btn-s',style:{width:'100%'},onClick:limparFiltros},'\u00d7 Limpar')
+        )
+      ),
+      /* Linha de datas separada */
+      ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr auto',gap:10,marginTop:4,alignItems:'end'}},
         ce('div',null,
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'De'),
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'\ud83d\udcc5 Per\u00edodo De'),
           ce('input',{className:'inp',type:'date',value:fde,onChange:function(e){setFde(e.target.value);setPg(1);}})
         ),
         ce('div',null,
           ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'At\u00e9'),
           ce('input',{className:'inp',type:'date',value:fate,onChange:function(e){setFate(e.target.value);setPg(1);}})
         ),
-        ce('div',{style:{display:'flex',alignItems:'flex-end'}},
-          ce('button',{className:'btn btn-s',style:{width:'100%'},onClick:limparFiltros},'\u00d7 Limpar')
-        )
+        ce('div',null)
       )
     ):null,
     /* Tabela */
@@ -4653,10 +4657,10 @@ function Historico(){
       hloading?ce(Spinner):ce('div',{className:'tbl-wrap'},
         ce('table',{className:'tbl tbl-hist',style:{tableLayout:'fixed',width:'100%'}},
           ce('colgroup',null,
-            ce('col',{style:{width:32}}),ce('col',{style:{width:30}}),ce('col',{style:{width:90}}),
-            ce('col',{style:{width:70}}),ce('col',{style:{width:120}}),ce('col',{style:{width:75}}),
-            ce('col',{style:{width:100}}),ce('col',{style:{width:65}}),ce('col',{style:{width:40}}),
-            ce('col',{style:{width:85}}),ce('col',{style:{width:90}}),ce('col',{style:{width:80}})
+            ce('col',{style:{width:28}}),ce('col',{style:{width:24}}),ce('col',{style:{width:80}}),
+            ce('col',{style:{width:60}}),ce('col',{style:{width:100}}),ce('col',{style:{width:65}}),
+            ce('col',{style:{width:90}}),ce('col',{style:{width:58}}),ce('col',{style:{width:32}}),
+            ce('col',{style:{width:70}}),ce('col',{style:{width:80}}),ce('col',{style:{width:56}})
           ),
           ce('thead',null,ce('tr',null,
             ce('th',{key:'chk',style:{width:32}},ce('input',{type:'checkbox',
