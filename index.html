@@ -6767,52 +6767,308 @@ function Comunicados(){
   );
 }
 function Comunicacao(){
+  var useState=React.useState;
   var sm=useState(null);var modal=sm[0];var setModal=sm[1];
   var smsg=useState('');var msg=smsg[0];var setMsg=smsg[1];
   var ssrch=useState('');var srch=ssrch[0];var setSrch=ssrch[1];
   var spg=useState(1);var pg=spg[0];var setPg=spg[1];
+  var sfilt=useState('todos');var filt=sfilt[0];var setFilt=sfilt[1];
+  var sids=useState([]);var selIds=sids[0];var setSelIds=sids[1];
+  var stpl=useState('');var tplSel=stpl[0];var setTplSel=stpl[1];
+  var sshist=useState(false);var showHist=sshist[0];var setShowHist=sshist[1];
+  var shist=useState(JSON.parse(localStorage.getItem('smtt_com_hist')||'[]'));
+  var hist=shist[0];var setHist=shist[1];
   var t=useToast();var toast=t[0];var notify=t[1];
+
+  var TEMPLATES=[
+    {id:'agend',l:'\ud83d\udcc5 Agendamento confirmado',
+     w:'Ol\u00e1, {nome}! Sua solicita\u00e7\u00e3o #{prot} foi agendada pela SMTT de Cacequi. Em breve nossa equipe passar\u00e1 no local. D\u00favidas: (55) XXXX-XXXX.',
+     e:'Prezado(a) {nome},\n\nInformamos que sua solicita\u00e7\u00e3o #{prot} foi agendada pela SMTT de Cacequi/RS.\n\nEm breve nossa equipe entrar\u00e1 em contato para confirmar o hor\u00e1rio.\n\nAtenciosamente,\nSMTT Cacequi'},
+    {id:'concl',l:'\u2705 Servi\u00e7o conclu\u00eddo',
+     w:'Ol\u00e1, {nome}! O servi\u00e7o referente \u00e0 sua solicita\u00e7\u00e3o #{prot} foi conclu\u00eddo pela SMTT de Cacequi. Obrigado pela prefer\u00eancia!',
+     e:'Prezado(a) {nome},\n\nTemos a satisfa\u00e7\u00e3o de informar que o servi\u00e7o referente \u00e0 sua solicita\u00e7\u00e3o #{prot} foi conclu\u00eddo.\n\nAgradecemos seu contato com a SMTT de Cacequi/RS.\n\nAtenciosamente,\nSMTT Cacequi'},
+    {id:'cobr',l:'\ud83d\udcb0 Taxa pendente',
+     w:'Ol\u00e1, {nome}! Identificamos uma taxa pendente referente \u00e0 solicita\u00e7\u00e3o #{prot} junto \u00e0 SMTT de Cacequi. Por favor, entre em contato: (55) XXXX-XXXX.',
+     e:'Prezado(a) {nome},\n\nIdentificamos uma taxa pendente referente \u00e0 sua solicita\u00e7\u00e3o #{prot}.\n\nPor favor, entre em contato com a SMTT de Cacequi/RS para regulariza\u00e7\u00e3o.\n\nAtenciosamente,\nSMTT Cacequi'},
+    {id:'pend',l:'\u23f3 Solicita\u00e7\u00e3o em andamento',
+     w:'Ol\u00e1, {nome}! Sua solicita\u00e7\u00e3o #{prot} est\u00e1 em andamento pela SMTT de Cacequi. Em breve teremos novidades!',
+     e:'Prezado(a) {nome},\n\nSua solicita\u00e7\u00e3o #{prot} est\u00e1 sendo analisada e em breve ser\u00e1 atendida.\n\nAtenciosamente,\nSMTT Cacequi'},
+    {id:'livre',l:'\u270f\ufe0f Mensagem livre',w:'Ol\u00e1, {nome}! ',e:'Prezado(a) {nome},\n\n'}
+  ];
+
   var CONTATOS=INIT_SOLS.map(function(s){
     var reqs=INIT_REQS.filter(function(r){return r.solId===s.id||r.nom===s.nome;});
+    var ultReq=reqs.sort(function(a,b){return b.dt>a.dt?1:-1;})[0];
+    var contatos_feitos=hist.filter(function(h){return h.nome===s.nome;}).length;
     return {nom:s.nome,bairro:s.bairro||'',tel:s.telefone||'',
-      email:s.email||'',total:reqs.length};
-  })
-  var filtered=CONTATOS.filter(function(c){if(!srch)return true;var q=srch.toLowerCase();return c.nom.toLowerCase().indexOf(q)>=0||c.bairro.toLowerCase().indexOf(q)>=0;});
+      email:s.email||'',total:reqs.length,
+      prot:ultReq?ultReq.prot:'',
+      status:ultReq?ultReq.status:'',
+      contatado:contatos_feitos>0,
+      nContatos:contatos_feitos};
+  });
+
+  var filtered=CONTATOS.filter(function(c){
+    if(filt==='com_tel'&&!c.tel)return false;
+    if(filt==='com_email'&&!c.email)return false;
+    if(filt==='sem_contato'&&c.contatado)return false;
+    if(filt==='ja_contatado'&&!c.contatado)return false;
+    if(srch){var q=srch.toLowerCase();
+      if(c.nom.toLowerCase().indexOf(q)<0&&c.bairro.toLowerCase().indexOf(q)<0)return false;
+    }
+    return true;
+  });
+
   var items=paginate(filtered,pg);
-  function openW(s){setMsg('Ol\xe1, '+s.nom+'! Aqui \xe9 a SMTT de Cacequi. Estamos entrando em contato sobre sua solicita\xe7\xe3o de servi\xe7o. Obrigado!');setModal({tipo:'whatsapp',item:s});}
-  function openE(s){setMsg('Prezado(a) '+s.nom+',\n\nEntramos em contato sobre o andamento de sua solicita\xe7\xe3o junto \xe0 SMTT de Cacequi/RS.\n\nAtenciosamente,\nSMTT');setModal({tipo:'email',item:s});}
-  return ce('div',{className:'page',style:{paddingTop:28,paddingLeft:28,paddingRight:28}},
+  var selItems=CONTATOS.filter(function(c){return selIds.includes(c.nom);});
+
+  /* KPIs */
+  var _tot=CONTATOS.length;
+  var _tel=CONTATOS.filter(function(c){return !!c.tel;}).length;
+  var _email=CONTATOS.filter(function(c){return !!c.email;}).length;
+  var _contatado=CONTATOS.filter(function(c){return c.contatado;}).length;
+
+  function applyTemplate(tplId,item,tipo){
+    var tpl=TEMPLATES.find(function(t){return t.id===tplId;});
+    if(!tpl)return '';
+    var txt=tipo==='w'?tpl.w:tpl.e;
+    return txt.replace(/{nome}/g,item.nom).replace(/{prot}/g,item.prot||'N/A');
+  }
+
+  function registrarContato(item,tipo){
+    var h={dt:today(),hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+      nome:item.nom,tipo:tipo,msg:msg.slice(0,80)};
+    var novo=hist.concat([h]);
+    setHist(novo);
+    try{localStorage.setItem('smtt_com_hist',JSON.stringify(novo.slice(-200)));}catch(e){}
+  }
+
+  function openW(s){
+    var tpl=TEMPLATES.find(function(t){return t.id===(tplSel||'livre');})||TEMPLATES[TEMPLATES.length-1];
+    setMsg(applyTemplate(tpl.id,s,'w'));
+    setModal({tipo:'whatsapp',item:s});
+  }
+  function openE(s){
+    var tpl=TEMPLATES.find(function(t){return t.id===(tplSel||'livre');})||TEMPLATES[TEMPLATES.length-1];
+    setMsg(applyTemplate(tpl.id,s,'e'));
+    setModal({tipo:'email',item:s});
+  }
+
+  function enviar(){
+    var texto=encodeURIComponent(msg);
+    if(modal.tipo==='whatsapp'){
+      var tel=(modal.item.tel||'').replace(/\D/g,'');
+      if(tel.length===10||tel.length===11)tel='55'+tel;
+      if(!tel){notify('\u26a0\ufe0f Telefone n\u00e3o cadastrado.');return;}
+      window.open('https://wa.me/'+tel+'?text='+texto,'_blank');
+      registrarContato(modal.item,'WhatsApp');
+      notify('\ud83d\udcac WhatsApp aberto!');
+    } else {
+      var email=modal.item.email||'';
+      if(!email){notify('\u26a0\ufe0f E-mail n\u00e3o cadastrado.');return;}
+      var assunto=encodeURIComponent('SMTT Cacequi - Sua Solicita\u00e7\u00e3o');
+      window.open('mailto:'+email+'?subject='+assunto+'&body='+texto,'_blank');
+      registrarContato(modal.item,'E-mail');
+      notify('\ud83d\udce7 E-mail aberto!');
+    }
+    setModal(null);
+  }
+
+  function enviarLote(tipo){
+    var alvos=selItems.filter(function(s){return tipo==='w'?!!s.tel:!!s.email;});
+    if(!alvos.length){notify('Nenhum selecionado com '+(tipo==='w'?'telefone':'e-mail')+'.');return;}
+    alvos.forEach(function(s,i){
+      setTimeout(function(){
+        var txt=applyTemplate(tplSel||'livre',s,tipo);
+        if(tipo==='w'){
+          var tel=(s.tel||'').replace(/\D/g,'');
+          if(tel.length===10||tel.length===11)tel='55'+tel;
+          window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(txt),'_blank');
+        } else {
+          var assunto=encodeURIComponent('SMTT Cacequi - Sua Solicita\u00e7\u00e3o');
+          window.open('mailto:'+s.email+'?subject='+assunto+'&body='+encodeURIComponent(txt),'_blank');
+        }
+        registrarContato(s,tipo==='w'?'WhatsApp':'E-mail');
+      },i*500);
+    });
+    notify('\u2705 '+(tipo==='w'?'WhatsApp':'E-mail')+' aberto para '+alvos.length+' contatos!');
+    setSelIds([]);
+  }
+
+  return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
-    modal?ce('div',{className:'modal-ov'},ce('div',{className:'modal-bx',style:{maxWidth:520}},ce('h3',{className:'modal-title'},modal.tipo==='whatsapp'?'\ud83d\udcac Enviar WhatsApp':'\ud83d\udce7 Enviar E-mail'),ce('p',{style:{color:'#64748b',fontSize:13,marginBottom:12}},'Para: ',ce('strong',null,modal.item.nom),' \u2014 '+(modal.tipo==='whatsapp'?modal.item.tel:modal.item.email)),ce('div',{className:'fg'},ce('label',null,'Mensagem'),ce('textarea',{className:'msg-area',rows:7,value:msg,onChange:function(e){setMsg(e.target.value);}})),ce('div',{className:'modal-acts'},ce('button',{className:'btn btn-s',onClick:function(){setModal(null);}},'Cancelar'),ce('button',{className:'btn',style:{background:modal.tipo==='whatsapp'?'#25d366':'#2563eb',color:'#fff'},onClick:function(){
-              var texto=encodeURIComponent(msg);
-              if(modal.tipo==='whatsapp'){
-                var tel=(modal.item.tel||'').replace(/\\D/g,'');
-                /* Garantir DDI 55 (Brasil) */
-                if(tel.length===10||tel.length===11)tel='55'+tel;
-                if(!tel){notify('\u26a0\ufe0f Telefone n\u00e3o cadastrado para este solicitante.');return;}
-                window.open('https://wa.me/'+tel+'?text='+texto,'_blank');
-                notify('\ud83d\udcac WhatsApp aberto!');
-              } else {
-                var email=modal.item.email||'';
-                if(!email){notify('\u26a0\ufe0f E-mail n\u00e3o cadastrado para este solicitante.');return;}
-                var assunto=encodeURIComponent('SMTT Cacequi - Sua Solicita\u00e7\u00e3o');
-                window.open('mailto:'+email+'?subject='+assunto+'&body='+texto,'_blank');
-                notify('\ud83d\udce7 Cliente de e-mail aberto!');
-              }
-              setModal(null);
-            }},modal.tipo==='whatsapp'?'\ud83d\udcac Abrir WhatsApp':'\ud83d\udce7 Abrir E-mail')))):null,
-    ce('div',{className:'page-header'},ce('h2',{className:'page-title'},'\ud83d\udce1 Comunica\xe7\xe3o com Solicitantes')),
-    ce('div',{style:{display:'flex',gap:24,fontSize:13,color:'#475569',background:'linear-gradient(135deg,#eff6ff,#f0fdf4)',border:'1px solid #dbeafe',borderRadius:10,padding:'14px 18px',marginBottom:14}},ce('div',null,'\ud83d\udcac ',ce('strong',null,'WhatsApp'),' \u2014 dispon\xedvel quando o solicitante informou telefone'),ce('div',null,'\ud83d\udce7 ',ce('strong',null,'E-mail'),' \u2014 dispon\xedvel quando o solicitante informou e-mail')),
+    /* Modal envio */
+    modal?ce('div',{className:'modal-ov'},
+      ce('div',{className:'modal-bx',style:{maxWidth:520}},
+        ce('h3',{className:'modal-title'},modal.tipo==='whatsapp'?'\ud83d\udcac Enviar WhatsApp':'\ud83d\udce7 Enviar E-mail'),
+        ce('p',{style:{color:'#64748b',fontSize:13,marginBottom:8}},
+          'Para: ',ce('strong',null,modal.item.nom),' \u2014 '+(modal.tipo==='whatsapp'?modal.item.tel:modal.item.email)),
+        /* Template selector no modal */
+        ce('div',{style:{display:'flex',gap:6,flexWrap:'wrap',marginBottom:10}},
+          TEMPLATES.map(function(tpl){
+            return ce('button',{key:tpl.id,
+              style:{fontSize:11,padding:'3px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,
+                cursor:'pointer',background:tplSel===tpl.id?'#2563eb':'#f8fafc',
+                color:tplSel===tpl.id?'#fff':'#374151'},
+              onClick:function(){
+                setTplSel(tpl.id);
+                setMsg(applyTemplate(tpl.id,modal.item,modal.tipo==='whatsapp'?'w':'e'));
+              }},tpl.l);
+          })
+        ),
+        ce('div',{className:'fg'},
+          ce('label',null,'Mensagem'),
+          ce('textarea',{className:'msg-area',rows:7,value:msg,onChange:function(e){setMsg(e.target.value);}})
+        ),
+        ce('div',{className:'modal-acts'},
+          ce('button',{className:'btn btn-s',onClick:function(){setModal(null);}},'Cancelar'),
+          ce('button',{className:'btn',style:{background:modal.tipo==='whatsapp'?'#25d366':'#2563eb',color:'#fff'},onClick:enviar},
+            modal.tipo==='whatsapp'?'\ud83d\udcac Abrir WhatsApp':'\ud83d\udce7 Abrir E-mail')
+        )
+      )
+    ):null,
+    /* Modal historico */
+    showHist?ce('div',{className:'modal-ov',onClick:function(){setShowHist(false);}},
+      ce('div',{className:'modal-bx',style:{maxWidth:520},onClick:function(e){e.stopPropagation();}},
+        ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}},
+          ce('h3',{className:'modal-title',style:{margin:0}},'\ud83d\udcdc Hist\u00f3rico de Contatos'),
+          ce('button',{onClick:function(){setShowHist(false);},
+            style:{background:'#f1f5f9',border:'none',borderRadius:6,padding:'4px 10px',cursor:'pointer',fontSize:16}},'\xd7')
+        ),
+        hist.length===0?ce('p',{style:{color:'#94a3b8',fontSize:13}},'Nenhum contato registrado ainda.'):
+        ce('div',{style:{maxHeight:400,overflowY:'auto',display:'flex',flexDirection:'column',gap:6}},
+          hist.slice().reverse().map(function(h,i){
+            return ce('div',{key:i,style:{padding:'8px 12px',borderRadius:8,
+              background:i%2===0?'#f8fafc':'#fff',border:'1px solid #f1f5f9'}},
+              ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:2}},
+                ce('span',{style:{fontWeight:700,fontSize:12,color:'#1e293b'}},h.nome),
+                ce('span',{style:{fontSize:10,color:'#94a3b8'}},h.dt+' '+h.hora)
+              ),
+              ce('div',{style:{fontSize:11,color:'#64748b'}},
+                ce('span',{style:{background:h.tipo==='WhatsApp'?'#dcfce7':'#eff6ff',
+                  color:h.tipo==='WhatsApp'?'#16a34a':'#2563eb',
+                  padding:'1px 6px',borderRadius:999,fontWeight:600,marginRight:6}},h.tipo),
+                h.msg+'...'
+              )
+            );
+          })
+        ),
+        hist.length>0?ce('button',{className:'btn btn-s',style:{marginTop:10,width:'100%',color:'#dc2626'},
+          onClick:function(){setHist([]);try{localStorage.removeItem('smtt_com_hist');}catch(e){}setShowHist(false);notify('Hist\u00f3rico limpo.');}},
+          '\ud83d\uddd1\ufe0f Limpar Hist\u00f3rico'):null
+      )
+    ):null,
+    ce('div',{className:'page-header'},
+      ce('h2',{className:'page-title'},'\ud83d\udce1 Comunica\u00e7\u00e3o'),
+      ce('div',{style:{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center'}},
+        ce('button',{className:'btn btn-s',onClick:function(){setShowHist(true);}},
+          '\ud83d\udcdc Hist\u00f3rico'+(hist.length>0?' ('+hist.length+')':'')),
+        selIds.length>0?ce('button',{className:'btn btn-s',
+          style:{background:'#25d366',color:'#fff',border:'none'},
+          onClick:function(){enviarLote('w');}},'\ud83d\udcac Lote WhatsApp ('+selIds.length+')'):null,
+        selIds.length>0?ce('button',{className:'btn btn-s',
+          style:{background:'#2563eb',color:'#fff',border:'none'},
+          onClick:function(){enviarLote('e');}},'\ud83d\udce7 Lote E-mail ('+selIds.length+')'):null
+      )
+    ),
+    /* KPIs */
+    ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}},
+      [{v:_tot,l:'Total',c:'#2563eb'},{v:_tel,l:'Com Telefone',c:'#25d366'},
+       {v:_email,l:'Com E-mail',c:'#7c3aed'},{v:_contatado,l:'Contatados',c:'#059669'},
+       {v:_tot-_contatado,l:'Sem Contato',c:'#d97706'}
+      ].map(function(k){
+        return ce('div',{key:k.l,style:{background:k.c+'11',border:'1.5px solid '+k.c+'33',
+          borderRadius:8,padding:'8px 12px',textAlign:'center',flex:1,minWidth:80,cursor:'pointer'},
+          onClick:function(){
+            if(k.l==='Com Telefone')setFilt('com_tel');
+            else if(k.l==='Com E-mail')setFilt('com_email');
+            else if(k.l==='Sem Contato')setFilt('sem_contato');
+            else if(k.l==='Contatados')setFilt('ja_contatado');
+            else setFilt('todos');
+            setPg(1);
+          }},
+          ce('div',{style:{fontSize:20,fontWeight:800,color:k.c}},k.v),
+          ce('div',{style:{fontSize:10,color:'#64748b',fontWeight:600,textTransform:'uppercase',marginTop:2}},k.l)
+        );
+      })
+    ),
     ce('div',{className:'card'},
-      ce('input',{className:'srch',placeholder:'\ud83d\udd0d Buscar por nome ou bairro...',value:srch,onChange:function(e){setSrch(e.target.value);setPg(1);}}),
-      ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl tbl-com'},
-        ce('thead',null,ce('tr',null,['#','Nome do Solicitante','Bairro','Telefone','E-mail','Solicita\xe7\xf5es','Contato'].map(function(c){return ce('th',{key:c},c);}))),
-        ce('tbody',null,items.map(function(s,i){return ce('tr',{key:s.nom},ce('td',null,(pg-1)*PER+i+1),ce('td',null,ce('strong',null,s.nom)),ce('td',null,s.bairro),ce('td',null,s.tel?ce('span',{className:'badge b-gr'},s.tel):ce('span',{className:'badge b-gy'},'N\xe3o informado')),ce('td',null,s.email?ce('span',{className:'badge b-bl'},s.email):ce('span',{className:'badge b-gy'},'N\xe3o informado')),ce('td',{style:{textAlign:'center'}},s.total),ce('td',null,ce('button',{className:'btn btn-sm',style:{background:s.tel?'#25d366':'#e2e8f0',color:s.tel?'#fff':'#94a3b8',marginRight:6},disabled:!s.tel,onClick:function(){if(s.tel)openW(s);}},'\ud83d\udcac WhatsApp'),ce('button',{className:'btn btn-sm',style:{background:s.email?'#2563eb':'#e2e8f0',color:s.email?'#fff':'#94a3b8'},disabled:!s.email,onClick:function(){if(s.email)openE(s);}},'\ud83d\udce7 E-mail')));}))
-      )),
-      ce(Pag,{total:filtered.length,pg:pg,set:function(v){setPg(v);},label:'solicitante(s)'})
+      /* Filtros e busca */
+      ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginBottom:10,alignItems:'center'}},
+        ce('input',{className:'srch',style:{flex:1,minWidth:160,margin:0},
+          placeholder:'\ud83d\udd0d Buscar por nome ou bairro...',value:srch,
+          onChange:function(e){setSrch(e.target.value);setPg(1);}}),
+        ce('select',{className:'inp',style:{fontSize:12,padding:'6px 8px'},
+          value:filt,onChange:function(e){setFilt(e.target.value);setPg(1);}},
+          ce('option',{value:'todos'},'Todos'),
+          ce('option',{value:'com_tel'},'Com Telefone'),
+          ce('option',{value:'com_email'},'Com E-mail'),
+          ce('option',{value:'sem_contato'},'Sem Contato'),
+          ce('option',{value:'ja_contatado'},'J\u00e1 Contatados')
+        ),
+        /* Template padrao */
+        ce('select',{className:'inp',style:{fontSize:12,padding:'6px 8px'},
+          value:tplSel,onChange:function(e){setTplSel(e.target.value);}},
+          ce('option',{value:''},'Template...'),
+          TEMPLATES.map(function(tpl){return ce('option',{key:tpl.id,value:tpl.id},tpl.l);})
+        )
+      ),
+      /* Selecionar todos */
+      filtered.length>0?ce('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:8,fontSize:12,color:'#64748b'}},
+        ce('input',{type:'checkbox',
+          checked:selIds.length>0&&items.every(function(s){return selIds.includes(s.nom);}),
+          onChange:function(e){setSelIds(e.target.checked?items.map(function(s){return s.nom;}):[]);}}),
+        ce('span',null,'Selecionar p\u00e1gina'),
+        selIds.length>0?ce('span',{style:{color:'#2563eb',fontWeight:600}},selIds.length+' selecionados'):null
+      ):null,
+      /* Tabela */
+      ce('div',{className:'tbl-wrap'},
+        ce('table',{className:'tbl tbl-com',style:{tableLayout:'fixed',width:'100%'}},
+          ce('colgroup',null,
+            ce('col',{style:{width:28}}),ce('col',{style:{width:30}}),
+            ce('col',{style:{width:'auto'}}),ce('col',{style:{width:80}}),
+            ce('col',{style:{width:90}}),ce('col',{style:{width:90}}),
+            ce('col',{style:{width:50}}),ce('col',{style:{width:130}})
+          ),
+          ce('thead',null,ce('tr',null,
+            ['','#','Solicitante','Bairro','Telefone','E-mail','Req.','Contato'].map(function(c){return ce('th',{key:c},c);})
+          )),
+          ce('tbody',null,items.map(function(s,i){
+            var sel=selIds.includes(s.nom);
+            return ce('tr',{key:s.nom,style:sel?{background:'#eff6ff'}:{}},
+              ce('td',null,ce('input',{type:'checkbox',checked:sel,
+                onChange:function(){setSelIds(function(p){return p.includes(s.nom)?p.filter(function(x){return x!==s.nom;}):p.concat([s.nom]);});}})),
+              ce('td',null,(pg-1)*PER+i+1),
+              ce('td',{style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},
+                ce('div',{style:{display:'flex',alignItems:'center',gap:4}},
+                  s.contatado?ce('span',{title:'J\u00e1 contatado '+s.nContatos+'x',style:{color:'#16a34a',fontSize:14}},'\u2713'):null,
+                  ce('strong',null,s.nom)
+                )
+              ),
+              ce('td',{style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},s.bairro||'\u2013'),
+              ce('td',null,s.tel?ce('span',{className:'badge b-gr',style:{fontSize:10}},s.tel):
+                ce('span',{className:'badge b-gy',style:{fontSize:10}},'N/I')),
+              ce('td',{style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},
+                s.email?ce('span',{className:'badge b-bl',style:{fontSize:10}},s.email):
+                ce('span',{className:'badge b-gy',style:{fontSize:10}},'N/I')),
+              ce('td',{style:{textAlign:'center'}},s.total),
+              ce('td',null,
+                ce('button',{className:'btn btn-sm',
+                  style:{background:s.tel?'#25d366':'#e2e8f0',color:s.tel?'#fff':'#94a3b8',marginRight:4,fontSize:11},
+                  disabled:!s.tel,onClick:function(){if(s.tel)openW(s);}},'\ud83d\udcac'),
+                ce('button',{className:'btn btn-sm',
+                  style:{background:s.email?'#2563eb':'#e2e8f0',color:s.email?'#fff':'#94a3b8',fontSize:11},
+                  disabled:!s.email,onClick:function(){if(s.email)openE(s);}},'\ud83d\udce7')
+              )
+            );
+          }))
+        )
+      ),
+      ce(Pag,{total:filtered.length,pg:pg,set:function(v){setPg(v);},label:'contato(s)'})
     )
   );
 }
+
 
 function Agenda(){
   var now=new Date();
