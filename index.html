@@ -6845,6 +6845,7 @@ function Agenda(){
   var t=useToast();var toast=t[0];var notify=t[1];
   /* Novos estados */
   var slsrch=useState('');var listSrch=slsrch[0];var setListSrch=slsrch[1];
+  var sAlert=useState(false);var showAlertas=sAlert[0];var setShowAlertas=sAlert[1];
   var srecur=useState('none');var recurType=srecur[0];var setRecurType=srecur[1];
   var srecurn=useState(2);var recurN=srecurn[0];var setRecurN=srecurn[1];
   var sweekSt=useState(function(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().slice(0,10);});var weekStart=sweekSt[0];var setWeekStart=sweekSt[1];
@@ -6933,7 +6934,7 @@ function Agenda(){
   function prevMes(){if(mes===0){setMes(11);setAno(ano-1);}else setMes(mes-1);setSelDia(null);setDayPg(1);}
   function resetListPg(){setListPg(1);}
   function nextMes(){if(mes===11){setMes(0);setAno(ano+1);}else setMes(mes+1);setSelDia(null);setDayPg(1);}
-  function goHoje(){var n=new Date();setMes(n.getMonth());setAno(n.getFullYear());setSelDia(null);setDayPg(1);setListPg(1);}
+  function goHoje(){var n=new Date();setMes(n.getMonth());setAno(n.getFullYear());setSelDia(n.getDate());setDayPg(1);setListPg(1);setView('cal');}
 
   var firstDay=new Date(ano,mes,1).getDay();
   var daysInMes=new Date(ano,mes+1,0).getDate();
@@ -7508,6 +7509,47 @@ setMesmoEnd(false);setSolRef(null);setEditAgId(null);setAgReg(false);setAgRegD({
       ce('h2',{className:'page-title',dangerouslySetInnerHTML:{__html:emojiToTw('\ud83d\udcc5 Agenda')}}),
       ce('div',{style:{display:'flex',gap:8}},
         ce('button',{className:'btn btn-s',onClick:goHoje},'\ud83d\udcc6 Hoje'),
+        ce('div',{style:{position:'relative',display:'inline-block'}},
+          ce('button',{className:'btn btn-s',onClick:function(){setShowAlertas(function(v){return !v;});}},'\ud83d\udd14 Alertas',
+            (_kHoje+_kUrg+agendaManual.filter(function(r){return r.date<today()&&r.status!=='Conclu\u00eddo';}).length)>0?
+            ce('span',{style:{background:'#dc2626',color:'#fff',borderRadius:999,fontSize:10,fontWeight:700,padding:'1px 6px',marginLeft:5}},
+              _kHoje+_kUrg+agendaManual.filter(function(r){return r.date<today()&&r.status!=='Conclu\u00eddo';}).length):null
+          ),
+          showAlertas?ce('div',{style:{position:'absolute',top:36,left:0,zIndex:999,background:'#fff',border:'1.5px solid #e2e8f0',borderRadius:10,boxShadow:'0 8px 32px rgba(0,0,0,.15)',minWidth:260,padding:12}},
+            /* Fechar ao clicar fora */
+            ce('div',{style:{fontWeight:700,fontSize:12,color:'#1e3a5f',marginBottom:8,display:'flex',justifyContent:'space-between'}},
+              '\ud83d\udd14 Alertas',ce('span',{style:{cursor:'pointer',color:'#94a3b8'},onClick:function(){setShowAlertas(false);}},'\u00d7')),
+            /* Hoje */
+            _kHoje>0?ce('div',{style:{marginBottom:8}},
+              ce('div',{style:{fontSize:11,fontWeight:700,color:'#059669',marginBottom:4}},'\u2600\ufe0f Hoje ('+_kHoje+')'),
+              agendaManual.filter(function(r){return r.date===today();})
+                .slice(0,3).map(function(r,i){
+                  return ce('div',{key:i,style:{fontSize:11,padding:'4px 8px',background:'#f0fdf4',borderRadius:6,marginBottom:3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},
+                    ce('b',null,r.nome),' \u2022 ',(r.cn||''));
+                })
+            ):null,
+            /* Urgentes */
+            _kUrg>0?ce('div',{style:{marginBottom:8}},
+              ce('div',{style:{fontSize:11,fontWeight:700,color:'#dc2626',marginBottom:4}},'\ud83d\udea8 Urgentes ('+_kUrg+')'),
+              agendaManual.filter(function(r){return r.urg==='Sim'&&r.status!=='Conclu\u00eddo';})
+                .slice(0,3).map(function(r,i){
+                  return ce('div',{key:i,style:{fontSize:11,padding:'4px 8px',background:'#fef2f2',borderRadius:6,marginBottom:3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},
+                    ce('b',null,r.nome),' \u2022 ',r.date.split('-').reverse().join('/'));
+                })
+            ):null,
+            /* Atrasados */
+            (function(){
+              var at=agendaManual.filter(function(r){return r.date<today()&&r.status!=='Conclu\u00eddo';});
+              return at.length>0?ce('div',null,
+                ce('div',{style:{fontSize:11,fontWeight:700,color:'#d97706',marginBottom:4}},'\u26a0\ufe0f Atrasados ('+at.length+')'),
+                at.slice(0,3).map(function(r,i){
+                  return ce('div',{key:i,style:{fontSize:11,padding:'4px 8px',background:'#fffbeb',borderRadius:6,marginBottom:3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},
+                    ce('b',null,r.nome),' \u2022 ',r.date.split('-').reverse().join('/'));
+                })
+              ):null;
+            })()
+          ):null
+        ),
         ce('button',{className:'btn '+(view==='cal'?'btn-p':'btn-s'),onClick:function(){setView('cal');}},'\ud83d\uddd3\ufe0f Calend\u00e1rio'),
         ce('button',{className:'btn '+(view==='list'?'btn-p':'btn-s'),onClick:function(){setView('list');}},'\u2630 Lista'),
         ce('button',{className:'btn '+(view==='resumo'?'btn-p':'btn-s'),onClick:function(){setView('resumo');}},'\ud83d\udccb Resumo'),
