@@ -4154,8 +4154,7 @@ function Controle(p){
       })
     ):null,
     /* LISTA */
-    viewMode==='lista'?
-    cloading?ce(Spinner):ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl tbl-ctrl'},
+    viewMode==='lista'?(cloading?ce(Spinner):ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl tbl-ctrl'},
 
         ce('thead',null,ce('tr',null,
           [ce('th',{key:'chk',style:{width:32}},ce('input',{type:'checkbox',
@@ -4219,9 +4218,9 @@ function Controle(p){
             )
           );
         }))
-      )),
-      ce(Pag,{total:sorted.length,pg:pg,set:function(v){setPg(v);},label:'solicita\u00e7\u00e3o(\u00f5es)'})
-    ):null
+      ))
+    )):null,
+    ce(Pag,{total:sorted.length,pg:pg,set:function(v){setPg(v);},label:'solicita\u00e7\u00e3o(\u00f5es)'})
   );
 }
 
