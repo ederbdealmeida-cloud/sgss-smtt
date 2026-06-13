@@ -4319,6 +4319,58 @@ function Controle(p){
   );
 }
 
+    showFilters?ce('div',{style:{marginBottom:10,padding:'10px 12px',border:'1.5px solid #bfdbfe',borderRadius:8,background:'#eff6ff',boxSizing:'border-box',overflow:'hidden'}},
+      ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px 10px'}},
+        ce('div',{style:{gridColumn:'span 2'}},
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'Busca'),
+          ce('input',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},placeholder:'Nome, protocolo, bairro, servi\u00e7o...',value:srch,onChange:function(e){setSrch(e.target.value);setPg(1);}})
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'Status'),
+          ce('select',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},value:fst,onChange:function(e){setFst(e.target.value);setPg(1);}},
+            ce('option',{value:''},'Todos'),
+            ce('option',{value:'Pendente'},'Pendente'),
+            ce('option',{value:'Agendado'},'Agendado'),
+            ce('option',{value:'Em andamento'},'Em andamento'),
+            ce('option',{value:'Conclu\u00eddo'},'Conclu\u00eddo')
+          )
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'Urg\u00eancia'),
+          ce('select',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},value:furg,onChange:function(e){setFurg(e.target.value);setPg(1);}},
+            ce('option',{value:''},'Todos'),
+            ce('option',{value:'sim'},'\ud83d\udea8 Urgentes'),
+            ce('option',{value:'nao'},'N\u00e3o urgentes')
+          )
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'Funcion\u00e1rio'),
+          ce('select',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},value:ffunc,onChange:function(e){setFfunc(e.target.value);setPg(1);}},
+            ce('option',{value:''},'Todos'),
+            FUNC_LIST.filter(function(f){return f.ativo!==false;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);})
+          )
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'Servi\u00e7o'),
+          ce('select',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},value:ftipo,onChange:function(e){setFtipo(e.target.value);setPg(1);}},
+            ce('option',{value:''},'Todos'),
+            CATS.map(function(c){return ce('option',{key:c.id,value:String(c.id)},c.nome);})
+          )
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'De'),
+          ce('input',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},type:'date',value:fde,onChange:function(e){setFde(e.target.value);setPg(1);}})
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'At\u00e9'),
+          ce('input',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},type:'date',value:fate,onChange:function(e){setFate(e.target.value);setPg(1);}})
+        ),
+        ce('div',{style:{gridColumn:'span 2',display:'flex',justifyContent:'flex-end',marginTop:4}},
+          ce('button',{className:'btn btn-s',style:{fontSize:11,padding:'4px 12px'},onClick:limparFiltros},'\u00d7 Limpar filtros')
+        )
+      )
+    ):null,
+    
 
 function Historico(){
   var useState=React.useState,useEffect=React.useEffect;
@@ -4595,15 +4647,15 @@ function Historico(){
       )
     ),
     /* Filtros avancados */
-    showFilters?ce('div',{className:'card',style:{marginBottom:12,padding:'12px 14px',border:'2px solid #2563eb33',background:'#eff6ff'}},
-      ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}},
-        ce('div',null,
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Busca geral'),
-          ce('input',{className:'inp',placeholder:'\ud83d\udd0d Nome, protocolo, bairro...', value:srch,onChange:function(e){setSrch(e.target.value);setPg(1);}})
+    showFilters?ce('div',{style:{marginBottom:10,padding:'10px 12px',border:'1.5px solid #bfdbfe',borderRadius:8,background:'#eff6ff',boxSizing:'border-box',overflow:'hidden'}},
+      ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px 10px'}},
+        ce('div',{style:{gridColumn:'span 2'}},
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'Busca'),
+          ce('input',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},placeholder:'Nome, protocolo, bairro, servi\u00e7o...',value:srch,onChange:function(e){setSrch(e.target.value);setPg(1);}})
         ),
         ce('div',null,
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Status'),
-          ce('select',{className:'inp',value:fst,onChange:function(e){setFst(e.target.value);setPg(1);}},
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'Status'),
+          ce('select',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},value:fst,onChange:function(e){setFst(e.target.value);setPg(1);}},
             ce('option',{value:''},'Todos'),
             ce('option',{value:'Pendente'},'Pendente'),
             ce('option',{value:'Agendado'},'Agendado'),
@@ -4612,44 +4664,41 @@ function Historico(){
           )
         ),
         ce('div',null,
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Funcion\u00e1rio'),
-          ce('select',{className:'inp',value:ffunc,onChange:function(e){setFfunc(e.target.value);setPg(1);}},
-            ce('option',{value:''},'Todos'),
-            FUNC_LIST.filter(function(f){return f.ativo!==false;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);})
-          )
-        ),
-        ce('div',null,
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Tipo de Servi\u00e7o'),
-          ce('select',{className:'inp',value:ftipo,onChange:function(e){setFtipo(e.target.value);setPg(1);}},
-            ce('option',{value:''},'Todos'),
-            CATS.map(function(c){return ce('option',{key:c.id,value:String(c.id)},c.nome);})
-          )
-        ),
-        ce('div',null,
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Urg\u00eancia'),
-          ce('select',{className:'inp',value:furg,onChange:function(e){setFurg(e.target.value);setPg(1);}},
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'Urg\u00eancia'),
+          ce('select',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},value:furg,onChange:function(e){setFurg(e.target.value);setPg(1);}},
             ce('option',{value:''},'Todos'),
             ce('option',{value:'sim'},'\ud83d\udea8 Urgentes'),
             ce('option',{value:'nao'},'N\u00e3o urgentes')
           )
         ),
-        ce('div',{style:{display:'flex',alignItems:'flex-end'}},
-          ce('button',{className:'btn btn-s',style:{width:'100%'},onClick:limparFiltros},'\u00d7 Limpar')
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'Funcion\u00e1rio'),
+          ce('select',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},value:ffunc,onChange:function(e){setFfunc(e.target.value);setPg(1);}},
+            ce('option',{value:''},'Todos'),
+            FUNC_LIST.filter(function(f){return f.ativo!==false;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);})
+          )
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'Servi\u00e7o'),
+          ce('select',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},value:ftipo,onChange:function(e){setFtipo(e.target.value);setPg(1);}},
+            ce('option',{value:''},'Todos'),
+            CATS.map(function(c){return ce('option',{key:c.id,value:String(c.id)},c.nome);})
+          )
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'De'),
+          ce('input',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},type:'date',value:fde,onChange:function(e){setFde(e.target.value);setPg(1);}})
+        ),
+        ce('div',null,
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:3}},'At\u00e9'),
+          ce('input',{className:'inp',style:{fontSize:12,padding:'5px 8px',width:'100%',boxSizing:'border-box'},type:'date',value:fate,onChange:function(e){setFate(e.target.value);setPg(1);}})
+        ),
+        ce('div',{style:{gridColumn:'span 2',display:'flex',justifyContent:'flex-end',marginTop:4}},
+          ce('button',{className:'btn btn-s',style:{fontSize:11,padding:'4px 12px'},onClick:limparFiltros},'\u00d7 Limpar filtros')
         )
-      ),
-      /* Linha de datas separada */
-      ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr auto',gap:10,marginTop:4,alignItems:'end'}},
-        ce('div',null,
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'\ud83d\udcc5 Per\u00edodo De'),
-          ce('input',{className:'inp',type:'date',value:fde,onChange:function(e){setFde(e.target.value);setPg(1);}})
-        ),
-        ce('div',null,
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'At\u00e9'),
-          ce('input',{className:'inp',type:'date',value:fate,onChange:function(e){setFate(e.target.value);setPg(1);}})
-        ),
-        ce('div',null)
       )
     ):null,
+    
     /* Tabela */
     ce('div',{className:'card'},
       !showFilters?ce('input',{className:'srch',placeholder:'\ud83d\udd0d Buscar por nome, protocolo, bairro, servi\u00e7o ou funcion\u00e1rio...',value:srch,
