@@ -3320,6 +3320,10 @@ function Solicitacoes(){
   var sbulkEd=useState(false);var showBulkEdit=sbulkEd[0];var setShowBulkEdit=sbulkEd[1];
   var sbulkSt=useState('');var bulkStatus=sbulkSt[0];var setBulkStatus=sbulkSt[1];
   var sbulkFn=useState('');var bulkFunc=sbulkFn[0];var setBulkFunc=sbulkFn[1];
+  var sbulkBa=useState('');var bulkBairro=sbulkBa[0];var setBulkBairro=sbulkBa[1];
+  var sbulkCat=useState('');var bulkCat=sbulkCat[0];var setBulkCat=sbulkCat[1];
+  var sbulkTxa=useState('');var bulkTaxa=sbulkTxa[0];var setBulkTaxa=sbulkTxa[1];
+  var sbulkUrg=useState('');var bulkUrg=sbulkUrg[0];var setBulkUrg=sbulkUrg[1];
   /* Expor abertura de form de edicao para outros modulos */
   var React_useEffect=React.useEffect;
   /* Expor funcao de edicao e processar pending imediatamente */
@@ -3547,14 +3551,31 @@ function Solicitacoes(){
   }
   function execBulkEdit(){
     if(!selIds.length){notify('Selecione ao menos um registro.');return;}
-    if(!bulkStatus&&!bulkFunc){notify('Selecione o que deseja alterar.');return;}
-    var upd={};
-    if(bulkStatus){upd.status=bulkStatus;if(bulkStatus==='Conclu\u00eddo')upd.dtConclusao=today();}
-    if(bulkFunc)upd.func=bulkFunc;
-    INIT_REQS.forEach(function(r,i){if(selIds.includes(r.id))INIT_REQS[i]=Object.assign({},r,upd);});
+    if(!bulkBairro&&!bulkCat&&!bulkTaxa&&!bulkUrg){
+      notify('Selecione ao menos um campo para alterar.');return;
+    }
+    INIT_REQS.forEach(function(r,i){
+      if(!selIds.includes(r.id))return;
+      var upd={};
+      if(bulkBairro)upd.bairro=bulkBairro;
+      if(bulkUrg)upd.urg=bulkUrg;
+      if(bulkCat){
+        var cat=CATS.find(function(c){return c.id===bulkCat;});
+        if(cat){upd.catId=cat.id;upd.cn=cat.nome;upd.sn=cat.nome;}
+      }
+      if(bulkTaxa==='isento'){upd.taxa=0;upd.pago='Isento';}
+      else if(bulkTaxa==='pago'){
+        var _cat=CATS.find(function(c){return c.id===(upd.catId||r.catId);});
+        upd.taxa=(_cat&&_cat.taxa)||r.taxa||0;
+        upd.pago='Pago';
+      }
+      INIT_REQS[i]=Object.assign({},r,upd);
+    });
     setAll(INIT_REQS.map(function(x){return Object.assign({},x);}));
     notify('\u2705 '+selIds.length+' registro(s) atualizados!');
-    setSelIds([]);setShowBulkEdit(false);setBulkStatus('');setBulkFunc('');sgssSave();
+    setSelIds([]);setShowBulkEdit(false);
+    setBulkBairro('');setBulkCat('');setBulkTaxa('');setBulkUrg('');
+    sgssSave();
   }
   function openPrintModal(){
     var alvo=selIds.length>0?filtered.filter(function(r){return selIds.includes(r.id);}):filtered;
@@ -3875,26 +3896,67 @@ function Solicitacoes(){
     ce(Toast,{msg:toast}),
     /* Modal editar em lote */
     showBulkEdit?ce('div',{style:{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.45)',zIndex:1500,display:'flex',alignItems:'center',justifyContent:'center'},onClick:function(){setShowBulkEdit(false);}},
-      ce('div',{style:{background:'#fff',borderRadius:12,padding:'20px 24px',width:'min(95vw,400px)',boxShadow:'0 20px 60px rgba(0,0,0,.3)'},onClick:function(e){e.stopPropagation();}},
-        ce('h3',{style:{margin:'0 0 14px',fontSize:15,fontWeight:700,color:'#1e3a5f'}},'\u270f\ufe0f Editar em Lote \u2014 '+selIds.length+' selecionados'),
-        ce('div',{style:{display:'flex',flexDirection:'column',gap:10}},
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Status'),
-          ce('select',{className:'inp',value:bulkStatus,onChange:function(e){setBulkStatus(e.target.value);}},
-            ce('option',{value:''},'-- N\u00e3o alterar --'),
-            ce('option',{value:'Pendente'},'Pendente'),
-            ce('option',{value:'Agendado'},'Agendado'),
-            ce('option',{value:'Em andamento'},'Em andamento'),
-            ce('option',{value:'Conclu\u00eddo'},'Conclu\u00eddo')
+      ce('div',{style:{background:'#fff',borderRadius:12,padding:'20px 24px',width:'min(95vw,460px)',maxHeight:'90vh',overflowY:'auto',boxShadow:'0 20px 60px rgba(0,0,0,.3)'},onClick:function(e){e.stopPropagation();}},
+        ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}},
+          ce('h3',{style:{margin:0,fontSize:15,fontWeight:700,color:'#1e3a5f'}},'\u270f\ufe0f Editar em Lote \u2014 '+selIds.length+' registro(s)'),
+          ce('button',{style:{background:'none',border:'none',fontSize:18,cursor:'pointer',color:'#64748b'},onClick:function(){setShowBulkEdit(false);}},'\u00d7')
+        ),
+        ce('p',{style:{fontSize:11,color:'#94a3b8',margin:'0 0 14px'}},'\u26a0\ufe0f Deixe em branco os campos que n\u00e3o deseja alterar.'),
+        ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}},
+          /* Bairro */
+          ce('div',null,
+            ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Bairro'),
+            ce('input',{className:'inp',placeholder:'Digitar bairro...',value:bulkBairro,
+              onChange:function(e){setBulkBairro(e.target.value);}})
           ),
-          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4,marginTop:6}},'Funcion\u00e1rio'),
-          ce('select',{className:'inp',value:bulkFunc,onChange:function(e){setBulkFunc(e.target.value);}},
-            ce('option',{value:''},'-- N\u00e3o alterar --'),
-            FUNC_LIST.filter(function(f){return f.ativo;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);})
+          /* Urgencia */
+          ce('div',null,
+            ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'\ud83d\udea8 Urg\u00eancia'),
+            ce('select',{className:'inp',value:bulkUrg,onChange:function(e){setBulkUrg(e.target.value);}},
+              ce('option',{value:''},'-- N\u00e3o alterar --'),
+              ce('option',{value:'Sim'},'Urgente'),
+              ce('option',{value:'N\u00e3o'},'Normal')
+            )
           ),
-          ce('div',{style:{display:'flex',gap:8,justifyContent:'flex-end',marginTop:10}},
-            ce('button',{className:'btn btn-s',onClick:function(){setShowBulkEdit(false);}},'\u00d7 Cancelar'),
-            ce('button',{className:'btn btn-p',onClick:execBulkEdit},'\u2714 Aplicar')
+          /* Tipo de servico */
+          ce('div',{style:{gridColumn:'1/-1'}},
+            ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'\ud83d\udee0\ufe0f Tipo de Servi\u00e7o'),
+            ce('select',{className:'inp',value:bulkCat,onChange:function(e){setBulkCat(e.target.value);}},
+              ce('option',{value:''},'-- N\u00e3o alterar --'),
+              CATS.map(function(c){return ce('option',{key:c.id,value:c.id},c.nome);})
+            )
+          ),
+          /* Taxa */
+          ce('div',{style:{gridColumn:'1/-1'}},
+            ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'\ud83d\udcb0 Taxa'),
+            ce('div',{style:{display:'flex',gap:8}},
+              ce('label',{style:{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'8px 14px',
+                borderRadius:8,border:'2px solid '+(bulkTaxa==='isento'?'#16a34a':'#e2e8f0'),
+                background:bulkTaxa==='isento'?'#f0fdf4':'#f8fafc',flex:1,justifyContent:'center'}},
+                ce('input',{type:'radio',name:'bulkTaxa',value:'isento',checked:bulkTaxa==='isento',
+                  onChange:function(){setBulkTaxa('isento');}}),
+                ce('span',{style:{fontSize:12,fontWeight:600,color:'#16a34a'}},'\u2713 Isento')
+              ),
+              ce('label',{style:{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'8px 14px',
+                borderRadius:8,border:'2px solid '+(bulkTaxa==='pago'?'#2563eb':'#e2e8f0'),
+                background:bulkTaxa==='pago'?'#eff6ff':'#f8fafc',flex:1,justifyContent:'center'}},
+                ce('input',{type:'radio',name:'bulkTaxa',value:'pago',checked:bulkTaxa==='pago',
+                  onChange:function(){setBulkTaxa('pago');}}),
+                ce('span',{style:{fontSize:12,fontWeight:600,color:'#2563eb'}},'\ud83d\udcb2 Pago (taxa do servi\u00e7o)')
+              ),
+              ce('label',{style:{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'8px 14px',
+                borderRadius:8,border:'2px solid '+(bulkTaxa===''&&bulkTaxa!=='isento'&&bulkTaxa!=='pago'?'#e2e8f0':'#e2e8f0'),
+                background:'#f8fafc',flex:1,justifyContent:'center'}},
+                ce('input',{type:'radio',name:'bulkTaxa',value:'',checked:bulkTaxa==='',
+                  onChange:function(){setBulkTaxa('');}}),
+                ce('span',{style:{fontSize:12,fontWeight:600,color:'#64748b'}},'\u2014 N\u00e3o alterar')
+              )
+            )
           )
+        ),
+        ce('div',{style:{display:'flex',gap:8,justifyContent:'flex-end',marginTop:16,paddingTop:12,borderTop:'1px solid #f1f5f9'}},
+          ce('button',{className:'btn btn-s',onClick:function(){setShowBulkEdit(false);setBulkBairro('');setBulkCat('');setBulkTaxa('');setBulkUrg('');}},'\u00d7 Cancelar'),
+          ce('button',{className:'btn btn-p',onClick:execBulkEdit},'\u2714 Aplicar nos '+selIds.length+' registro(s)')
         )
       )
     ):null,
