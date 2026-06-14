@@ -4932,7 +4932,7 @@ function Controle(p){
           [ce('th',{key:'chk',style:{width:32}},ce('input',{type:'checkbox',
             checked:items.length>0&&items.every(function(r){return selIds.includes(r.id);}),
             onChange:function(){setSelIds(items.every(function(r){return selIds.includes(r.id);})?[]:items.map(function(r){return r.id;}));}})),
-          'Protocolo','Data','Solicitante','Endereço/Nº','Bairro','Servi\u00e7o','Taxa','SLA','Urg.','Status','Funcion\u00e1rio','A\u00e7\u00f5es']
+          'Protocolo','Data','Solicitante','Endereço/Nº','Bairro','Servi\u00e7o','Taxa','Atraso','Urg.','Status','Funcion\u00e1rio','A\u00e7\u00f5es']
           .map(function(c){return typeof c==='string'?ce('th',{key:c},c):c;})
         )),
         ce('tbody',null,items.map(function(r){
