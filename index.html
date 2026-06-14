@@ -4006,6 +4006,8 @@ function Solicitacoes(){
         ce('tbody',null,items.map(function(r){var isE=r.id===editId;
           return ce('tr',{key:r.id,className:isE?'':r.urg==='Sim'&&r.status!=='Conclu\xeddo'?'row-urg':'',
             style:isE?{background:'#eff6ff',boxShadow:'inset 0 0 0 2px #2563eb'}:{}},
+          ce('td',{style:{textAlign:'center',width:32}},
+            ce('input',{type:'checkbox',checked:selIds.includes(r.id),onChange:function(){toggleSel(r.id);}})),
           ce('td',null,ce('strong',null,r.prot)),ce('td',null,fmtD(r.dt)),
           isE?ce('td',null,ce('input',{value:editD.nom||'',onChange:function(e){setEditD(function(v){return Object.assign({},v,{nom:e.target.value});});},style:{padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12,width:'100%'}})):ce('td',null,r.nom||'Não informado'),
           isE?ce('td',null,ce('input',{value:editD.bairro||'',onChange:function(e){setEditD(function(v){return Object.assign({},v,{bairro:e.target.value});});},style:{padding:'3px 6px',border:'1px solid #93c5fd',borderRadius:4,fontSize:12,width:'100%'}})):ce('td',null,r.bairro||'Não informado'),
