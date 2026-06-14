@@ -4681,25 +4681,66 @@ function Controle(p){
           ce('h3',{style:{fontSize:15,fontWeight:700,color:'#1e3a5f',margin:0}},'\ud83d\udda8\ufe0f Impress\u00e3o Personalizada'),
           ce('button',{className:'btn-icon',onClick:function(){setShowPrint(false);}},'\u00d7')
         ),
-        ce('div',{style:{background:'#f8fafc',borderRadius:8,padding:'10px 14px',marginBottom:12}},
-          ce('div',{style:{fontWeight:600,fontSize:12,color:'#64748b',marginBottom:8}},'Intervalo de p\u00e1ginas (total: '+totalPgs+' p\u00e1g. / '+allSorted.length+' cards)'),
-          ce('div',{style:{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}},
-            ce('label',{style:{fontSize:13}},'De p\u00e1g.'),
-            ce('input',{className:'inp',type:'number',min:'1',max:String(totalPgs),style:{width:60},
-              value:printFrom,onChange:function(e){setPrintFrom(e.target.value);}}),
-            ce('label',{style:{fontSize:13}},'at\u00e9'),
-            ce('input',{className:'inp',type:'number',min:'1',max:String(totalPgs),style:{width:60},
-              value:printTo,onChange:function(e){setPrintTo(e.target.value);}}),
-            ce('button',{className:'btn',style:{fontSize:11},
-              onClick:function(){
-                var fp2=Math.max(1,parseInt(printFrom)||1);
-                var tp2=Math.min(totalPgs,parseInt(printTo)||totalPgs);
-                var pgi=allSorted.slice((fp2-1)*PER,tp2*PER);
+        ce('div',{style:{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:8,padding:'10px 12px',marginBottom:12}},
+          ce('div',{style:{fontSize:11,fontWeight:700,color:'#64748b',marginBottom:8,textTransform:'uppercase'}},'\ud83d\udcc4 Selecionar por P\u00e1gina'),
+          /* Pagina especifica */
+          ce('div',{style:{marginBottom:8}},
+            ce('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4}},'P\u00e1gina espec\u00edfica:'),
+            ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,width:'100%'},
+              value:printFrom==='single'?printTo:'',
+              onChange:function(e){
+                var pg=e.target.value;
+                if(!pg)return;
+                setPrintFrom('single');setPrintTo(pg);
+                var pgN=parseInt(pg);
+                var pgRegs=allSorted.slice((pgN-1)*PER,pgN*PER);
                 var nw={};
                 allSorted.forEach(function(r){nw[r.id]=false;});
-                pgi.forEach(function(r){nw[r.id]=true;});
+                pgRegs.forEach(function(r){nw[r.id]=true;});
                 setPrintCards(nw);
-              }},'Aplicar p\u00e1ginas')
+              }},
+              ce('option',{value:''},'-- Escolher p\u00e1gina --'),
+              (function(){
+                var opts=[];
+                for(var p=1;p<=totalPgs;p++){
+                  var ini=(p-1)*PER+1;
+                  var fim=Math.min(p*PER,allSorted.length);
+                  opts.push(ce('option',{key:p,value:p},'P\u00e1g. '+p+' \u2014 reg. '+ini+' a '+fim));
+                }
+                return opts;
+              })()
+            )
+          ),
+          /* Intervalo */
+          ce('div',null,
+            ce('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4}},'Intervalo de p\u00e1ginas:'),
+            ce('div',{style:{display:'flex',gap:6,alignItems:'center'}},
+              ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,flex:1},
+                value:printFrom==='single'?'':printFrom,
+                onChange:function(e){setPrintFrom(e.target.value);}},
+                ce('option',{value:''},'De...'),
+                (function(){var o=[];for(var p=1;p<=totalPgs;p++)o.push(ce('option',{key:p,value:p},'P\u00e1g. '+p));return o;})()
+              ),
+              ce('span',{style:{color:'#94a3b8',fontWeight:700}},'at\u00e9'),
+              ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,flex:1},
+                value:printFrom==='single'?'':printTo,
+                onChange:function(e){setPrintTo(e.target.value);}},
+                ce('option',{value:''},'At\u00e9...'),
+                (function(){var o=[];for(var p=1;p<=totalPgs;p++)o.push(ce('option',{key:p,value:p},'P\u00e1g. '+p));return o;})()
+              ),
+              ce('button',{className:'btn btn-s',style:{fontSize:11,whiteSpace:'nowrap'},
+                onClick:function(){
+                  var de=parseInt(printFrom),ate=parseInt(printTo);
+                  if(!de||!ate){notify('Selecione De e At\u00e9.');return;}
+                  if(de>ate){notify('"De" deve ser menor ou igual a "At\u00e9".');return;}
+                  var nw={};
+                  allSorted.forEach(function(r){nw[r.id]=false;});
+                  for(var p=de;p<=ate;p++){
+                    allSorted.slice((p-1)*PER,p*PER).forEach(function(r){nw[r.id]=true;});
+                  }
+                  setPrintCards(nw);
+                }},'\u2714 Aplicar')
+            )
           )
         ),
         ce('div',{style:{marginBottom:12}},
