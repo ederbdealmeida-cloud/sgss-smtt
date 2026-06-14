@@ -3990,14 +3990,16 @@ function Solicitacoes(){
           clearTimeout(window._srt);
           window._srt=setTimeout(function(){setLoading(false);setPg(1);},500);
         }}),
-      loading?ce(Spinner):ce('div',{className:'tbl-wrap'},ce('table',{className:'ce('thead',null,ce('tr',null,
+      loading?ce(Spinner):ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl'},
+        ce('thead',null,ce('tr',null,
           ce('th',{style:{width:32,textAlign:'center'}},
             ce('input',{type:'checkbox',
               checked:items.length>0&&items.every(function(r){return selIds.includes(r.id);}),
               onChange:toggleAll})
           ),
           ['Protocolo','Data','Solicitante','Bairro','Servi\u00e7o','Taxa','Urg.','Status','A\u00e7\u00f5es'].map(function(c){return ce('th',{key:c},c);})
-        )),ody',null,items.map(function(r){var isE=r.id===editId;
+        )),
+        ce('tbo',null,items.map(function(r){var isE=r.id===editId;
           return ce('tr',{key:r.id,className:isE?'':r.urg==='Sim'&&r.status!=='Conclu\xeddo'?'row-urg':'',
             style:isE?{background:'#eff6ff',boxShadow:'inset 0 0 0 2px #2563eb'}:{}},
           ce('td',null,ce('strong',null,r.prot)),ce('td',null,fmtD(r.dt)),
