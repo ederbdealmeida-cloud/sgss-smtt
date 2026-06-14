@@ -5486,10 +5486,14 @@ function Relatorios(){
                         .catch(function(){notify('\ud83d\udccb '+r.prot);});
                     }
                   }},'\ud83d\udce4'),
-                /* Ver no Historico */
-                ce('button',{className:'btn-icon',title:'Ver no Hist\u00f3rico',
+                /* Copiar protocolo */
+                ce('button',{className:'btn-icon',title:'Copiar protocolo',
                   style:{background:'#f8fafc',color:'#64748b',border:'1px solid #e2e8f0'},
-                  onClick:function(){if(window._setPage)window._setPage('historico');}},'\ud83d\udcdc')
+                  onClick:function(){
+                    navigator.clipboard.writeText(r.prot)
+                      .then(function(){notify('\ud83d\udccb Protocolo copiado: '+r.prot);})
+                      .catch(function(){notify(r.prot);});
+                  }},'\ud83d\udccb')
               )
             );})))
         )),
