@@ -3342,6 +3342,8 @@ function Solicitacoes(){
   var sids=useState([]);var selIds=sids[0];var setSelIds=sids[1];
   var sprtModal=useState(false);var showPrtModal=sprtModal[0];var setShowPrtModal=sprtModal[1];
   var sprtPg=useState('');var prtPg=sprtPg[0];var setPrtPg=sprtPg[1];
+  var sprtDe=useState('');var prtDe=sprtDe[0];var setPrtDe=sprtDe[1];
+  var sprtAte=useState('');var prtAte=sprtAte[0];var setPrtAte=sprtAte[1];
   var sprtCards=useState({});var prtCards=sprtCards[0];var setPrtCards=sprtCards[1];
   var sbulkEd=useState(false);var showBulkEdit=sbulkEd[0];var setShowBulkEdit=sbulkEd[1];
   var sbulkSt=useState('');var bulkStatus=sbulkSt[0];var setBulkStatus=sbulkSt[1];
@@ -4000,32 +4002,76 @@ function Solicitacoes(){
           ce('h3',{style:{fontSize:15,fontWeight:700,color:'#1e3a5f',margin:0}},'\ud83d\udda8\ufe0f Impress\u00e3o Personalizada'),
           ce('button',{style:{background:'none',border:'none',fontSize:18,cursor:'pointer'},onClick:function(){setShowPrtModal(false);}},'\u00d7')
         ),
-        /* Select de pagina */
-        ce('div',{style:{marginBottom:10}},
-          ce('select',{style:{fontSize:12,padding:'6px 10px',border:'1.5px solid #e2e8f0',borderRadius:7,width:'100%'},
-            value:prtPg,
-            onChange:function(e){
-              var pg=e.target.value;
-              setPrtPg(pg);
-              if(pg==='')return;
-              /* Selecionar automaticamente os registros da pagina escolhida */
-              var pgN=parseInt(pg);
-              var pgRegs=filtered.slice((pgN-1)*PER,pgN*PER);
-              var n=Object.assign({},prtCards);
-              pgRegs.forEach(function(r){n[r.id]=true;});
-              setPrtCards(n);
-            }},
-            ce('option',{value:''},'-- Selecionar por p\u00e1gina... --'),
-            (function(){
-              var totalPgs=Math.ceil(filtered.length/PER)||1;
-              var opts=[];
-              for(var p=1;p<=totalPgs;p++){
-                var ini=(p-1)*PER+1;
-                var fim=Math.min(p*PER,filtered.length);
-                opts.push(ce('option',{key:p,value:p},'P\u00e1gina '+p+' (registros '+ini+' a '+fim+')'));
-              }
-              return opts;
-            })()
+        /* Selecao por pagina e intervalo */
+        ce('div',{style:{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:8,padding:'10px 12px',marginBottom:12}},
+          ce('div',{style:{fontSize:11,fontWeight:700,color:'#64748b',marginBottom:8,textTransform:'uppercase'}},'\ud83d\udcc4 Selecionar por P\u00e1gina'),
+          /* Pagina especifica */
+          ce('div',{style:{marginBottom:8}},
+            ce('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4}},'P\u00e1gina espec\u00edfica:'),
+            ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,width:'100%'},
+              value:prtPg,
+              onChange:function(e){
+                var pg=e.target.value;
+                setPrtPg(pg);setPrtDe('');setPrtAte('');
+                if(!pg)return;
+                var pgN=parseInt(pg);
+                var pgRegs=filtered.slice((pgN-1)*PER,pgN*PER);
+                var n=Object.assign({},prtCards);
+                pgRegs.forEach(function(r){n[r.id]=true;});
+                setPrtCards(n);
+              }},
+              ce('option',{value:''},'-- Escolher p\u00e1gina --'),
+              (function(){
+                var totalPgs=Math.ceil(filtered.length/PER)||1;
+                var opts=[];
+                for(var p=1;p<=totalPgs;p++){
+                  var ini=(p-1)*PER+1;
+                  var fim=Math.min(p*PER,filtered.length);
+                  opts.push(ce('option',{key:p,value:p},'P\u00e1g. '+p+' \u2014 reg. '+ini+' a '+fim));
+                }
+                return opts;
+              })()
+            )
+          ),
+          /* Intervalo de paginas */
+          ce('div',null,
+            ce('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4}},'Intervalo de p\u00e1ginas:'),
+            ce('div',{style:{display:'flex',gap:6,alignItems:'center'}},
+              ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,flex:1},
+                value:prtDe,
+                onChange:function(e){setPrtDe(e.target.value);setPrtPg('');}},
+                ce('option',{value:''},'De...'),
+                (function(){
+                  var totalPgs=Math.ceil(filtered.length/PER)||1;
+                  var opts=[];
+                  for(var p=1;p<=totalPgs;p++)opts.push(ce('option',{key:p,value:p},'P\u00e1g. '+p));
+                  return opts;
+                })()
+              ),
+              ce('span',{style:{color:'#94a3b8',fontWeight:700}},'at\u00e9'),
+              ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,flex:1},
+                value:prtAte,
+                onChange:function(e){setPrtAte(e.target.value);setPrtPg('');}},
+                ce('option',{value:''},'At\u00e9...'),
+                (function(){
+                  var totalPgs=Math.ceil(filtered.length/PER)||1;
+                  var opts=[];
+                  for(var p=1;p<=totalPgs;p++)opts.push(ce('option',{key:p,value:p},'P\u00e1g. '+p));
+                  return opts;
+                })()
+              ),
+              ce('button',{className:'btn btn-s',style:{fontSize:11,whiteSpace:'nowrap'},
+                onClick:function(){
+                  if(!prtDe||!prtAte){notify('Selecione De e At\u00e9.');return;}
+                  var de=parseInt(prtDe),ate=parseInt(prtAte);
+                  if(de>ate){notify('"De" deve ser menor ou igual a "At\u00e9".');return;}
+                  var n=Object.assign({},prtCards);
+                  for(var p=de;p<=ate;p++){
+                    filtered.slice((p-1)*PER,p*PER).forEach(function(r){n[r.id]=true;});
+                  }
+                  setPrtCards(n);
+                }},'\u2714 Aplicar')
+            )
           )
         ),
         ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}},
