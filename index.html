@@ -4885,38 +4885,11 @@ function Controle(p){
         ce('button',{className:'btn btn-s',style:{background:'#16a34a',color:'#fff',border:'none'},onClick:exportXLSX},'\ud83d\udcca Excel'),
         ce('button',{className:'btn btn-s',style:{background:showAdvFilter?'#2563eb':'',color:showAdvFilter?'#fff':''},onClick:function(){setShowAdvFilter(function(v){return !v;});}},'\ud83d\udd0d Filtro Avan\u00e7ado'),
         ce('button',{className:'btn btn-s',onClick:function(){
-          var alvo=selIds.length>0?selItems:sorted;
-          if(!alvo.length){notify('Sem dados.');return;}
-          var hdr='Protocolo;Data;Solicitante;Bairro;Servi\u00e7o;Funcion\u00e1rio;Taxa;Urg.;Status;Dias Aberto\n';
-          var rows=alvo.map(function(r){return[r.prot,fmtD(r.dt),r.nom,r.bairro,r.cn,r.func||'',r.taxa,r.urg,r.status].join(';');}).join('\n');
-          var blob=new Blob(['\uFEFF'+hdr+rows],{type:'text/csv;charset=utf-8'});
-          var url=URL.createObjectURL(blob);var a=document.createElement('a');
-          a.href=url;a.download='controle-smtt.csv';a.click();
-          setTimeout(function(){URL.revokeObjectURL(url);},1000);
-        }},_tw('\u2b07\ufe0f Excel')),
-        ce('button',{className:'btn btn-s',onClick:function(){
-          setShowPrint(true);var _init={};(selIds.length>0?selItems:sorted).forEach(function(r){_init[r.id]=true;});setPrintCards(_init);return;var target=selItems.length>0?selItems:sorted;
-          if(!target.length){notify('Sem itens para imprimir.');return;}
-          var rows=[];for(var _i=0;_i<target.length;_i+=2){
-            rows.push('<tr><td style="width:50%;padding:5px;vertical-align:top">'+mkCard(target[_i])+'</td>'
-              +(target[_i+1]?'<td style="width:50%;padding:5px;vertical-align:top">'+mkCard(target[_i+1])+'</td>':'<td style="width:50%"></td>')
-            +'</tr>');
-          }
-          var _pw=1020,_ph=780,_pl=Math.round((screen.width-_pw)/2),_pt=Math.round((screen.height-_ph)/2);
-          var w=window.open('','_blank','width='+_pw+',height='+_ph+',left='+_pl+',top='+_pt+',scrollbars=yes,resizable=yes');
-          if(!w){notify('Permita pop-ups!');return;}
-          w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
-            +'<style>'+PRINT_CSS+'body{background:#f8fafc;padding:16px;font-family:"IBM Plex Sans",Arial,sans-serif}@media print{body{background:#fff;padding:0}}'
-            +'.btn-pr{display:block;margin:14px auto 0;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
-            +'@media print{.btn-pr{display:none!important}}'
-            +'</style></head><body>'
-            +'<div class="doc-paper">'
-            +buildHeader('&#128204; Controle de Solicitações','Emissão: '+new Date().toLocaleDateString('pt-BR')+' &mdash; '+target.length+' solicitação(s)')
-            +'<table style="width:100%;border-collapse:separate"><tbody>'+rows.join('')+'</tbody></table>'
-            +'<button class="btn-pr" onclick="window.print()">&#128424;&#65039; Imprimir / Salvar PDF</button>'
-            +'</div></body></html>');
-          w.document.close();
-        }},_tw('\ud83d\udda8\ufe0f Imprimir Lote'),(selIds.length>0?' ('+selIds.length+')':sorted.length?' ('+sorted.length+')':''))
+          setShowPrint(true);
+          var _init={};
+          (selIds.length>0?selItems:sorted).forEach(function(r){_init[r.id]=true;});
+          setPrintCards(_init);
+        }},'\ud83d\udda8\ufe0f Imprimir Lote'+(selIds.length>0?' ('+selIds.length+')':sorted.length?' ('+sorted.length+')':''))
       )
     ),
     ce('div',{className:'card'},
