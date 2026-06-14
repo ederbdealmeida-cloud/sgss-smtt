@@ -4939,8 +4939,7 @@ function Controle(p){
       })
     ):null,
     /* LISTA */
-    viewMode==='lista'?(cloading?ce(Spinner):ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl tbl-ctrl',style:{tableLayout:'fixed',width:'100%'}},ce('colgroup',null,ce('col',{style:{width:32}}),ce('col',{style:{width:85}}),ce('col',{style:{width:68}}),ce('col',{style:{width:120}}),ce('col',{style:{width:100}}),ce('col',{style:{width:75}}),ce('col',{style:{width:95}}),ce('col',{style:{width:65}}),ce('col',{style:{width:42}}),ce('col',{style:{width:42}}),ce('col',{style:{width:120}}),ce('col',{style:{width:95}}),ce('col',{style:{width:105}})),
-
+    viewMode==='lista'?(cloading?ce(Spinner):ce('div',{style:{overflowX:'auto',WebkitOverflowScrolling:'touch'}},ce('table',{className:'tbl tbl-ctrl',style:{minWidth:980,width:'100%'}},
         ce('thead',null,ce('tr',null,
           [ce('th',{key:'chk',style:{width:32}},ce('input',{type:'checkbox',
             checked:items.length>0&&items.every(function(r){return selIds.includes(r.id);}),
