@@ -3994,19 +3994,7 @@ function Solicitacoes(){
           clearTimeout(window._srt);
           window._srt=setTimeout(function(){setLoading(false);setPg(1);},500);
         }}),
-      loading?ce(Spinner):ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl',style:{tableLayout:'fixed',width:'100%'}},
-        ce('colgroup',null,
-          ce('col',{style:{width:36}}),
-          ce('col',{style:{width:110}}),
-          ce('col',{style:{width:78}}),
-          ce('col',{style:{width:'15%'}}),
-          ce('col',{style:{width:'10%'}}),
-          ce('col',{style:{width:'18%'}}),
-          ce('col',{style:{width:70}}),
-          ce('col',{style:{width:44}}),
-          ce('col',{style:{width:110}}),
-          ce('col',{style:{width:130}})
-        ),
+      loading?ce(Spinner):ce('div',{style:{overflowX:'auto',WebkitOverflowScrolling:'touch'}},ce('table',{className:'tbl',style:{minWidth:900,width:'100%'}},
         ce('thead',null,ce('tr',null,
           ce('th',{style:{textAlign:'center'}},
             ce('input',{type:'checkbox',
