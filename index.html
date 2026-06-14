@@ -1096,24 +1096,26 @@ function paginate(arr,pg){return arr.slice((pg-1)*PER,pg*PER);}
 function Pag(p){
   var pages=Math.ceil(p.total/PER)||1;
   var cur=p.pg;
-  var half=2;
-  var start=Math.max(1,cur-half);
-  var end=Math.min(pages,start+4);
-  if(end-start<4)start=Math.max(1,end-4);
+  /* winStart controla onde a janela de 5 comeca - nao segue a pagina automaticamente */
+  var sWin=React.useState(1);var winStart=sWin[0];var setWinStart=sWin[1];
+  /* Resetar janela quando total de paginas muda (ex: filtro) */
+  React.useEffect(function(){setWinStart(1);},[pages]);
+  var winEnd=Math.min(pages,winStart+4);
   var nums=[];
-  for(var n=start;n<=end;n++)nums.push(n);
+  for(var n=winStart;n<=winEnd;n++)nums.push(n);
+  function goTo(n){p.set(n);}
+  function prevWin(){var ns=Math.max(1,winStart-5);setWinStart(ns);p.set(ns);}
+  function nextWin(){var ns=Math.min(pages-4,winStart+5);setWinStart(Math.max(1,ns));p.set(Math.max(1,ns));}
   return ce('div',{className:'pag'},
     ce('span',null,'Total: '+p.total+' '+p.label),
     ce('div',{className:'pag-btns',style:{display:'flex',alignItems:'center',gap:3}},
-      cur>1?ce('button',{className:'pag-n',onClick:function(){p.set(1);},title:'Primeira'},'\xab'):null,
-      cur>1?ce('button',{className:'pag-n',onClick:function(){p.set(cur-1);}},'\u2039'):null,
+      winStart>1?ce('button',{className:'pag-n',onClick:prevWin,title:'Bloco anterior'},'\xab'):null,
       nums.map(function(n){
         return ce('button',{key:n,
           className:'pag-n'+(n===cur?' pag-n-active':''),
-          onClick:function(){p.set(n);}},n);
+          onClick:function(){goTo(n);}},n);
       }),
-      cur<pages?ce('button',{className:'pag-n',onClick:function(){p.set(cur+1);}},'\u203a'):null,
-      cur<pages?ce('button',{className:'pag-n',onClick:function(){p.set(pages);},title:'\xdaltima'},'\xbb'):null
+      winEnd<pages?ce('button',{className:'pag-n',onClick:nextWin,title:'Pr\xf3ximo bloco'},'\xbb'):null
     )
   );
 }
