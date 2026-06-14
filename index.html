@@ -3906,8 +3906,15 @@ function Solicitacoes(){
           /* Bairro */
           ce('div',null,
             ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Bairro'),
-            ce('input',{className:'inp',placeholder:'Digitar bairro...',value:bulkBairro,
-              onChange:function(e){setBulkBairro(e.target.value);}})
+            ce('select',{className:'inp',value:bulkBairro,onChange:function(e){setBulkBairro(e.target.value);}},
+              ce('option',{value:''},'-- N\u00e3o alterar --'),
+              (function(){
+                var bairros=[];
+                INIT_REQS.forEach(function(r){if(r.bairro&&bairros.indexOf(r.bairro)<0)bairros.push(r.bairro);});
+                bairros.sort();
+                return bairros.map(function(b){return ce('option',{key:b,value:b},b);});
+              })()
+            )
           ),
           /* Urgencia */
           ce('div',null,
