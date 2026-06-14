@@ -203,7 +203,7 @@ body{height:100%;font-family:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif
 .b-re{background:#fee2e2;color:#991b1b}
 
 /* ── PAGINATION ── */
-.pag{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1.5px solid var(--c-border);color:var(--c-muted);font-size:12.5px;flex-wrap:wrap;gap:8px}
+.pag{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1.5px solid var(--c-border);color:var(--c-muted);font-size:12.5px;flex-wrap:wrap;gap:8px}.pag-n{min-width:30px;height:30px;padding:0 6px;border:1.5px solid var(--c-border);border-radius:6px;background:#fff;color:var(--c-text);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;justify-content:center}.pag-n:hover{background:var(--c-primary);color:#fff;border-color:var(--c-primary)}.pag-n-active{background:var(--c-primary)!important;color:#fff!important;border-color:var(--c-primary)!important;box-shadow:0 2px 8px #2563eb44}
 .pag-btns{display:flex;align-items:center;gap:6px}
 .pag-btns button{padding:5px 13px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);background:#fff;cursor:pointer;font-size:12px;font-family:inherit;transition:all var(--trans);font-weight:500}
 .pag-btns button:hover:not(:disabled){background:var(--c-primary);color:#fff;border-color:var(--c-primary)}
@@ -1093,7 +1093,30 @@ function uid(){return Date.now()+Math.floor(Math.random()*1000);}
 var COLORS=['#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2','#be185d','#65a30d'];
 var PER=5;
 function paginate(arr,pg){return arr.slice((pg-1)*PER,pg*PER);}
-function Pag(p){var pages=Math.ceil(p.total/PER)||1;return ce('div',{className:'pag'},ce('span',null,'Total: '+p.total+' '+p.label),ce('div',{className:'pag-btns'},ce('button',{disabled:p.pg===1,onClick:function(){p.set(p.pg-1);}},'\u2039 Anterior'),ce('span',null,p.pg+' / '+pages),ce('button',{disabled:p.pg===pages,onClick:function(){p.set(p.pg+1);}},'Pr\xf3ximo \u203a')));}
+function Pag(p){
+  var pages=Math.ceil(p.total/PER)||1;
+  var cur=p.pg;
+  var half=2;
+  var start=Math.max(1,cur-half);
+  var end=Math.min(pages,start+4);
+  if(end-start<4)start=Math.max(1,end-4);
+  var nums=[];
+  for(var n=start;n<=end;n++)nums.push(n);
+  return ce('div',{className:'pag'},
+    ce('span',null,'Total: '+p.total+' '+p.label),
+    ce('div',{className:'pag-btns',style:{display:'flex',alignItems:'center',gap:3}},
+      cur>1?ce('button',{className:'pag-n',onClick:function(){p.set(1);},title:'Primeira'},'\xab'):null,
+      cur>1?ce('button',{className:'pag-n',onClick:function(){p.set(cur-1);}},'\u2039'):null,
+      nums.map(function(n){
+        return ce('button',{key:n,
+          className:'pag-n'+(n===cur?' pag-n-active':''),
+          onClick:function(){p.set(n);}},n);
+      }),
+      cur<pages?ce('button',{className:'pag-n',onClick:function(){p.set(cur+1);}},'\u203a'):null,
+      cur<pages?ce('button',{className:'pag-n',onClick:function(){p.set(pages);},title:'\xdaltima'},'\xbb'):null
+    )
+  );
+}
 function useToast(){var s=useState('');var msg=s[0];var set=s[1];function n(m){set(m);setTimeout(function(){set('');},2500);}return[msg,n];}
 function Toast(p){return p.msg?ce('div',{className:'toast'},'\u2705 '+p.msg):null;}
 
