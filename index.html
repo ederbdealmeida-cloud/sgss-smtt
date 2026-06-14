@@ -4689,7 +4689,7 @@ function Controle(p){
               ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,width:'100%'},
                 value:printFrom==='single'?'':printFrom,
                 onChange:function(e){setPrintFrom(e.target.value);setPrintTo('');}},
-                ce('option',{value:''},'-- Todas --'),
+
                 (function(){var o=[];for(var p=1;p<=totalPgs;p++){var ini=(p-1)*PER+1;var fim=Math.min(p*PER,allSorted.length);o.push(ce('option',{key:p,value:p},'P\u00e1g. '+p+' ('+ini+'-'+fim+')'));}return o;})()
               )
             ),
@@ -4700,7 +4700,7 @@ function Controle(p){
                 disabled:!printFrom,
                 value:printTo,
                 onChange:function(e){setPrintTo(e.target.value);}},
-                ce('option',{value:''},'-- S\u00f3 De --'),
+
                 (function(){var o=[];for(var p=parseInt(printFrom)||1;p<=totalPgs;p++){var ini=(p-1)*PER+1;var fim=Math.min(p*PER,allSorted.length);o.push(ce('option',{key:p,value:p},'P\u00e1g. '+p+' ('+ini+'-'+fim+')'));}return o;})()
               )
             )
