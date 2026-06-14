@@ -3314,6 +3314,12 @@ function Solicitacoes(){
   var ssrch=useState('');var srch=ssrch[0];var setSrch=ssrch[1];
   var sfkpi=useState('');var filtKPI=sfkpi[0];var setFiltKPI=sfkpi[1];
   var sload=useState(false);var loading=sload[0];var setLoading=sload[1];
+  var sids=useState([]);var selIds=sids[0];var setSelIds=sids[1];
+  var sprtModal=useState(false);var showPrtModal=sprtModal[0];var setShowPrtModal=sprtModal[1];
+  var sprtCards=useState({});var prtCards=sprtCards[0];var setPrtCards=sprtCards[1];
+  var sbulkEd=useState(false);var showBulkEdit=sbulkEd[0];var setShowBulkEdit=sbulkEd[1];
+  var sbulkSt=useState('');var bulkStatus=sbulkSt[0];var setBulkStatus=sbulkSt[1];
+  var sbulkFn=useState('');var bulkFunc=sbulkFn[0];var setBulkFunc=sbulkFn[1];
   /* Expor abertura de form de edicao para outros modulos */
   var React_useEffect=React.useEffect;
   /* Expor funcao de edicao e processar pending imediatamente */
@@ -3523,6 +3529,66 @@ function Solicitacoes(){
     setAll(INIT_REQS.map(function(x){return Object.assign({},x);}));
     setNM(false);setNSol(null);setNSq('');setNTel('');setNEmail('');setNReg(false);setNRegD({nome:'',rua:'',numero:'',bairro:'',ref:'',tel:'',email:''});setNIt([]);
     notify('\u2705 '+nIt.length+' serviço(s) registado(s)! Protocolo: '+firstProt);
+  }
+  function toggleSel(id){setSelIds(function(p){return p.includes(id)?p.filter(function(x){return x!==id;}):p.concat([id]);});}
+  function toggleAll(){var vis=items.map(function(r){return r.id;});setSelIds(function(p){return vis.every(function(id){return p.includes(id);})?p.filter(function(id){return !vis.includes(id);}):Array.from(new Set(p.concat(vis)));});}
+  function execBulkDelete(){
+    if(!selIds.length){notify('Selecione ao menos um registro.');return;}
+    showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir '+selIds.length+' registro(s)?',
+      corpo:'Os registros ser\u00e3o removidos do m\u00f3dulo.',lblOk:'Excluir',cor:'red',
+      onOk:function(){
+        selIds.forEach(function(id){
+          var ix=INIT_REQS.findIndex(function(r){return r.id===id;});
+          if(ix>=0)INIT_REQS.splice(ix,1);
+        });
+        setAll(INIT_REQS.map(function(x){return Object.assign({},x);}));
+        setSelIds([]);notify('\u2705 '+selIds.length+' registro(s) exclu\u00eddo(s).');sgssSave();
+      }});
+  }
+  function execBulkEdit(){
+    if(!selIds.length){notify('Selecione ao menos um registro.');return;}
+    if(!bulkStatus&&!bulkFunc){notify('Selecione o que deseja alterar.');return;}
+    var upd={};
+    if(bulkStatus){upd.status=bulkStatus;if(bulkStatus==='Conclu\u00eddo')upd.dtConclusao=today();}
+    if(bulkFunc)upd.func=bulkFunc;
+    INIT_REQS.forEach(function(r,i){if(selIds.includes(r.id))INIT_REQS[i]=Object.assign({},r,upd);});
+    setAll(INIT_REQS.map(function(x){return Object.assign({},x);}));
+    notify('\u2705 '+selIds.length+' registro(s) atualizados!');
+    setSelIds([]);setShowBulkEdit(false);setBulkStatus('');setBulkFunc('');sgssSave();
+  }
+  function openPrintModal(){
+    var alvo=selIds.length>0?filtered.filter(function(r){return selIds.includes(r.id);}):filtered;
+    if(!alvo.length){notify('Sem registros para imprimir.');return;}
+    var init={};
+    alvo.forEach(function(r){init[r.id]=true;});
+    setPrtCards(init);setShowPrtModal(true);
+  }
+  function execPrintLote(){
+    var alvo=filtered.filter(function(r){return prtCards[r.id]===true;});
+    if(!alvo.length){notify('Nenhum card selecionado.');return;}
+    var htmlParts=alvo.map(function(r){return _buildComprovanteHtml(r,[r]);});
+    var w=window.open('','_blank','width=860,height=720,scrollbars=yes');
+    if(!w){notify('Permita pop-ups!');return;}
+    var body=htmlParts.map(function(b,i){
+      return (i>0?'<div style="page-break-before:always;margin-top:40px"></div>':'')
+        +'<div style="max-width:680px;margin:0 auto 40px;background:#fff;padding:24px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)">'
+        +b.svcCards+b.card2+b.card3
+        +'</div>';
+    }).join('');
+    w.document.open('text/html','replace');
+    w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
+      +PRINT_CSS
+      +'body{padding:20px;background:#f8fafc;font-family:Arial,Helvetica,sans-serif}'
+      +'@media print{body{background:#fff;padding:0}}'
+      +'.btn-pr{display:block;margin:14px auto;padding:9px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}'
+      +'@media print{.btn-pr{display:none!important}}'
+      +'</style></head><body>'
+      +buildHeader('\ud83d\udda8\ufe0f Comprovantes \u2014 '+alvo.length+' registro(s)','Emiss\u00e3o: '+new Date().toLocaleDateString('pt-BR'))
+      +body
+      +'<button class="btn-pr" onclick="window.print()">\ud83d\udda8\ufe0f Imprimir / Salvar PDF</button>'
+      +'</body></html>');
+    w.document.close();
+    setShowPrtModal(false);
   }
   var EMPTY={nom:'',dt:today(),solId:null,bairro:'',rua:'',num:'',ref:'',tel:'',email:'',catId:'',cn:'',fp:'',subId:null,sn:'',taxa:0,urg:'N\xe3o',foto:null,descricao:''};
   function saveEditSol(){INIT_REQS.forEach(function(x,i){if(x.id===editId)INIT_REQS[i]=Object.assign({},editD);});setAll(function(prev){return prev.map(function(x){return x.id===editId?Object.assign({},editD):x;});});var _prot=INIT_REQS.find(function(x){return x.id===editId;});
@@ -3807,7 +3873,85 @@ function Solicitacoes(){
   if(docItem)return ce(Documentos2,{item:docItem,onClose:function(){setDocItem(null);}});
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
-    ce('div',{className:'page-header'},ce('h2',{className:'page-title'},'\ud83d\udcdd Solicita\xe7\xf5es de Servi\xe7o'),ce('button',{className:'btn btn-p',onClick:function(){setNM(true);setNSol(null);setNSq('');setNSug([]);setNIt([nmEmpty(null)]);setNDt(today());}},'\u2795 Nova Solicita\xe7\xe3o')),
+    /* Modal editar em lote */
+    showBulkEdit?ce('div',{style:{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.45)',zIndex:1500,display:'flex',alignItems:'center',justifyContent:'center'},onClick:function(){setShowBulkEdit(false);}},
+      ce('div',{style:{background:'#fff',borderRadius:12,padding:'20px 24px',width:'min(95vw,400px)',boxShadow:'0 20px 60px rgba(0,0,0,.3)'},onClick:function(e){e.stopPropagation();}},
+        ce('h3',{style:{margin:'0 0 14px',fontSize:15,fontWeight:700,color:'#1e3a5f'}},'\u270f\ufe0f Editar em Lote \u2014 '+selIds.length+' selecionados'),
+        ce('div',{style:{display:'flex',flexDirection:'column',gap:10}},
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4}},'Status'),
+          ce('select',{className:'inp',value:bulkStatus,onChange:function(e){setBulkStatus(e.target.value);}},
+            ce('option',{value:''},'-- N\u00e3o alterar --'),
+            ce('option',{value:'Pendente'},'Pendente'),
+            ce('option',{value:'Agendado'},'Agendado'),
+            ce('option',{value:'Em andamento'},'Em andamento'),
+            ce('option',{value:'Conclu\u00eddo'},'Conclu\u00eddo')
+          ),
+          ce('label',{style:{fontSize:11,fontWeight:700,color:'#64748b',display:'block',marginBottom:4,marginTop:6}},'Funcion\u00e1rio'),
+          ce('select',{className:'inp',value:bulkFunc,onChange:function(e){setBulkFunc(e.target.value);}},
+            ce('option',{value:''},'-- N\u00e3o alterar --'),
+            FUNC_LIST.filter(function(f){return f.ativo;}).map(function(f){return ce('option',{key:f.id,value:f.nome},f.nome);})
+          ),
+          ce('div',{style:{display:'flex',gap:8,justifyContent:'flex-end',marginTop:10}},
+            ce('button',{className:'btn btn-s',onClick:function(){setShowBulkEdit(false);}},'\u00d7 Cancelar'),
+            ce('button',{className:'btn btn-p',onClick:execBulkEdit},'\u2714 Aplicar')
+          )
+        )
+      )
+    ):null,
+    /* Modal impressao lote */
+    showPrtModal?ce('div',{style:{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.55)',zIndex:1500,display:'flex',alignItems:'center',justifyContent:'center'},onClick:function(){setShowPrtModal(false);}},
+      ce('div',{style:{background:'#fff',borderRadius:12,padding:'22px 26px',width:'min(95vw,540px)',maxHeight:'88vh',overflowY:'auto',boxShadow:'0 20px 60px rgba(0,0,0,.3)'},onClick:function(e){e.stopPropagation();}},
+        ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}},
+          ce('h3',{style:{fontSize:15,fontWeight:700,color:'#1e3a5f',margin:0}},'\ud83d\udda8\ufe0f Impress\u00e3o Personalizada'),
+          ce('button',{style:{background:'none',border:'none',fontSize:18,cursor:'pointer'},onClick:function(){setShowPrtModal(false);}},'\u00d7')
+        ),
+        ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}},
+          ce('span',{style:{fontSize:12,color:'#64748b',fontWeight:600}},
+            Object.values(prtCards).filter(Boolean).length+' de '+filtered.length+' selecionados'),
+          ce('div',{style:{display:'flex',gap:6}},
+            ce('button',{className:'btn',style:{fontSize:11,padding:'3px 10px'},onClick:function(){var n={};filtered.forEach(function(r){n[r.id]=true;});setPrtCards(n);}},'\u2714 Todos'),
+            ce('button',{className:'btn',style:{fontSize:11,padding:'3px 10px'},onClick:function(){setPrtCards({});}},'\u00d7 Nenhum')
+          )
+        ),
+        ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:5,maxHeight:280,overflowY:'auto',marginBottom:14}},
+          filtered.map(function(r){
+            var chk=!!prtCards[r.id];
+            return ce('label',{key:r.id,style:{display:'flex',alignItems:'center',gap:7,padding:'6px 9px',
+              background:chk?'#eff6ff':'#f8fafc',border:'1px solid '+(chk?'#93c5fd':'#e2e8f0'),
+              borderRadius:6,cursor:'pointer',fontSize:11,userSelect:'none'}},
+              ce('input',{type:'checkbox',checked:chk,onChange:function(){setPrtCards(function(c){var n=Object.assign({},c);n[r.id]=!chk;return n;});}}),
+              ce('div',null,
+                ce('div',{style:{fontWeight:700,color:'#2563eb',fontSize:11}},r.prot),
+                ce('div',{style:{color:'#64748b',fontSize:10,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:140}},r.nom)
+              )
+            );
+          })
+        ),
+        ce('div',{style:{display:'flex',gap:8,justifyContent:'flex-end',borderTop:'1px solid #f1f5f9',paddingTop:12}},
+          ce('button',{className:'btn',onClick:function(){setShowPrtModal(false);}},'\u274c Cancelar'),
+          ce('button',{className:'btn btn-p',onClick:execPrintLote},
+            '\ud83d\udda8\ufe0f Gerar ('+Object.values(prtCards).filter(Boolean).length+')')
+        )
+      )
+    ):null,
+    ce('div',{className:'page-header'},
+      ce('h2',{className:'page-title'},'\ud83d\udcdd Solicita\u00e7\u00f5es de Servi\u00e7o'),
+      ce('div',{style:{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center'}},
+        selIds.length>0?ce('button',{className:'btn btn-s',
+          style:{background:'#dc2626',color:'#fff',border:'none'},
+          onClick:execBulkDelete},'\ud83d\uddd1\ufe0f Excluir ('+selIds.length+')'):null,
+        selIds.length>0?ce('button',{className:'btn btn-s',
+          style:{background:'#7c3aed',color:'#fff',border:'none'},
+          onClick:function(){setShowBulkEdit(true);}},'\u270f\ufe0f Editar ('+selIds.length+')'):null,
+        ce('button',{className:'btn btn-s',
+          style:{background:'#0891b2',color:'#fff',border:'none'},
+          onClick:openPrintModal},
+          '\ud83d\udda8\ufe0f Imprimir'+(selIds.length>0?' ('+selIds.length+' sel.)':'')),
+        ce('button',{className:'btn btn-p',
+          onClick:function(){setNM(true);setNSol(null);setNSq('');setNSug([]);setNIt([nmEmpty(null)]);setNDt(today());}},
+          '\u2795 Nova Solicita\u00e7\u00e3o')
+      )
+    ),
     /* KPIs Solicitacoes clicaveis */
     ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}},
       (function(){
@@ -3846,9 +3990,14 @@ function Solicitacoes(){
           clearTimeout(window._srt);
           window._srt=setTimeout(function(){setLoading(false);setPg(1);},500);
         }}),
-      loading?ce(Spinner):ce('div',{className:'tbl-wrap'},ce('table',{className:'tbl'},
-        ce('thead',null,ce('tr',null,['Protocolo','Data','Solicitante','Bairro','Servi\xe7o','Taxa','Urg.','Status','A\xe7\xf5es'].map(function(c){return ce('th',{key:c},c);}))),
-        ce('tbody',null,items.map(function(r){var isE=r.id===editId;
+      loading?ce(Spinner):ce('div',{className:'tbl-wrap'},ce('table',{className:'ce('thead',null,ce('tr',null,
+          ce('th',{style:{width:32,textAlign:'center'}},
+            ce('input',{type:'checkbox',
+              checked:items.length>0&&items.every(function(r){return selIds.includes(r.id);}),
+              onChange:toggleAll})
+          ),
+          ['Protocolo','Data','Solicitante','Bairro','Servi\u00e7o','Taxa','Urg.','Status','A\u00e7\u00f5es'].map(function(c){return ce('th',{key:c},c);})
+        )),ody',null,items.map(function(r){var isE=r.id===editId;
           return ce('tr',{key:r.id,className:isE?'':r.urg==='Sim'&&r.status!=='Conclu\xeddo'?'row-urg':'',
             style:isE?{background:'#eff6ff',boxShadow:'inset 0 0 0 2px #2563eb'}:{}},
           ce('td',null,ce('strong',null,r.prot)),ce('td',null,fmtD(r.dt)),
