@@ -3321,6 +3321,12 @@ function Solicitacoes(){
       setSubcats(SUBS[r.catId]||[]);setSubInfo(null);setHoras(1);
       setLocked(false);setForm(Object.assign({},r));
     };
+    /* Processar pending ao montar */
+    if(window._pendingEditReq){
+      var _p=window._pendingEditReq;window._pendingEditReq=null;
+      setSubcats(SUBS[_p.catId]||[]);setSubInfo(null);setHoras(1);
+      setLocked(false);setForm(Object.assign({},_p));
+    }
     return function(){window._openEditReq=null;};
   },[]);
   var spg=useState(1);var pg=spg[0];var setPg=spg[1];
@@ -5446,7 +5452,10 @@ function Relatorios(){
                   w.document.close();
                 }},'\ud83d\udc41\ufe0f'),
                 r.status!=='Conclu\u00eddo'?ce('button',{className:'btn-icon',title:'Editar no formulário',style:{background:'#eff6ff',color:'#2563eb',border:'1px solid #93c5fd',marginRight:3},
-                  onClick:function(){if(window._openEditReq&&window._setPage){window._openEditReq(r);window._setPage('solicitacoes');}else{notify('Úbra Solicitações primeiro.');}}},'📝'):null,
+                  onClick:function(){
+                    window._pendingEditReq=r;
+                    if(window._setPage)window._setPage('solicitacoes');
+                  }},'📝'):null,
                 ce('button',{className:'btn-icon',title:'Excluir',style:{color:'#dc2626'},
                   onClick:function(){
                     showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir registro?',sub:r.prot,corpo:'O registro ser\u00e1 removido permanentemente dos relat\u00f3rios.',lblOk:'Excluir',cor:'red',onOk:function(){
@@ -9489,6 +9498,7 @@ function App(){
   var sp=useState('dashboard');var page=sp[0];var setPage=sp[1];
   window._setPage=setPage;
   window._openEditReq=null;
+  window._pendingEditReq=window._pendingEditReq||null;
   var scol=useState(false);var collapsed=scol[0];var setCollapsed=scol[1];
   var sprev=useState({reqs:[],acoes:[],user:null});
   var prevSession=sprev[0];var setPrevSession=sprev[1];
