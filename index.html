@@ -3316,19 +3316,20 @@ function Solicitacoes(){
   var sload=useState(false);var loading=sload[0];var setLoading=sload[1];
   /* Expor abertura de form de edicao para outros modulos */
   var React_useEffect=React.useEffect;
+  /* Expor funcao de edicao e processar pending imediatamente */
+  window._openEditReq=function(r){
+    setSubcats(SUBS[r.catId]||[]);setSubInfo(null);setHoras(1);
+    setLocked(false);setForm(Object.assign({},r));
+  };
   React_useEffect(function(){
-    window._openEditReq=function(r){
-      setSubcats(SUBS[r.catId]||[]);setSubInfo(null);setHoras(1);
-      setLocked(false);setForm(Object.assign({},r));
-    };
-    /* Processar pending ao montar */
     if(window._pendingEditReq){
       var _p=window._pendingEditReq;window._pendingEditReq=null;
-      setSubcats(SUBS[_p.catId]||[]);setSubInfo(null);setHoras(1);
-      setLocked(false);setForm(Object.assign({},_p));
+      setTimeout(function(){
+        setSubcats(SUBS[_p.catId]||[]);setSubInfo(null);setHoras(1);
+        setLocked(false);setForm(Object.assign({},_p));
+      },50);
     }
-    return function(){window._openEditReq=null;};
-  },[]);
+  });
   var spg=useState(1);var pg=spg[0];var setPg=spg[1];
   var sf=useState(null);var form=sf[0];var setForm=sf[1];
   var ssubs=useState([]);var subcats=ssubs[0];var setSubcats=ssubs[1];
