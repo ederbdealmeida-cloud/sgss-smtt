@@ -4540,6 +4540,8 @@ function Controle(p){
   function saveStatus(id){
     var e=Object.assign({},ed[id]);
     if(e.status==='Concluído'&&!e.dtConclusao)e.dtConclusao=today();
+    /* Se atribuiu funcionario e status ainda e Pendente, muda para Em andamento */
+    if(e.func&&e.func!==''&&(!e.status||e.status==='Pendente'))e.status='Em andamento';
     setAll(function(prev){return prev.map(function(r){return r.id===id?Object.assign({},r,e):r;});});
     INIT_REQS.forEach(function(r,i){if(r.id===id)INIT_REQS[i]=Object.assign({},INIT_REQS[i],e);});
     cancelEdit(id);logAudit('Editou','Controle','Protocolo: '+(items.find(function(x){return x.id===id;})||{}).prot);notify('\u2705 Atualizado!');sgssSave();
@@ -4601,6 +4603,14 @@ function Controle(p){
     var updates={};
     if(bulkAction==='status'&&bulkStatus){updates.status=bulkStatus;if(bulkStatus==='Conclu\u00eddo')updates.dtConclusao=today();}
     else if(bulkAction==='func'&&bulkFunc){updates.func=bulkFunc;}
+    /* Ao atribuir funcionario, pendente -> em andamento */
+    if(updates.func){
+      INIT_REQS.forEach(function(r,i){
+        if(selIds.includes(r.id)&&(!r.status||r.status==='Pendente')){
+          updates.status='Em andamento';
+        }
+      });
+    }
     else{notify('Selecione a a\u00e7\u00e3o e o valor.');return;}
     setAll(function(prev){return prev.map(function(r){return selIds.includes(r.id)?Object.assign({},r,updates):r;});});
     INIT_REQS.forEach(function(r,i){if(selIds.includes(r.id))INIT_REQS[i]=Object.assign({},INIT_REQS[i],updates);});
@@ -4867,7 +4877,7 @@ function Controle(p){
           ce('button',{onClick:function(){setViewMode('lista');},style:{padding:'5px 12px',border:'none',borderRadius:6,cursor:'pointer',fontWeight:700,fontSize:12,background:viewMode==='lista'?'#fff':'transparent',color:viewMode==='lista'?'#2563eb':'#64748b',boxShadow:viewMode==='lista'?'0 1px 4px rgba(0,0,0,.1)':''}},'\u2630 Lista'),
           ce('button',{onClick:function(){setViewMode('kanban');},style:{padding:'5px 12px',border:'none',borderRadius:6,cursor:'pointer',fontWeight:700,fontSize:12,background:viewMode==='kanban'?'#fff':'transparent',color:viewMode==='kanban'?'#2563eb':'#64748b',boxShadow:viewMode==='kanban'?'0 1px 4px rgba(0,0,0,.1)':''}},'\ud83d\udccc Kanban')
         ),
-        selIds.length>0?ce('button',{className:'btn btn-s',style:{background:'#7c3aed',color:'#fff',border:'none'},onClick:function(){setBulkAction('status');}},'\ud83d\udce6 Lote ('+selIds.length+')'):null,
+        selIds.length>0?ce('button',{className:'btn btn-s',style:{background:'#7c3aed',color:'#fff',border:'none'},onClick:function(){setBulkAction('status');}},'\ud83d\udc64 Atribuir ('+selIds.length+')'):null,
         ce('button',{className:'btn btn-s',style:{background:'#16a34a',color:'#fff',border:'none'},onClick:exportXLSX},'\ud83d\udcca Excel'),
         ce('button',{className:'btn btn-s',style:{background:showAdvFilter?'#2563eb':'',color:showAdvFilter?'#fff':''},onClick:function(){setShowAdvFilter(function(v){return !v;});}},'\ud83d\udd0d Filtro Avan\u00e7ado'),
         ce('button',{className:'btn btn-s',onClick:function(){
@@ -9893,6 +9903,17 @@ function App(){
   window._setPage=setPage;
   window._openEditReq=null;
   window._pendingEditReq=window._pendingEditReq||null;
+  /* Migrar: registros com funcionario e status Pendente -> Em andamento */
+  (function(){
+    var changed=false;
+    INIT_REQS.forEach(function(r,i){
+      if(r.func&&r.func!==''&&r.status==='Pendente'){
+        INIT_REQS[i]=Object.assign({},r,{status:'Em andamento'});
+        changed=true;
+      }
+    });
+    if(changed)sgssSave();
+  })();
   var scol=useState(false);var collapsed=scol[0];var setCollapsed=scol[1];
   var sprev=useState({reqs:[],acoes:[],user:null});
   var prevSession=sprev[0];var setPrevSession=sprev[1];
