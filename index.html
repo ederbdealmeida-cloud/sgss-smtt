@@ -1830,7 +1830,7 @@ function gerarHtmlComprovanteServico(r,allReqs){
     +".sl{height:1px;background:#1e293b;margin-top:36px;margin-bottom:5px}"
     +".slb{font-size:10px;color:#64748b;text-align:center;font-weight:600}"
     +"</style></head><body><div class=\"wrap\">"
-    +buildHeader("Comprovante de Solicitação"+(parts.length>1?" - "+parts.length+" serviços":""),"Emitido em: "+new Date().toLocaleDateString("pt-BR"))
+    +buildHeader("Comprovante de Solicita&ccedil;&atilde;o"+(parts.length>1?" - "+parts.length+" serviços":""),"Emitido em: "+new Date().toLocaleDateString("pt-BR"))
     +svcCards+card2+card3
     +"<div class=\"sg\"><div><div class=\"sl\"></div><div class=\"slb\">Assinatura e Carimbo - SMTT</div></div>"
     +"<div><div class=\"sl\"></div><div class=\"slb\">Recebido pelo Solicitante</div></div></div>"
@@ -3320,7 +3320,7 @@ function compartilharComprovanteServico(r,allReqs,btnEl){
 var _brasaoHtml=_brasao46
       ?'<img src="'+_brasao46+'" style="width:46px;height:46px;display:block;">'
       :'';
-    var _header='<table width="100%" style="border-collapse:collapse;width:100%;margin-bottom:18px;padding-bottom:14px;border-bottom:3px solid #1e3a5f"><tr>'      +'<td width="58" style="width:58px;vertical-align:middle;padding-right:14px">'      +(_brasaoHtml?'<div style="width:58px;height:58px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px;overflow:hidden">'+_brasaoHtml+'</div>':'')+'</td>'      +'<td style="vertical-align:middle">'      +'<div style="font-size:13px;font-weight:800;color:#1e3a5f;text-transform:uppercase">PREFEITURA MUNICIPAL DE CACEQUI &ndash; RS</div>'      +'<div style="font-size:11px;color:#475569;margin-top:2px">Secretaria Municipal de Transporte e Tr&acirc;nsito</div>'      +'<div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:5px">Comprovante de Solicita&ccedil;&atilde;o'+(parts.length>1?' - '+parts.length+' servi&ccedil;os':'')+'</div>'      +'<div style="font-size:10px;color:#94a3b8;margin-top:2px">Emitido em: '+(new Date()).toLocaleDateString('pt-BR')+'</div>'      +'</td></tr></table>';
+    var _header='<table width="100%" style="border-collapse:collapse;width:100%;margin-bottom:18px;padding-bottom:14px;border-bottom:3px solid #1e3a5f"><tr>'      +'<td width="58" style="width:58px;vertical-align:middle;padding-right:14px">'      +(_brasaoHtml?'<div style="width:58px;height:58px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px;overflow:hidden">'+_brasaoHtml+'</div>':'')+'</td>'      +'<td style="vertical-align:middle">'      +'<div style="font-size:13px;font-weight:800;color:#1e3a5f;text-transform:uppercase">PREFEITURA MUNICIPAL DE CACEQUI &ndash; RS</div>'      +'<div style="font-size:11px;color:#475569;margin-top:2px">Secretaria Municipal de Transporte e Tr&acirc;nsito</div>'      +'<div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:5px">Comprovante de Solicita&ccedil;&atilde;o'+(parts.length>1?' - '+parts.length+' serviços':'')+'</div>'      +'<div style="font-size:10px;color:#94a3b8;margin-top:2px">Emitido em: '+(new Date()).toLocaleDateString('pt-BR')+'</div>'      +'</td></tr></table>';
     var _inner=_header+b.svcCards+b.card2+b.card3+_assinaturas;
     var _div=document.createElement('div');
     _div.style.cssText='position:absolute;left:-9999px;top:'+window.scrollY+'px;width:680px;background:#fff;padding:24px;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;';
@@ -4985,7 +4985,7 @@ function Controle(p){
         ce(Sel,{val:furg,set:function(v){setFurg(v);setPg(1);},ph:'Todas as prioridades',
             opts:[{v:'',l:'Todas as prioridades'},{v:'Sim',l:'Urgente'},{v:'Não',l:'Normal'}]}),
         ce(Sel,{val:ffunc,set:function(v){setFfunc(v);setCloading(true);setPg(1);setTimeout(function(){setCloading(false);},400);},ph:'Todos funcionários',opts:[{v:'',l:'Todos funcionários'}].concat(FUNC_LIST.filter(function(f){return f.ativo;}).map(function(f){return{v:f.nome,l:f.nome};}))}),
-        ce(Sel,{val:ftipo,set:function(v){setFtipo(v);setCloading(true);setPg(1);setTimeout(function(){setCloading(false);},400);},ph:'Todos os serviços',opts:[{v:'',l:'Todos os serviços'}].concat(CATS.map(function(c){return{v:String(c.id),l:c.nome};}))}),
+        ce(Sel,{val:ftipo,set:function(v){setFtipo(v);setCloading(true);setPg(1);setTimeout(function(){setCloading(false);},400);},ph:'Todos os servi&ccedil;os',opts:[{v:'',l:'Todos os serviços'}].concat(CATS.map(function(c){return{v:String(c.id),l:c.nome};}))}),
         ce('div',{style:{display:'flex',gap:4,alignItems:'center',flexShrink:0}},
           ce('span',{style:{fontSize:11,color:'#64748b',fontWeight:600}},'De'),
           ce('input',{type:'date',value:fde,onChange:function(e){setFde(e.target.value);setCloading(true);setPg(1);setTimeout(function(){setCloading(false);},400);},style:{padding:'4px 6px',border:'1px solid #e2e8f0',borderRadius:6,fontSize:11}}),
