@@ -4719,7 +4719,7 @@ function Controle(p){
       ce('div',{style:{position:'sticky',bottom:0,background:'#1e3a5f',padding:'10px 16px',display:'flex',gap:10,justifyContent:'center',flexWrap:'wrap'}},
         ce('button',{className:'btn',style:{background:'#fff',color:'#1e3a5f',fontWeight:700,minWidth:120},
           onClick:function(){window.print();}},
-          '\ud83d\udda8\ufe0f Imprimir'),
+          'Imprimir'),
         ce('button',{id:'ctrl-share-btn',className:'btn',style:{background:'#16a34a',color:'#fff',fontWeight:700,minWidth:140},
           onClick:function(e){
             var btn=e.currentTarget;
@@ -4748,7 +4748,7 @@ function Controle(p){
               alert('Erro ao gerar PDF: '+er.message);
             });
           }},
-          '\ud83d\udce4 Compartilhar PDF'),
+          'Compartilhar PDF'),
         ce('button',{className:'btn',style:{background:'#64748b',color:'#fff',minWidth:100},
           onClick:function(){setPrintView(null);}},
           '\u2715 Fechar')
