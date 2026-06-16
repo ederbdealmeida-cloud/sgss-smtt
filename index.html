@@ -7693,7 +7693,7 @@ function Comunicados(){
   }
 
   function imprimirComunicados(){
-    var lista=visivel;
+    var lista=ativos;
     if(!lista.length){notify('Nenhum comunicado para imprimir.');return;}
     var CAT_NOME={interno:'Interno',externo:'Externo',manutencao:'Manuten\u00e7\u00e3o',aviso:'Aviso'};
     var PRIO_COR={urgente:'#dc2626',normal:'#2563eb',info:'#16a34a'};
