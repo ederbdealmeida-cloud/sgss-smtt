@@ -5159,6 +5159,8 @@ function Historico(){
   var ssort=useState({col:'dt',dir:-1});var sortCfg=ssort[0];var setSortCfg=ssort[1];
   var sshowF=useState(false);var showFilters=sshowF[0];var setShowFilters=sshowF[1];
   var ssrec=useState(false);var showRec=ssrec[0];var setShowRec=ssrec[1];
+  var sftcat=useState('');var ftcat=sftcat[0];var setFtcat=sftcat[1];
+  var sexpcat=useState(false);var expCat=sexpcat[0];var setExpCat=sexpcat[1];
 
   function toggleSort(col){
     setSortCfg(function(s){return s.col===col?{col:col,dir:s.dir*-1}:{col:col,dir:-1};});
@@ -5178,6 +5180,7 @@ function Historico(){
     if(fde&&r.dt<fde)return false;
     if(fate&&r.dt>fate)return false;
     if(ftipo&&String(r.catId)!==String(ftipo))return false;
+    if(ftcat&&(r.cn||'')!==ftcat)return false;
     if(furg==='sim'&&r.urg!=='Sim')return false;
     if(furg==='nao'&&r.urg==='Sim')return false;
     return true;
@@ -5214,7 +5217,7 @@ function Historico(){
   var _diffQtd=_qtdAtual-_qtdAnt;
   var _diffRec=_recAtual-_recAnt;
 
-  function limparFiltros(){setFst('');setFfunc('');setFde('');setFate('');setFtipo('');setFurg('');setSrch('');setPg(1);}
+  function limparFiltros(){setFst('');setFfunc('');setFde('');setFate('');setFtipo('');setFurg('');setSrch('');setFtcat('');setPg(1);}
 
   function delHist(r){
     showConfirm({ico:'\ud83d\uddd1\ufe0f',titulo:'Excluir do hist\u00f3rico?',sub:r.prot,corpo:'Uma c\u00f3pia ser\u00e1 preservada para recupera\u00e7\u00e3o.',lblOk:'Excluir',cor:'red',onOk:function(){
@@ -5414,6 +5417,54 @@ function Historico(){
           )
         )
       )
+    ),
+    /* Boxes filtro por categoria */
+    ce('div',{style:{marginBottom:10}},
+      ce('div',{style:{fontSize:11,fontWeight:700,color:'#64748b',textTransform:'uppercase',letterSpacing:'.5px',marginBottom:6}},'\ud83c\udff7\ufe0f Filtrar por Servi\u00e7o'),
+      ce('div',{style:{display:'flex',flexWrap:'wrap',gap:6}},
+        (function(){
+          var _all=INIT_REQS.filter(function(r){return r.status==='Conclu\u00eddo';});
+          var _map={};
+          _all.forEach(function(r){var k=r.cn||'Sem categoria';_map[k]=(_map[k]||0)+1;});
+          var _cats=Object.keys(_map).sort(function(a,b){return _map[b]-_map[a];});
+          var _colors=['#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2','#be185d','#065f46','#92400e','#1e40af','#b45309','#0f766e','#7e22ce','#b91c1c','#1d4ed8'];
+          var _visible=expCat?_cats:_cats.slice(0,5);
+          var _boxes=_visible.map(function(cat,i){
+            var _active=ftcat===cat;
+            var _col=_colors[i%_colors.length];
+            return ce('button',{
+              key:cat,
+              onClick:function(){setFtcat(_active?'':cat);setPg(1);},
+              style:{
+                background:_active?_col:'#fff',
+                color:_active?'#fff':_col,
+                border:'2px solid '+_col,
+                borderRadius:20,
+                padding:'5px 12px',
+                fontSize:11,
+                fontWeight:700,
+                cursor:'pointer',
+                display:'flex',
+                alignItems:'center',
+                gap:5,
+                transition:'.15s'
+              }
+            },
+              ce('span',null,cat),
+              ce('span',{style:{background:_active?'rgba(255,255,255,.3)':'rgba(0,0,0,.08)',borderRadius:999,padding:'1px 6px',fontSize:10}},_map[cat])
+            );
+          });
+          if(_cats.length>5){
+            _boxes.push(ce('button',{
+              key:'expand',
+              onClick:function(){setExpCat(!expCat);},
+              style:{background:'#f1f5f9',color:'#64748b',border:'2px solid #e2e8f0',borderRadius:20,padding:'5px 12px',fontSize:11,fontWeight:700,cursor:'pointer'}
+            },expCat?'\u2191 Ver menos':'+ '+ (_cats.length-5)+' mais'));
+          }
+          return _boxes;
+        })()
+      ),
+      ftcat?ce('button',{onClick:function(){setFtcat('');setPg(1);},style:{marginTop:6,fontSize:11,color:'#64748b',background:'none',border:'none',cursor:'pointer',textDecoration:'underline'}},'\u2715 Limpar filtro de servi\u00e7o'):null
     ),
     /* Filtros avancados */
     showFilters?ce('div',{style:{marginBottom:10,padding:'10px 12px',border:'1.5px solid #bfdbfe',borderRadius:8,background:'#eff6ff',overflow:'hidden'}},
