@@ -4707,25 +4707,47 @@ function Controle(p){
         ),
         ce('div',{style:{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:8,padding:'10px 12px',marginBottom:12}},
           ce('div',{style:{fontSize:11,fontWeight:700,color:'#64748b',marginBottom:8,textTransform:'uppercase'}},'\ud83d\udcc4 Filtrar por P\u00e1gina'),
-          ce('div',{style:{display:'flex',gap:8,alignItems:'center'}},
-            ce('div',{style:{flex:1}},
-              ce('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4}},'De:'),
-              ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,width:'100%'},
-                value:printFrom==='single'?'':printFrom,
-                onChange:function(e){setPrintFrom(e.target.value);setPrintTo('');}},
-
-                (function(){var o=[];for(var p=1;p<=totalPgs;p++){var ini=(p-1)*PER+1;var fim=Math.min(p*PER,allSorted.length);o.push(ce('option',{key:p,value:p},'P\u00e1g. '+p+' ('+ini+'-'+fim+')'));}return o;})()
-              )
-            ),
-            ce('span',{style:{color:'#94a3b8',fontWeight:700,marginTop:18}},'at\u00e9'),
-            ce('div',{style:{flex:1}},
-              ce('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4}},'At\u00e9:'),
-              ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,width:'100%'},
-                disabled:!printFrom,
-                value:printTo,
-                onChange:function(e){setPrintTo(e.target.value);}},
-
-                (function(){var o=[];for(var p=parseInt(printFrom)||1;p<=totalPgs;p++){var ini=(p-1)*PER+1;var fim=Math.min(p*PER,allSorted.length);o.push(ce('option',{key:p,value:p},'P\u00e1g. '+p+' ('+ini+'-'+fim+')'));}return o;})()
+          /* P\u00e1gina espec\u00edfica */
+          ce('div',{style:{marginBottom:8}},
+            ce('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4}},'P\u00e1gina espec\u00edfica:'),
+            ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,width:'100%'},
+              value:printFrom==='single'?printTo:'',
+              onChange:function(e){
+                var pg=e.target.value;
+                if(!pg){setPrintFrom('');setPrintTo('');return;}
+                setPrintFrom('single');setPrintTo(pg);
+                var pgN=parseInt(pg);
+                var pgRegs=allSorted.slice((pgN-1)*PER,pgN*PER);
+                var nw={};
+                allSorted.forEach(function(r){nw[r.id]=false;});
+                pgRegs.forEach(function(r){nw[r.id]=true;});
+                setPrintCards(nw);
+              }},
+              ce('option',{value:''},'-- Todas as p\u00e1ginas --'),
+              (function(){var o=[];for(var p=1;p<=totalPgs;p++){var ini=(p-1)*PER+1;var fim=Math.min(p*PER,allSorted.length);o.push(ce('option',{key:p,value:p},'P\u00e1g. '+p+' \u2014 cards '+ini+' a '+fim));}return o;})()
+            )
+          ),
+          /* Intervalo */
+          ce('div',null,
+            ce('label',{style:{fontSize:11,color:'#64748b',display:'block',marginBottom:4}},'Intervalo de p\u00e1ginas:'),
+            ce('div',{style:{display:'flex',gap:8,alignItems:'center'}},
+              ce('div',{style:{flex:1}},
+                ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,width:'100%'},
+                  value:printFrom==='single'?'':printFrom,
+                  onChange:function(e){setPrintFrom(e.target.value);setPrintTo('');}},
+                  ce('option',{value:''},'De...'),
+                  (function(){var o=[];for(var p=1;p<=totalPgs;p++){var ini=(p-1)*PER+1;var fim=Math.min(p*PER,allSorted.length);o.push(ce('option',{key:p,value:p},'P\u00e1g. '+p+' ('+ini+'-'+fim+')'));}return o;})()
+                )
+              ),
+              ce('span',{style:{color:'#94a3b8',fontWeight:700}},'at\u00e9'),
+              ce('div',{style:{flex:1}},
+                ce('select',{style:{fontSize:12,padding:'5px 8px',border:'1.5px solid #e2e8f0',borderRadius:6,width:'100%'},
+                  disabled:!printFrom||printFrom==='single',
+                  value:printFrom==='single'?'':printTo,
+                  onChange:function(e){setPrintTo(e.target.value);}},
+                  ce('option',{value:''},'At\u00e9...'),
+                  (function(){var o=[];for(var p=parseInt(printFrom)||1;p<=totalPgs;p++){var ini=(p-1)*PER+1;var fim=Math.min(p*PER,allSorted.length);o.push(ce('option',{key:p,value:p},'P\u00e1g. '+p+' ('+ini+'-'+fim+')'));}return o;})()
+                )
               )
             )
           )
