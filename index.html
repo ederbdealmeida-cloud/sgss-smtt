@@ -4765,13 +4765,20 @@ function Controle(p){
           ),
           ce('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:5,maxHeight:260,overflowY:'auto'}},
             (function(){
-              var de=parseInt(printFrom)||0;
-              var ate=parseInt(printTo)||0;
-              var lista=de>0
-                ?(ate>0
-                  ?allSorted.slice((de-1)*PER,ate*PER)
-                  :allSorted.slice((de-1)*PER,de*PER))
-                :allSorted;
+              var lista;
+              if(printFrom==='single'){
+                /* Pagina especifica */
+                var pgN=parseInt(printTo)||1;
+                lista=allSorted.slice((pgN-1)*PER,pgN*PER);
+              } else {
+                var de=parseInt(printFrom)||0;
+                var ate=parseInt(printTo)||0;
+                lista=de>0
+                  ?(ate>0
+                    ?allSorted.slice((de-1)*PER,ate*PER)
+                    :allSorted.slice((de-1)*PER,de*PER))
+                  :allSorted;
+              }
               return lista.map(function(r){
               var isChk=printCards[r.id]===true;
               return ce('label',{key:r.id,style:{display:'flex',alignItems:'center',gap:6,padding:'5px 8px',
