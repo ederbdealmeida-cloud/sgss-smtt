@@ -5372,7 +5372,7 @@ function Historico(){
         ce('button',{className:'btn btn-s',style:{background:'#16a34a',color:'#fff',border:'none'},onClick:exportXLSX},'\ud83d\udcca Excel'),
         selIds.length>0?ce('button',{className:'btn btn-s',style:{background:'#dc2626',color:'#fff',border:'none'},onClick:delLote},'\ud83d\uddd1\ufe0f Excluir ('+selIds.length+')'):null,
         DELETED_REQS.length>0?ce('button',{className:'btn btn-s',style:{background:'#fef2f2',color:'#dc2626',border:'1px solid #fca5a5'},onClick:function(){setShowRec(true);}},'\u21a9\ufe0f Lixeira ('+DELETED_REQS.length+')'):null,
-        ce('button',{className:'btn btn-s',style:{background:showFilters?'#2563eb':'',color:showFilters?'#fff':''},onClick:function(){setShowFilters(function(v){return !v;});}},'\ud83d\udd0d Filtros')
+        
       )
     ),
     /* KPIs */
