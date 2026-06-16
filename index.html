@@ -3207,18 +3207,36 @@ function _buildComprovanteHtml(r,allReqs){
     var sn=s.cn||s.sn||'-';
     var st=s.status||'Pendente';
     var sc=st==='Conclu\u00eddo'?'#16a34a':'#d97706';
-    return card('Solicita\u00e7\u00e3o'+(parts.length>1?' #'+(i+1):''),'#84cc16',
-      rw('N\u00ba Protocolo','<b style="color:#1d4ed8;font-size:14px">'+(s.prot||'-')+'</b>')
-      +rw('Data',dt)
-      +rw('Tipo de Servi\u00e7o',sn)
-      +(s.subSvc?rw('Subservi\u00e7o',s.subSvc):'')
-      +rw('Status','<span style="color:'+sc+';font-weight:700">'+st+'</span>')
-      +(s.urg==='Sim'?rw('Urg\u00eancia','<span style="color:#dc2626">URGENTE</span>'):'')
-    )
+    var protBox='<div style="background:#84cc16;border-radius:10px;padding:14px 18px;margin:10px 0;display:flex;justify-content:space-between;align-items:center;">'
+      +'<div>'
+      +'<div style="font-size:10px;color:#365314;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">N\u00famero do Protocolo</div>'
+      +'<div style="font-size:22px;font-weight:800;color:#1a2e05;letter-spacing:.5px">'+(s.prot||'-')+'</div>'
+      +'</div>'
+      +'<div style="text-align:right">'
+      +'<div style="font-size:10px;color:#365314;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Data de Registro</div>'
+      +'<div style="font-size:16px;font-weight:700;color:#1a2e05">'+dt+'</div>'
+      +'</div>'
+      +'</div>';
+    var svcBox='<div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px 16px;margin:10px 0;">'
+      +'<div style="font-size:10px;font-weight:700;color:#84cc16;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Servi\u00e7o Solicitado</div>'
+      +'<div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px">'+sn+(s.urg==='Sim'?' <span style="background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700">\u26a0\ufe0f URGENTE</span>':'')+'</div>'
+      +(s.subSvc?'<div style="font-size:11px;color:#64748b;">'+s.subSvc+'</div>':'')
+      +'</div>';
+    var stBox='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0;">'
+      +'<div style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;">'
+      +'<div style="font-size:10px;color:#64748b;margin-bottom:4px">Status Atual</div>'
+      +'<span style="background:'+(st==='Conclu\u00eddo'?'#dcfce7':st==='Em andamento'?'#cffafe':'#fff7ed')+';color:'+sc+';padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700">'+st+'</span>'
+      +'</div>'
+      +'<div style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;">'
+      +'<div style="font-size:10px;color:#64748b;margin-bottom:4px">Forma de Pagamento</div>'
+      +'<div style="font-size:12px;font-weight:700;color:#1e293b">'+(main.fp||'A definir')+'</div>'
+      +'</div>'
+      +'</div>';
+    return protBox+svcBox
     +((s.foto||s.descricao)?'<div style="display:grid;grid-template-columns:'+(s.foto&&s.descricao?'1fr 1fr':'1fr')+';gap:10px;margin:8px 0 4px">'
       +(s.foto?'<div><img src="'+s.foto+'" style="width:100%;height:160px;object-fit:contain;border-radius:8px;border:1px solid #e2e8f0;display:block;background:#f8fafc"></div>':'')
-      +(s.descricao?'<div style="padding:10px 12px;background:#f8fafc;border-left:3px solid #1d4ed8;border-radius:0 6px 6px 0;font-size:11px;color:#374151"><b style="font-size:11px;color:#1d4ed8;display:block;margin-bottom:4px">Descri\u00e7\u00e3o</b>'+s.descricao+'</div>':'')
-      +'</div>':'')+'</div>';
+      +(s.descricao?'<div style="padding:10px 12px;background:#f8fafc;border-left:3px solid #84cc16;border-radius:0 6px 6px 0;font-size:11px;color:#374151"><b style="font-size:11px;color:#84cc16;display:block;margin-bottom:4px">Descri\u00e7\u00e3o</b>'+s.descricao+'</div>':'')
+      +'</div>':'')+stBox;
   }).join('');
   var endStr=(main.rua||'')+(main.num?', '+main.num:'')+(main.bairro?' - '+main.bairro:'');
   var card2=card('Dados do Solicitante','#0891b2',
