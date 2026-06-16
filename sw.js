@@ -1,5 +1,5 @@
-/* SW v23 - force cache clear */
-const CACHE = 'sgss-v23';
+/* SW v24 - force cache clear */
+const CACHE = 'sgss-v24';
 
 self.addEventListener('install', e => {
   e.waitUntil(
