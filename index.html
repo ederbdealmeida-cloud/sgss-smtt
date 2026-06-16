@@ -5072,7 +5072,7 @@ function Controle(p){
                 btn.disabled=true;
                 var tmp=document.createElement('div');
                 tmp.style.cssText='position:fixed;top:0;left:0;width:400px;background:#fff;padding:12px;z-index:9999;font-family:Arial,sans-serif;font-size:12px;';
-                tmp.innerHTML='<div class="doc-paper">'+buildHeader('&#128204; Controle \u2014 '+r.prot,fmtD(r.dt))+mkCard(r)+'</div>';
+                tmp.innerHTML='<div style="padding:8px;">'+mkCard(r)+'</div>';
                 document.body.appendChild(tmp);
                 html2canvas(tmp,{scale:2,useCORS:true,allowTaint:true,logging:false}).then(function(canvas){
                   document.body.removeChild(tmp);
