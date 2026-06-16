@@ -4510,6 +4510,7 @@ function Controle(p){
   var sba=useState(null);var bulkAction=sba[0];var setBulkAction=sba[1];
   var sbaf=useState('');var bulkFunc=sbaf[0];var setBulkFunc=sbaf[1];
   var sbas=useState('');var bulkStatus=sbas[0];var setBulkStatus=sbas[1];
+  var spv=useState(null);var printView=spv[0];var setPrintView=spv[1];
   var t=useToast();var toast=t[0];var notify=t[1];
   var _hlId=p&&p.hlId?p.hlId:null;
   React.useEffect(function(){
@@ -4687,21 +4688,54 @@ function Controle(p){
         +(target[_i+2]?'<td style="width:33.3%;padding:4px;vertical-align:top">'+mkCard(target[_i+2])+'</td>':'<td style="width:33.3%"></td>')
         +'</tr>');
     }
-    var _pw=820,_ph=650;
-    var w=window.open('','_blank','width='+_pw+',height='+_ph+',scrollbars=yes');
-    if(!w){notify('\u26a0\ufe0f Permita pop-ups.');return;}
-    w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>@page{size:A4 portrait;margin:8mm}body{font-family:"IBM Plex Sans",Arial,sans-serif;font-size:12px;}table{width:100%;border-collapse:separate;}</style></head><body>'
-      +'<table><tbody>'+rows.join('')+'</tbody></table>'
-      +'<div style="display:flex;gap:10px;justify-content:center;margin:16px 0;">'
-      +'<button onclick="window.print()" style="padding:10px 24px;background:#1e3a5f;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;">\ud83d\udda8\ufe0f Imprimir</button>'
-      +'<button onclick="(function(){var txt=Array.from(document.querySelectorAll(\'td\')).map(function(td){return td.innerText;}).filter(function(t){return t.trim();}).join(\'\\n\');if(navigator.share){navigator.share({title:\'SMTT Controle\',text:txt}).catch(function(){});}else{navigator.clipboard.writeText(txt).then(function(){alert(\'Copiado!\');});}})()" style="padding:10px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;">\ud83d\udce4 Compartilhar</button>'
-      +'</div>'
-      +'</body></html>');
-    w.document.close();
+    var _html='<table style="width:100%;border-collapse:separate;"><tbody>'+rows.join('')+'</tbody></table>';
+    setPrintView({cards:target,html:_html});
     setShowPrint(false);
   }
   return ce('div',{className:'page'},
     ce(Toast,{msg:toast}),
+    printView?ce('div',{style:{position:'fixed',top:0,left:0,right:0,bottom:0,background:'#f1f5f9',zIndex:2000,overflowY:'auto'}},
+      ce('div',{id:'ctrl-print-area',style:{padding:'12px 8px',maxWidth:860,margin:'0 auto'}},
+        ce('div',{dangerouslySetInnerHTML:{__html:printView.html}})
+      ),
+      ce('div',{style:{position:'sticky',bottom:0,background:'#1e3a5f',padding:'10px 16px',display:'flex',gap:10,justifyContent:'center',flexWrap:'wrap'}},
+        ce('button',{className:'btn',style:{background:'#fff',color:'#1e3a5f',fontWeight:700,minWidth:120},
+          onClick:function(){window.print();}},
+          '\ud83d\udda8\ufe0f Imprimir'),
+        ce('button',{id:'ctrl-share-btn',className:'btn',style:{background:'#16a34a',color:'#fff',fontWeight:700,minWidth:140},
+          onClick:function(e){
+            var btn=e.currentTarget;
+            if(!window.html2canvas||!window.jspdf){alert('Bibliotecas nao carregadas.');return;}
+            if(!navigator.share||!navigator.canShare){alert('Compartilhamento nao disponivel neste dispositivo.');return;}
+            btn.textContent='Gerando...';
+            btn.disabled=true;
+            var el=document.getElementById('ctrl-print-area');
+            html2canvas(el,{scale:1.5,useCORS:true,allowTaint:true,logging:false,scrollY:0}).then(function(canvas){
+              var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+              var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
+              var img=canvas.toDataURL('image/jpeg',0.88);
+              var ih=pW*canvas.height/canvas.width;
+              pdf.addImage(img,'JPEG',0,0,pW,Math.min(ih,pH));
+              var pos=0;
+              while(pos+pH<ih){pos+=pH;pdf.addPage();pdf.addImage(img,'JPEG',0,-pos,pW,ih);}
+              var blob=pdf.output('blob');
+              var file=new File([blob],'controle_smtt.pdf',{type:'application/pdf'});
+              btn.textContent='\ud83d\udce4 Compartilhar';
+              btn.disabled=false;
+              if(!navigator.canShare({files:[file]})){alert('Dispositivo nao suporta compartilhamento de PDF.');return;}
+              navigator.share({title:'Controle SMTT Cacequi',files:[file]}).catch(function(er){if(er.name!=='AbortError'){alert('Erro ao compartilhar: '+er.message);}});
+            }).catch(function(er){
+              btn.textContent='\ud83d\udce4 Compartilhar';
+              btn.disabled=false;
+              alert('Erro ao gerar PDF: '+er.message);
+            });
+          }},
+          '\ud83d\udce4 Compartilhar PDF'),
+        ce('button',{className:'btn',style:{background:'#64748b',color:'#fff',minWidth:100},
+          onClick:function(){setPrintView(null);}},
+          '\u2715 Fechar')
+      )
+    ):null,
     showPrint?ce('div',{style:{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.55)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}},
       ce('div',{style:{background:'#fff',borderRadius:12,padding:'22px 26px',width:'min(95vw,560px)',maxHeight:'88vh',overflowY:'auto',boxShadow:'0 20px 60px rgba(0,0,0,.3)'}},
         ce('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}},
