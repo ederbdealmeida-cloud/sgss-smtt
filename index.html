@@ -4692,7 +4692,10 @@ function Controle(p){
     if(!w){notify('\u26a0\ufe0f Permita pop-ups.');return;}
     w.document.open('text/html','replace');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>@page{size:A4 portrait;margin:8mm}body{font-family:"IBM Plex Sans",Arial,sans-serif;font-size:12px;}table{width:100%;border-collapse:separate;}</style></head><body>'
       +'<table><tbody>'+rows.join('')+'</tbody></table>'
-      +'<button onclick="window.print()" style="margin:10px;padding:6px 16px;">Imprimir</button>'
+      +'<div style="display:flex;gap:10px;justify-content:center;margin:16px 0;">'
+      +'<button onclick="window.print()" style="padding:10px 24px;background:#1e3a5f;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;">\ud83d\udda8\ufe0f Imprimir</button>'
+      +'<button onclick="(function(){var txt=Array.from(document.querySelectorAll(\'td\')).map(function(td){return td.innerText;}).filter(function(t){return t.trim();}).join(\'\\n\');if(navigator.share){navigator.share({title:\'SMTT Controle\',text:txt}).catch(function(){});}else{navigator.clipboard.writeText(txt).then(function(){alert(\'Copiado!\');});}})()" style="padding:10px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;">\ud83d\udce4 Compartilhar</button>'
+      +'</div>'
       +'</body></html>');
     w.document.close();
     setShowPrint(false);
