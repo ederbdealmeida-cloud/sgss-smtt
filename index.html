@@ -1567,9 +1567,9 @@ function PainelFuncionario(p){
   var pend=reqs.filter(function(r){return r.status!=='Conclu\u00eddo';});
   var receita=concl.reduce(function(s,r){return s+(r.taxa||0);},0);
   var card=function(icon,label,val,color){
-    return ce('div',{style:{background:'#f8fafc',borderRadius:10,padding:'14px 18px',borderLeft:'4px solid '+(color||'#2563eb')}},
-      ce('div',{style:{fontSize:11,color:'#64748b',textTransform:'uppercase',letterSpacing:'.5px'}},icon+' '+label),
-      ce('div',{style:{fontSize:22,fontWeight:700,color:color||'#1e293b',marginTop:4}},val)
+    return ce('div',{style:{background:'#4682b4',borderRadius:10,padding:'14px 18px',borderLeft:'4px solid '+(color||'#2563eb')}},
+      ce('div',{style:{fontSize:11,color:'#dbeafe',textTransform:'uppercase',letterSpacing:'.5px'}},icon+' '+label),
+      ce('div',{style:{fontSize:22,fontWeight:700,color:'#ffffff',marginTop:4}},val)
     );
   };
   return ce('div',null,
