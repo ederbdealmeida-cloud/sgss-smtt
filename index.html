@@ -5423,7 +5423,7 @@ function Historico(){
       ce('div',{style:{fontSize:11,fontWeight:700,color:'#64748b',textTransform:'uppercase',letterSpacing:'.5px',marginBottom:6}},'\ud83c\udff7\ufe0f Filtrar por Servi\u00e7o'),
       ce('div',{style:{display:'flex',flexWrap:'wrap',gap:6}},
         (function(){
-          var _all=INIT_REQS.filter(function(r){return r.status==='Conclu\u00eddo';});
+          var _all=INIT_REQS;
           var _map={};
           _all.forEach(function(r){var k=r.cn||'Sem categoria';_map[k]=(_map[k]||0)+1;});
           var _cats=Object.keys(_map).sort(function(a,b){return _map[b]-_map[a];});
