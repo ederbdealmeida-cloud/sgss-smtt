@@ -1,5 +1,5 @@
-/* SW v27-1781619260 */
-const CACHE = 'sgss-v27-1781619260';
+/* SW v28-1781619512 */
+const CACHE = 'sgss-v28-1781619512';
 
 self.addEventListener('install', e => {
   /* Limpar TODOS os caches antigos e ativar imediatamente */
