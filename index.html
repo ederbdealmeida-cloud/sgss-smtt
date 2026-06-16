@@ -4796,8 +4796,30 @@ function Controle(p){
             })()
           )
         ),
-        ce('div',{style:{display:'flex',gap:8,justifyContent:'flex-end',borderTop:'1px solid #f1f5f9',paddingTop:10}},
+        ce('div',{style:{display:'flex',gap:8,justifyContent:'flex-end',borderTop:'1px solid #f1f5f9',paddingTop:10,flexWrap:'wrap'}},
           ce('button',{className:'btn',onClick:function(){setShowPrint(false);}},'\u274c Cancelar'),
+          ce('button',{className:'btn btn-s',
+            style:{background:'#16a34a',color:'#fff',border:'none'},
+            onClick:function(){
+              var target=allSorted.filter(function(r){return printCards[r.id]===true;});
+              if(!target.length){notify('\u26a0\ufe0f Nenhum card selecionado.');return;}
+              var txt=target.map(function(r){
+                return 'Protocolo: '+r.prot
+                  +'\nSolicitante: '+r.nom
+                  +'\nServi\u00e7o: '+(r.cn||'')
+                  +'\nBairro: '+(r.bairro||'')
+                  +'\nStatus: '+(r.status||'')
+                  +'\nFuncion\u00e1rio: '+(r.func||'N\u00e3o atribu\u00eddo')
+                  +'\nData: '+fmtD(r.dt);
+              }).join('\n\n---\n\n')+'\n\n\u2014 SMTT Cacequi';
+              if(navigator.share){
+                navigator.share({title:'SMTT \u2014 Controle ('+target.length+' cards)',text:txt}).catch(function(){});
+              } else {
+                navigator.clipboard.writeText(txt)
+                  .then(function(){notify('\ud83d\udccb Copiado ('+target.length+' cards)!');})
+                  .catch(function(){notify('\ud83d\udccb '+target.length+' cards selecionados');});
+              }
+            }},'\ud83d\udce4 Compartilhar ('+Object.values(printCards).filter(Boolean).length+')'),
           ce('button',{className:'btn btn-p',onClick:execPrint},
             '\ud83d\udda8\ufe0f Gerar ('+Object.values(printCards).filter(Boolean).length+' cards)')
         )
