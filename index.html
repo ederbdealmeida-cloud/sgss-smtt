@@ -5168,6 +5168,7 @@ function Historico(){
   }
 
   var filtered=INIT_REQS.filter(function(r){
+    if(r.status!=='Conclu\u00eddo')return false;
     if(srch){var q=srch.toLowerCase();
       if((r.nom||'').toLowerCase().indexOf(q)<0&&
          (r.prot||'').toLowerCase().indexOf(q)<0&&
@@ -5202,7 +5203,11 @@ function Historico(){
   /* KPIs */
   var _tot=filtered.length;
   var _concl=filtered.filter(function(r){return r.status==='Conclu\u00eddo';}).length;
-  var _pend=filtered.filter(function(r){return r.status!=='Conclu\u00eddo';}).length;
+  var _atraso=filtered.filter(function(r){
+    if(!r.dtFim||!r.dt)return false;
+    var ms=new Date(r.dtFim)-new Date(r.dt);
+    return ms>7*24*60*60*1000;
+  }).length;
   var _urg=filtered.filter(function(r){return r.urg==='Sim';}).length;
   var _rec=filtered.reduce(function(s,r){return s+(parseFloat(r.taxa)||0);},0);
   /* Comparativo mensal */
@@ -5367,7 +5372,7 @@ function Historico(){
     /* KPIs */
     ce('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}},
       [{v:_tot,l:'Total',c:'#2563eb'},{v:_concl,l:'Conclu\u00eddos',c:'#16a34a'},
-       {v:_pend,l:'Pendentes',c:'#d97706'},{v:_urg,l:'Urgentes',c:'#dc2626'},
+       {v:_atraso,l:'Conclu\u00eddos c/ Atraso',c:'#d97706'},{v:_urg,l:'Urgentes',c:'#dc2626'},
        {v:'R$\u00a0'+_rec.toLocaleString('pt-BR',{minimumFractionDigits:2}),l:'Receita',c:'#059669'}
       ].map(function(k){
         return ce('div',{key:k.l,style:{background:k.c+'11',border:'1.5px solid '+k.c+'33',borderRadius:8,padding:'8px 14px',textAlign:'center',flex:1,minWidth:80}},
@@ -5423,7 +5428,7 @@ function Historico(){
       ce('div',{style:{fontSize:11,fontWeight:700,color:'#64748b',textTransform:'uppercase',letterSpacing:'.5px',marginBottom:6}},'\ud83c\udff7\ufe0f Filtrar por Servi\u00e7o'),
       ce('div',{style:{display:'flex',flexWrap:'wrap',gap:6}},
         (function(){
-          var _all=INIT_REQS;
+          var _all=INIT_REQS.filter(function(r){return r.status==='Conclu\u00eddo';});
           var _map={};
           _all.forEach(function(r){var k=r.cn||'Sem categoria';_map[k]=(_map[k]||0)+1;});
           var _cats=Object.keys(_map).sort(function(a,b){return _map[b]-_map[a];});
