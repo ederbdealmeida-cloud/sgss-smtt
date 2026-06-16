@@ -11,7 +11,7 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('message',function(e){
     if(e.data&&e.data.type==='SW_UPDATED'){window.location.reload(true);}
   });
-  navigator.serviceWorker.register('/sgss-smtt/sw.js?v=28-1781619512').then(function(reg){
+  navigator.serviceWorker.register('/sgss-smtt/sw.js?v=29-1781619710').then(function(reg){
     reg.addEventListener('updatefound',function(){
       var nw=reg.installing;
       nw.addEventListener('statechange',function(){
