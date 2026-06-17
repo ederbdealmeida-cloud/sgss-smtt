@@ -9598,6 +9598,23 @@ function Controle(p){
                   +(isUrg?'<span style="'+PA+'background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:999px;font-size:9px;font-weight:700">\u26a0\ufe0f Urgente</span>':'')
                   +fmtT()
                 +'</div>'
+                /* Radio buttons + campo data */
+                +'<div style="border-top:1px solid #e2e8f0;margin-top:8px;padding-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px">'
+                  +'<div style="display:flex;align-items:center;gap:16px">'
+                    +'<label style="display:flex;align-items:center;gap:5px;font-size:11px;color:#1e293b;cursor:pointer">'
+                      +'<input type="radio" name="status_'+r.prot+'" value="nao" '+(r.status!=='Conclu\u00eddo'?'checked':'')+' style="width:14px;height:14px;accent-color:#2563eb">'
+                      +'N\u00e3o Conclu\u00eddo'
+                    +'</label>'
+                    +'<label style="display:flex;align-items:center;gap:5px;font-size:11px;color:#1e293b;cursor:pointer">'
+                      +'<input type="radio" name="status_'+r.prot+'" value="sim" '+(r.status==='Conclu\u00eddo'?'checked':'')+' style="width:14px;height:14px;accent-color:#16a34a">'
+                      +'Conclu\u00eddo'
+                    +'</label>'
+                  +'</div>'
+                  +'<div style="display:flex;align-items:center;gap:5px">'
+                    +'<span style="font-size:10px;color:#64748b;font-weight:600">Data:</span>'
+                    +'<div style="width:90px;height:18px;border-bottom:1px solid #94a3b8"></div>'
+                  +'</div>'
+                +'</div>'
               +'</div>'
             +'</div>';
           };
