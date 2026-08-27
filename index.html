@@ -10406,8 +10406,8 @@ function Cronograma(){
       return r.enc!==1&&r.status!=='Concluído'&&(r.cn===selSvc||r.sn===selSvc);
     });
     if(!reqs.length){notify('Nenhuma solicitação pendente para este serviço.');return;}
-    var comEnd=reqs.filter(function(r){return r.rua&&r.num;});
-    var semEnd=reqs.filter(function(r){return !r.rua||!r.num;});
+    var comEnd=reqs.filter(function(r){return r.rua&&(r.numero||r.num);});
+    var semEnd=reqs.filter(function(r){return !r.rua||(!r.numero&&!r.num);});
     if(!comEnd.length){
       notify('Nenhuma solicitação com endereço completo.');
       setRota({paradas:[],semEnd:semEnd,svc:selSvc,coordenadas:[]});
@@ -10417,7 +10417,7 @@ function Cronograma(){
     notify('Geocodificando endereços...');
     var cidade='Cacequi, RS, Brasil';
     var promises=comEnd.map(function(r){
-      var addr=r.rua+', '+r.num+(r.bairro?', '+r.bairro:'')+', '+cidade;
+      var addr=r.rua+', '+(r.numero||r.num||'s/n')+(r.bairro?', '+r.bairro:'')+', '+cidade;
       return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(addr))
         .then(function(res){return res.json();})
         .then(function(data){
@@ -10472,7 +10472,7 @@ function Cronograma(){
   function imprimirCronograma(){
     if(!rota)return;
     var linhas=rota.paradas.map(function(p){
-      var end=(p.rua||'')+', '+(p.num||'')+(p.bairro?' - '+p.bairro:'');
+      var end=(p.rua||'')+', '+(p.numero||p.num||'s/n')+(p.bairro?' - '+p.bairro:'');
       return '<tr style="border-top:1px solid #e2e8f0">'
         +'<td style="padding:6px 8px;font-weight:700;color:#1e3a5f;text-align:center">'+p._ordem+'</td>'
         +'<td style="padding:6px 8px"><b>'+p.prot+'</b><div style="font-size:10px;color:#64748b">'+fmtD(p.dt)+'</div></td>'
@@ -10555,7 +10555,7 @@ function Cronograma(){
                   ce('td',{style:{textAlign:'center',fontWeight:700,color:'#2563eb'}},p._ordem),
                   ce('td',null,ce('code',null,p.prot)),
                   ce('td',null,p.nom),
-                  ce('td',null,(p.rua||'')+', '+(p.num||'')),
+                  ce('td',null,(p.rua||'')+', '+(p.numero||p.num||'s/n')),
                   ce('td',null,p.bairro||'\u2014'),
                   ce('td',null,ce('span',{style:{padding:'2px 8px',borderRadius:999,fontSize:10,fontWeight:700,
                     background:p.status==='Concluído'?'#dcfce7':'#fef3c7',
