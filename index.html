@@ -10406,8 +10406,8 @@ function Cronograma(){
       return r.enc!==1&&r.status!=='Concluído'&&(r.cn===selSvc||r.sn===selSvc);
     });
     if(!reqs.length){notify('Nenhuma solicitação pendente para este serviço.');return;}
-    var comEnd=reqs.filter(function(r){return r.rua&&(r.numero||r.num);});
-    var semEnd=reqs.filter(function(r){return !r.rua||(!r.numero&&!r.num);});
+    var comEnd=reqs.filter(function(r){return r.rua||(r.bairro&&r.bairro.trim());});
+    var semEnd=reqs.filter(function(r){return !r.rua&&(!r.bairro||!r.bairro.trim());});
     if(!comEnd.length){
       notify('Nenhuma solicitação com endereço completo.');
       setRota({paradas:[],semEnd:semEnd,svc:selSvc,coordenadas:[]});
@@ -10417,7 +10417,7 @@ function Cronograma(){
     notify('Geocodificando endereços...');
     var cidade='Cacequi, RS, Brasil';
     var promises=comEnd.map(function(r){
-      var addr=r.rua+', '+(r.numero||r.num||'s/n')+(r.bairro?', '+r.bairro:'')+', '+cidade;
+      var _num=(r.numero||r.num||''); var addr=(r.rua?r.rua+(_num?', '+_num:''):(r.bairro||''))+', '+cidade;
       return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(addr))
         .then(function(res){return res.json();})
         .then(function(data){
@@ -10520,7 +10520,7 @@ function Cronograma(){
     ),
     rota?ce('div',null,
       rota.semEnd.length?ce('div',{style:{background:'#fff7ed',border:'1px solid #fed7aa',borderRadius:10,padding:'12px 16px',marginBottom:12}},
-        ce('div',{style:{fontWeight:700,color:'#c2410c',marginBottom:6}},'\u26a0\ufe0f '+rota.semEnd.length+' registro(s) sem endereço completo \u2014 não incluído(s) na rota:'),
+        ce('div',{style:{fontWeight:700,color:'#c2410c',marginBottom:6}},_tw('\u26a0\ufe0f')+' '+rota.semEnd.length+' registro(s) sem endereço completo \u2014 não incluído(s) na rota:'),
         ce('ul',{style:{margin:0,paddingLeft:20}},
           rota.semEnd.map(function(r){
             return ce('li',{key:r.id,style:{fontSize:13,color:'#9a3412',marginBottom:2}},
