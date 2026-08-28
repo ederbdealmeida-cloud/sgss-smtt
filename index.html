@@ -10469,8 +10469,17 @@ function Cronograma(){
   function abrirMapaOSM(){
     if(!rota||!rota.coordenadas.length)return;
     var coords=rota.coordenadas;
-    var waypoints=coords.map(function(c){return c.lat+','+c.lon;}).join('/');
-    window.open('https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route='+waypoints,'_blank');
+    // Usar OSRM demo que aceita waypoints em formato lon,lat
+    if(coords.length===1){
+      // So um ponto - abrir no OSM centralizado
+      var url='https://www.openstreetmap.org/?mlat='+coords[0].lat+'&mlon='+coords[0].lon+'#map=15/'+coords[0].lat+'/'+coords[0].lon;
+      window.open(url,'_blank');
+    } else {
+      // Multiplos pontos - usar GraphHopper maps (gratuito, funciona bem)
+      var pts=coords.map(function(c){return 'point='+c.lat+'%2C'+c.lon;}).join('&');
+      var url='https://graphhopper.com/maps/?'+pts+'&locale=pt_BR&vehicle=car&weighting=fastest&turn_costs=true&use_miles=false&layer=OpenStreetMap';
+      window.open(url,'_blank');
+    }
   }
 
   function imprimirCronograma(){
