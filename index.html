@@ -10476,7 +10476,6 @@ function Cronograma(){
     var url='https://www.google.com/maps/dir/?api=1&origin='+origem+'&destination='+destino;
     if(waypoints)url+='&waypoints='+encodeURIComponent(waypoints);
     url+='&travelmode=driving';
-    alert('URL: '+url.slice(0,80));
     window.open(url,'_blank');
   }
 
@@ -10546,7 +10545,7 @@ function Cronograma(){
             '📍 ',rota.paradas.length,' parada(s) \u2014 ',rota.svc
           ),
           ce('div',{style:{display:'flex',gap:8}},
-            ce('button',{className:'btn btn-s',onClick:abrirMapaOSM},_tw('🗺️ Ver no Mapa')),
+            ce('button',{className:'btn btn-s',onClick:function(){abrirMapaOSM();},style:{background:'#1d4ed8',color:'#fff',fontWeight:700}},'🚗 Abrir Rota no Google Maps'),
             ce('button',{className:'btn btn-s',onClick:imprimirCronograma},_tw('🖨️ Imprimir'))
           )
         ),
