@@ -10415,19 +10415,49 @@ function Cronograma(){
     }
     setLoading(true);
     notify('Geocodificando endereços...');
+    // Coordenadas fixas dos bairros de Cacequi-RS
+    var BAIRROS_CACEQUI={
+      'centro':{lat:-29.8827,lon:-54.8351},
+      'iponã':{lat:-29.8780,lon:-54.8420},
+      'ipona':{lat:-29.8780,lon:-54.8420},
+      'povo novo':{lat:-29.8900,lon:-54.8280},
+      'maria nora':{lat:-29.8750,lon:-54.8300},
+      'mauá':{lat:-29.8860,lon:-54.8400},
+      'maua':{lat:-29.8860,lon:-54.8400},
+      'batovi':{lat:-29.8950,lon:-54.8450},
+      'álvaro leitão':{lat:-29.8700,lon:-54.8250},
+      'alvaro leitao':{lat:-29.8700,lon:-54.8250},
+      'vila cândida':{lat:-29.8830,lon:-54.8200},
+      'vila candida':{lat:-29.8830,lon:-54.8200},
+      'vila cãndida':{lat:-29.8830,lon:-54.8200},
+      'charqueadas':{lat:-29.8650,lon:-54.8100}
+    };
     var cidade='Cacequi, RS, Brasil';
     var promises=comEnd.map(function(r){
       var _num=(r.numero||r.num||'');
-      var _street=r.rua?r.rua+(_num?' '+_num:''):'';
-      var _params='format=json&limit=1&countrycodes=br&city=Cacequi&state=Rio+Grande+do+Sul';
-      if(_street)_params+='&street='+encodeURIComponent(_street);
-      else if(r.bairro)_params+='&street='+encodeURIComponent(r.bairro);
-      return fetch('https://nominatim.openstreetmap.org/search?'+_params)
-        .then(function(res){return res.json();})
-        .then(function(data){
-          if(data&&data[0]){return{r:r,lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon),ok:true};}
-          return{r:r,ok:false};
-        }).catch(function(){return{r:r,ok:false};});
+      // Se tem rua, geocodificar via Nominatim
+      if(r.rua&&r.rua.trim()){
+        var _street=r.rua+(_num?' '+_num:'');
+        var _params='format=json&limit=1&countrycodes=br&city=Cacequi&state=Rio+Grande+do+Sul&street='+encodeURIComponent(_street);
+        return fetch('https://nominatim.openstreetmap.org/search?'+_params)
+          .then(function(res){return res.json();})
+          .then(function(data){
+            if(data&&data[0]){return{r:r,lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon),ok:true};}
+            // Fallback: usar bairro
+            var _bk=(r.bairro||'').toLowerCase().trim();
+            if(BAIRROS_CACEQUI[_bk])return{r:r,lat:BAIRROS_CACEQUI[_bk].lat,lon:BAIRROS_CACEQUI[_bk].lon,ok:true};
+            return{r:r,ok:false};
+          }).catch(function(){
+            var _bk=(r.bairro||'').toLowerCase().trim();
+            if(BAIRROS_CACEQUI[_bk])return{r:r,lat:BAIRROS_CACEQUI[_bk].lat,lon:BAIRROS_CACEQUI[_bk].lon,ok:true};
+            return{r:r,ok:false};
+          });
+      }
+      // Sem rua: usar coordenadas fixas do bairro
+      var _bk=(r.bairro||'').toLowerCase().trim();
+      if(BAIRROS_CACEQUI[_bk])return Promise.resolve({r:r,lat:BAIRROS_CACEQUI[_bk].lat,lon:BAIRROS_CACEQUI[_bk].lon,ok:true});
+      // Bairro desconhecido: usar centro de Cacequi
+      return Promise.resolve({r:r,lat:-29.8827,lon:-54.8351,ok:true});
     });
     Promise.all(promises).then(function(results){
       var geocoded=results.filter(function(x){return x.ok;});
