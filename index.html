@@ -10469,17 +10469,14 @@ function Cronograma(){
   function abrirMapaOSM(){
     if(!rota||!rota.coordenadas.length)return;
     var coords=rota.coordenadas;
-    // Usar OSRM demo que aceita waypoints em formato lon,lat
-    if(coords.length===1){
-      // So um ponto - abrir no OSM centralizado
-      var url='https://www.openstreetmap.org/?mlat='+coords[0].lat+'&mlon='+coords[0].lon+'#map=15/'+coords[0].lat+'/'+coords[0].lon;
-      window.open(url,'_blank');
-    } else {
-      // Multiplos pontos - usar GraphHopper maps (gratuito, funciona bem)
-      var pts=coords.map(function(c){return 'point='+c.lat+'%2C'+c.lon;}).join('&');
-      var url='https://graphhopper.com/maps/?'+pts+'&locale=pt_BR&vehicle=car&weighting=fastest&turn_costs=true&use_miles=false&layer=OpenStreetMap';
-      window.open(url,'_blank');
-    }
+    // Google Maps - funciona com waypoints no mobile
+    var origem=coords[0].lat+','+coords[0].lon;
+    var destino=coords[coords.length-1].lat+','+coords[coords.length-1].lon;
+    var waypoints=coords.slice(1,coords.length-1).map(function(c){return c.lat+','+c.lon;}).join('|');
+    var url='https://www.google.com/maps/dir/?api=1&origin='+origem+'&destination='+destino;
+    if(waypoints)url+='&waypoints='+encodeURIComponent(waypoints);
+    url+='&travelmode=driving';
+    window.open(url,'_blank');
   }
 
   function imprimirCronograma(){
