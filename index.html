@@ -10428,23 +10428,36 @@ function Cronograma(){
     }
     setLoading(true);
     notify('Geocodificando endereços...');
-    // Coordenadas fixas dos bairros de Cacequi-RS
-    var BAIRROS_CACEQUI={
-      'centro':{lat:-29.8827,lon:-54.8351},
-      'iponã':{lat:-29.8780,lon:-54.8420},
-      'ipona':{lat:-29.8780,lon:-54.8420},
-      'povo novo':{lat:-29.8900,lon:-54.8280},
-      'maria nora':{lat:-29.8750,lon:-54.8300},
-      'mauá':{lat:-29.8860,lon:-54.8400},
-      'maua':{lat:-29.8860,lon:-54.8400},
-      'batovi':{lat:-29.8950,lon:-54.8450},
-      'álvaro leitão':{lat:-29.8700,lon:-54.8250},
-      'alvaro leitao':{lat:-29.8700,lon:-54.8250},
-      'vila cândida':{lat:-29.8830,lon:-54.8200},
-      'vila candida':{lat:-29.8830,lon:-54.8200},
-      'vila cãndida':{lat:-29.8830,lon:-54.8200},
-      'charqueadas':{lat:-29.8650,lon:-54.8100}
-    };
+    // Geocodificar bairro via Nominatim se nao tem rua
+    function geocodBairro(bairro){
+      var ref={
+        'maria nora':'Rua Santa Catarina, Cacequi, RS',
+        'iponã':'Rua Humaita, Cacequi, RS',
+        'ipona':'Rua Humaita, Cacequi, RS',
+        'mauá':'Rua Batovi, Cacequi, RS',
+        'maua':'Rua Batovi, Cacequi, RS',
+        'centro':'Praça Flores da Cunha, Cacequi, RS',
+        'povo novo':'Rua Povo Novo, Cacequi, RS',
+        'álvaro leitão':'Rua Alvaro Leitao, Cacequi, RS',
+        'alvaro leitao':'Rua Alvaro Leitao, Cacequi, RS',
+        'vila cândida':'Vila Candida, Cacequi, RS',
+        'vila candida':'Vila Candida, Cacequi, RS',
+        'batovi':'Rua Batovi, Cacequi, RS',
+        'popular':'Bairro Popular, Cacequi, RS',
+        'cohab':'Cohab, Cacequi, RS',
+        'vila cruzeiro':'Vila Cruzeiro, Cacequi, RS',
+        'charqueadas':'Charqueadas, Cacequi, RS'
+      };
+      var bk=bairro.toLowerCase().trim();
+      var query=ref[bk]||(bairro+', Cacequi, RS, Brasil');
+      return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q='+encodeURIComponent(query))
+        .then(function(res){return res.json();})
+        .then(function(data){
+          if(data&&data[0])return{lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon),ok:true};
+          // ultimo fallback: centro de Cacequi
+          return{lat:-29.8818,lon:-54.8337,ok:true};
+        }).catch(function(){return{lat:-29.8818,lon:-54.8337,ok:true};});
+    }
     var cidade='Cacequi, RS, Brasil';
     var promises=comEnd.map(function(r){
       var _num=(r.numero||r.num||'');
@@ -10461,20 +10474,13 @@ function Cronograma(){
           .then(function(data){
             if(data&&data[0]){return{r:r,lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon),ok:true};}
             // Fallback: usar bairro
-            var _bk=_bairro.toLowerCase().trim();
-            if(BAIRROS_CACEQUI[_bk])return{r:r,lat:BAIRROS_CACEQUI[_bk].lat,lon:BAIRROS_CACEQUI[_bk].lon,ok:true};
-            return{r:r,ok:false};
+            return geocodBairro(_bairro).then(function(coord){return{r:r,lat:coord.lat,lon:coord.lon,ok:true};});
           }).catch(function(){
-            var _bk=_bairro.toLowerCase().trim();
-            if(BAIRROS_CACEQUI[_bk])return{r:r,lat:BAIRROS_CACEQUI[_bk].lat,lon:BAIRROS_CACEQUI[_bk].lon,ok:true};
-            return{r:r,ok:false};
+            return{r:r,lat:-29.8818,lon:-54.8337,ok:true};
           });
       }
-      // Sem rua: usar coordenadas fixas do bairro
-      var _bk=_bairro.toLowerCase().trim();
-      if(BAIRROS_CACEQUI[_bk])return Promise.resolve({r:r,lat:BAIRROS_CACEQUI[_bk].lat,lon:BAIRROS_CACEQUI[_bk].lon,ok:true});
-      // Bairro desconhecido: usar centro de Cacequi
-      return Promise.resolve({r:r,lat:-29.8827,lon:-54.8351,ok:true});
+      // Sem rua: geocodificar pelo bairro
+      return geocodBairro(_bairro).then(function(coord){return{r:r,lat:coord.lat,lon:coord.lon,ok:true};});
     });
     Promise.all(promises).then(function(results){
       var geocoded=results.filter(function(x){return x.ok;});
