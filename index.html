@@ -10408,15 +10408,18 @@ function Cronograma(){
     if(!reqs.length){notify('Nenhuma solicitação pendente para este serviço.');return;}
     var comEnd=reqs.filter(function(r){
       var _sol=INIT_SOLS.find(function(s){return s.id===r.solId;});
-      var _rua=r.rua||(_sol&&_sol.rua)||'';
-      var _bairro=r.bairro||(_sol&&_sol.bairro)||'';
-      return (_rua&&_rua.trim())||(_bairro&&_bairro.trim());
+      var _rua=(r.rua||(_sol&&_sol.rua)||"").trim();
+      var _num=(r.num||r.numero||(_sol&&_sol.num)||(_sol&&_sol.numero)||"").trim();
+      var _bairro=(r.bairro||(_sol&&_sol.bairro)||"").trim();
+      // Tem endereco geocodificavel se tiver rua+numero OU pelo menos bairro
+      return (_rua&&_num)||_bairro;
     });
     var semEnd=reqs.filter(function(r){
       var _sol=INIT_SOLS.find(function(s){return s.id===r.solId;});
-      var _rua=r.rua||(_sol&&_sol.rua)||'';
-      var _bairro=r.bairro||(_sol&&_sol.bairro)||'';
-      return (!_rua||!_rua.trim())&&(!_bairro||!_bairro.trim());
+      var _rua=(r.rua||(_sol&&_sol.rua)||"").trim();
+      var _num=(r.num||r.numero||(_sol&&_sol.num)||(_sol&&_sol.numero)||"").trim();
+      var _bairro=(r.bairro||(_sol&&_sol.bairro)||"").trim();
+      return (!_rua||!_num)&&!_bairro;
     });
     if(!comEnd.length){
       notify('Nenhuma solicitação com endereço completo.');
@@ -10447,7 +10450,7 @@ function Cronograma(){
       var _num=(r.numero||r.num||'');
       var _sol=INIT_SOLS.find(function(s){return s.id===r.solId;});
       var _rua=r.rua||(_sol&&_sol.rua)||'';
-      var _num=r.numero||r.num||(_sol&&_sol.numero)||(_sol&&_sol.num)||'';
+      var _num=r.num||r.numero||(_sol&&_sol.num)||(_sol&&_sol.numero)||'';
       var _bairro=r.bairro||(_sol&&_sol.bairro)||'';
       // Se tem rua, geocodificar via Nominatim
       if(_rua&&_rua.trim()){
