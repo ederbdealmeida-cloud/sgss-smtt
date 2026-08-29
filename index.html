@@ -10389,240 +10389,328 @@ function Graficos(){
 function Cronograma(){
   var ce=React.createElement;
   var t=useToast();var notify=t[1];
+
+  // Estados
   var sSvc=React.useState('');var selSvc=sSvc[0];var setSelSvc=sSvc[1];
   var sRota=React.useState(null);var rota=sRota[0];var setRota=sRota[1];
   var sLoad=React.useState(false);var loading=sLoad[0];var setLoading=sLoad[1];
+  var sMapUrl=React.useState('');var mapUrl=sMapUrl[0];var setMapUrl=sMapUrl[1];
 
+  // Lista de servicos com solicitacoes PENDENTES
   var svcsPend=(function(){
     var m={};
-    INIT_REQS.filter(function(r){return r.enc!==1&&r.status!=='Concluído';})
-      .forEach(function(r){var k=r.cn||r.sn||'';if(k)m[k]=true;});
+    INIT_REQS.filter(function(r){
+      return r.enc!==1&&r.status!=='Concluído'&&r.status!=='Cancelado';
+    }).forEach(function(r){var k=r.cn||r.sn||'';if(k)m[k]=true;});
     return Object.keys(m).sort();
   })();
 
-  function gerarRota(){
-    if(!selSvc){notify('Selecione um tipo de serviço.');return;}
-    var reqs=INIT_REQS.filter(function(r){
-      return r.enc!==1&&r.status!=='Concluído'&&(r.cn===selSvc||r.sn===selSvc);
-    });
-    if(!reqs.length){notify('Nenhuma solicitação pendente para este serviço.');return;}
-    var comEnd=reqs.filter(function(r){
-      var _sol=INIT_SOLS.find(function(s){return s.id===r.solId;});
-      var _rua=(r.rua||(_sol&&_sol.rua)||"").trim();
-      var _num=(r.num||r.numero||(_sol&&_sol.num)||(_sol&&_sol.numero)||"").trim();
-      var _bairro=(r.bairro||(_sol&&_sol.bairro)||"").trim();
-      // Tem endereco geocodificavel se tiver rua+numero OU pelo menos bairro
-      return (_rua&&_num)||_bairro;
-    });
-    var semEnd=reqs.filter(function(r){
-      var _sol=INIT_SOLS.find(function(s){return s.id===r.solId;});
-      var _rua=(r.rua||(_sol&&_sol.rua)||"").trim();
-      var _num=(r.num||r.numero||(_sol&&_sol.num)||(_sol&&_sol.numero)||"").trim();
-      var _bairro=(r.bairro||(_sol&&_sol.bairro)||"").trim();
-      return (!_rua||!_num)&&!_bairro;
-    });
-    if(!comEnd.length){
-      notify('Nenhuma solicitação com endereço completo.');
-      setRota({paradas:[],semEnd:semEnd,svc:selSvc,coordenadas:[]});
-      return;
-    }
-    setLoading(true);
-    notify('Geocodificando endereços...');
-    // Geocodificar bairro via Nominatim se nao tem rua
-    function geocodBairro(bairro){
-      var ref={
-        'maria nora':'Rua Santa Catarina, Cacequi, RS',
-        'iponã':'Rua Humaita, Cacequi, RS',
-        'ipona':'Rua Humaita, Cacequi, RS',
-        'mauá':'Rua Batovi, Cacequi, RS',
-        'maua':'Rua Batovi, Cacequi, RS',
-        'centro':'Praça Flores da Cunha, Cacequi, RS',
-        'povo novo':'Rua Povo Novo, Cacequi, RS',
-        'álvaro leitão':'Rua Alvaro Leitao, Cacequi, RS',
-        'alvaro leitao':'Rua Alvaro Leitao, Cacequi, RS',
-        'vila cândida':'Vila Candida, Cacequi, RS',
-        'vila candida':'Vila Candida, Cacequi, RS',
-        'batovi':'Rua Batovi, Cacequi, RS',
-        'popular':'Bairro Popular, Cacequi, RS',
-        'cohab':'Cohab, Cacequi, RS',
-        'vila cruzeiro':'Vila Cruzeiro, Cacequi, RS',
-        'charqueadas':'Charqueadas, Cacequi, RS'
-      };
-      var bk=bairro.toLowerCase().trim();
-      var query=ref[bk]||(bairro+', Cacequi, RS, Brasil');
-      return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q='+encodeURIComponent(query))
-        .then(function(res){return res.json();})
-        .then(function(data){
-          if(data&&data[0])return{lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon),ok:true};
-          // ultimo fallback: centro de Cacequi
-          return{lat:-29.8818,lon:-54.8337,ok:true};
-        }).catch(function(){return{lat:-29.8818,lon:-54.8337,ok:true};});
-    }
-    var cidade='Cacequi, RS, Brasil';
-    var promises=comEnd.map(function(r){
-      var _num=(r.numero||r.num||'');
-      var _sol=INIT_SOLS.find(function(s){return s.id===r.solId;});
-      var _rua=r.rua||(_sol&&_sol.rua)||'';
-      var _num=r.num||r.numero||(_sol&&_sol.num)||(_sol&&_sol.numero)||'';
-      var _bairro=r.bairro||(_sol&&_sol.bairro)||'';
-      // Se tem rua, geocodificar via Nominatim
-      if(_rua&&_rua.trim()){
-        var _street=_rua+(_num?' '+_num:'');
-        var _params='format=json&limit=1&countrycodes=br&city=Cacequi&state=Rio+Grande+do+Sul&street='+encodeURIComponent(_street);
-        return fetch('https://nominatim.openstreetmap.org/search?'+_params)
-          .then(function(res){return res.json();})
-          .then(function(data){
-            if(data&&data[0]){return{r:r,lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon),ok:true};}
-            // Fallback: usar bairro
-            return geocodBairro(_bairro).then(function(coord){return{r:r,lat:coord.lat,lon:coord.lon,ok:true};});
-          }).catch(function(){
-            return{r:r,lat:-29.8818,lon:-54.8337,ok:true};
-          });
-      }
-      // Sem rua: geocodificar pelo bairro
-      return geocodBairro(_bairro).then(function(coord){return{r:r,lat:coord.lat,lon:coord.lon,ok:true};});
-    });
-    Promise.all(promises).then(function(results){
-      var geocoded=results.filter(function(x){return x.ok;});
-      var naoGeo=results.filter(function(x){return !x.ok;}).map(function(x){return x.r;});
-      if(!geocoded.length){
-        setLoading(false);
-        notify('Não foi possível geocodificar nenhum endereço.');
-        setRota({paradas:[],semEnd:semEnd.concat(naoGeo),svc:selSvc,coordenadas:[]});
-        return;
-      }
-      var coords=geocoded.map(function(x){return x.lon+','+x.lat;}).join(';');
-      var osrmUrl='https://router.project-osrm.org/trip/v1/driving/'+coords+'?roundtrip=false&source=first&destination=last&steps=false';
-      fetch(osrmUrl).then(function(res){return res.json();}).then(function(data){
-        setLoading(false);
-        var ordem=geocoded.slice();
-        if(data&&data.waypoints){
-          ordem=geocoded.slice();
-          ordem.sort(function(a,b){
-            var ia=geocoded.indexOf(a);var ib=geocoded.indexOf(b);
-            var wiA=data.waypoints[ia]?data.waypoints[ia].waypoint_index:ia;
-            var wiB=data.waypoints[ib]?data.waypoints[ib].waypoint_index:ib;
-            return wiA-wiB;
-          });
-        }
-        var paradas=ordem.map(function(x,i){return Object.assign({},x.r,{_ordem:i+1,_lat:x.lat,_lon:x.lon});});
-        var coordLista=ordem.map(function(x){return{lat:x.lat,lon:x.lon};});
-        setRota({paradas:paradas,semEnd:semEnd.concat(naoGeo),svc:selSvc,coordenadas:coordLista});
-        notify('Rota gerada com '+paradas.length+' parada(s)!');
-      }).catch(function(){
-        setLoading(false);
-        var paradas=geocoded.map(function(x,i){return Object.assign({},x.r,{_ordem:i+1,_lat:x.lat,_lon:x.lon});});
-        var coordLista=geocoded.map(function(x){return{lat:x.lat,lon:x.lon};});
-        setRota({paradas:paradas,semEnd:semEnd.concat(naoGeo),svc:selSvc,coordenadas:coordLista});
-        notify('Rota gerada (sem otimização).');
-      });
-    });
+  // Ruas de referencia por bairro para geocodificacao
+  var REF_BAIRROS={
+    'maria nora':'Rua Santa Catarina, Cacequi, RS, Brasil',
+    'iponã':'Rua Humaita, Cacequi, RS, Brasil',
+    'ipona':'Rua Humaita, Cacequi, RS, Brasil',
+    'mauá':'Rua Batovi, Cacequi, RS, Brasil',
+    'maua':'Rua Batovi, Cacequi, RS, Brasil',
+    'centro':'Praça Flores da Cunha, Cacequi, RS, Brasil',
+    'povo novo':'Bairro Povo Novo, Cacequi, RS, Brasil',
+    'álvaro leitão':'Bairro Alvaro Leitao, Cacequi, RS, Brasil',
+    'alvaro leitao':'Bairro Alvaro Leitao, Cacequi, RS, Brasil',
+    'vila cândida':'Vila Candida, Cacequi, RS, Brasil',
+    'vila candida':'Vila Candida, Cacequi, RS, Brasil',
+    'batovi':'Bairro Batovi, Cacequi, RS, Brasil',
+    'popular':'Bairro Popular, Cacequi, RS, Brasil',
+    'cohab':'Cohab, Cacequi, RS, Brasil',
+    'vila cruzeiro':'Vila Cruzeiro, Cacequi, RS, Brasil',
+    'charqueadas':'Bairro Charqueadas, Cacequi, RS, Brasil'
+  };
+
+  function geocodAddr(query){
+    return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q='+encodeURIComponent(query))
+      .then(function(res){return res.json();})
+      .then(function(data){
+        if(data&&data[0])return{lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon),ok:true,display:data[0].display_name};
+        return{ok:false};
+      }).catch(function(){return{ok:false};});
   }
 
-  function abrirMapaOSM(){
-    if(!rota||!rota.coordenadas.length)return;
-    var coords=rota.coordenadas;
-    // Google Maps - funciona com waypoints no mobile
-    var origem=coords[0].lat+','+coords[0].lon;
-    var destino=coords[coords.length-1].lat+','+coords[coords.length-1].lon;
-    var waypoints=coords.slice(1,coords.length-1).map(function(c){return c.lat+','+c.lon;}).join('|');
-    var url='https://www.google.com/maps/dir/?api=1&origin='+origem+'&destination='+destino;
-    if(waypoints)url+='&waypoints='+encodeURIComponent(waypoints);
-    url+='&travelmode=driving';
-    window.open(url,'_blank');
+  function gerarRota(){
+    if(!selSvc){notify('Selecione um tipo de serviço.');return;}
+
+    // Filtrar apenas PENDENTES do servico
+    var reqs=INIT_REQS.filter(function(r){
+      var isPend=r.status!=='Concluído'&&r.status!=='Cancelado'&&r.enc!==1;
+      var isSvc=(r.cn===selSvc||r.sn===selSvc);
+      return isPend&&isSvc;
+    });
+
+    if(!reqs.length){notify('Nenhuma solicitação pendente para este serviço.');return;}
+
+    setLoading(true);
+    setRota(null);
+    setMapUrl('');
+    notify('Buscando endereços... aguarde.');
+
+    // Para cada req, montar query de geocodificacao
+    var promises=reqs.map(function(r){
+      var _sol=INIT_SOLS.find(function(s){return s.id===r.solId;});
+      var _rua=(r.rua||(_sol&&_sol.rua)||'').trim();
+      var _num=(r.num||r.numero||(_sol&&_sol.num)||(_sol&&_sol.numero)||'').trim();
+      var _bairro=(r.bairro||(_sol&&_sol.bairro)||'').trim();
+      var _bk=_bairro.toLowerCase();
+
+      var hasEnd=(_rua&&_num)||_bairro;
+
+      if(!hasEnd){
+        return Promise.resolve({r:r,ok:false,motivo:'Sem endereço ou bairro cadastrado'});
+      }
+
+      var query='';
+      if(_rua&&_num){
+        query=_rua+', '+_num+(_bairro?', '+_bairro:'')+', Cacequi, RS, Brasil';
+      } else if(_rua){
+        query=_rua+(_bairro?', '+_bairro:'')+', Cacequi, RS, Brasil';
+      } else {
+        query=REF_BAIRROS[_bk]||(_bairro+', Cacequi, RS, Brasil');
+      }
+
+      return geocodAddr(query).then(function(coord){
+        if(coord.ok)return{r:r,lat:coord.lat,lon:coord.lon,ok:true,endStr:query,_rua:_rua,_num:_num,_bairro:_bairro};
+        // fallback: so bairro
+        var q2=REF_BAIRROS[_bk]||(_bairro+', Cacequi, RS, Brasil');
+        return geocodAddr(q2).then(function(c2){
+          if(c2.ok)return{r:r,lat:c2.lat,lon:c2.lon,ok:true,endStr:q2,_rua:_rua,_num:_num,_bairro:_bairro,approx:true};
+          return{r:r,ok:false,motivo:'Não foi possível localizar: '+query};
+        });
+      });
+    });
+
+    Promise.all(promises).then(function(results){
+      var geocoded=results.filter(function(x){return x.ok;});
+      var invalidos=results.filter(function(x){return !x.ok;}).map(function(x){return{r:x.r,motivo:x.motivo};});
+
+      if(!geocoded.length){
+        setLoading(false);
+        notify('Nenhum endereço válido encontrado.');
+        setRota({paradas:[],invalidos:invalidos,svc:selSvc,total:reqs.length});
+        return;
+      }
+
+      // Otimizar ordem por proximidade (nearest neighbor simples)
+      function distKm(a,b){
+        var R=6371;
+        var dLat=(b.lat-a.lat)*Math.PI/180;
+        var dLon=(b.lon-a.lon)*Math.PI/180;
+        var s=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+        return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
+      }
+
+      var restantes=geocoded.slice();
+      var ordenados=[];
+      var atual=restantes.splice(0,1)[0];
+      ordenados.push(atual);
+      while(restantes.length){
+        var menor=Infinity;var idx=0;
+        restantes.forEach(function(p,i){var d=distKm(atual,p);if(d<menor){menor=d;idx=i;}});
+        atual=restantes.splice(idx,1)[0];
+        ordenados.push(atual);
+      }
+
+      // Calcular distancia total e tempo estimado
+      var distTotal=0;
+      for(var i=0;i<ordenados.length-1;i++)distTotal+=distKm(ordenados[i],ordenados[i+1]);
+      var tempoMin=Math.round(distTotal/30*60)+(ordenados.length*15); // 30km/h + 15min por atend
+
+      var paradas=ordenados.map(function(x,i){
+        return Object.assign({},x.r,{
+          _ordem:i+1,_lat:x.lat,_lon:x.lon,
+          _endStr:x._rua?(x._rua+(x._num?' '+x._num:'')+(x._bairro?' - '+x._bairro:'')):x._bairro,
+          _approx:x.approx||false
+        });
+      });
+
+      // Montar URL Google Maps
+      var gmUrl='https://www.google.com/maps/dir/?api=1';
+      gmUrl+='&origin='+ordenados[0].lat+','+ordenados[0].lon;
+      gmUrl+='&destination='+ordenados[ordenados.length-1].lat+','+ordenados[ordenados.length-1].lon;
+      if(ordenados.length>2){
+        var wps=ordenados.slice(1,-1).map(function(p){return p.lat+','+p.lon;}).join('|');
+        gmUrl+='&waypoints='+encodeURIComponent(wps);
+      }
+      gmUrl+='&travelmode=driving';
+
+      // Mapa embed via iframe OSM
+      var bounds=ordenados.reduce(function(b,p){
+        return{minLat:Math.min(b.minLat,p.lat),maxLat:Math.max(b.maxLat,p.lat),minLon:Math.min(b.minLon,p.lon),maxLon:Math.max(b.maxLon,p.lon)};
+      },{minLat:ordenados[0].lat,maxLat:ordenados[0].lat,minLon:ordenados[0].lon,maxLon:ordenados[0].lon});
+      var cLat=(bounds.minLat+bounds.maxLat)/2;
+      var cLon=(bounds.minLon+bounds.maxLon)/2;
+      var markers=ordenados.map(function(p,i){return 'mlat='+p.lat+'&mlon='+p.lon;}).join('&');
+      var embedUrl='https://www.openstreetmap.org/export/embed.html?bbox='+(cLon-0.02)+','+(cLat-0.015)+','+(cLon+0.02)+','+(cLat+0.015)+'&layer=mapnik&'+markers;
+
+      setLoading(false);
+      setMapUrl(embedUrl);
+      setRota({
+        paradas:paradas,invalidos:invalidos,svc:selSvc,
+        total:reqs.length,distKm:Math.round(distTotal*10)/10,
+        tempoMin:tempoMin,gmUrl:gmUrl
+      });
+      notify('Rota gerada! '+paradas.length+' parada(s).');
+    });
   }
 
   function imprimirCronograma(){
     if(!rota)return;
     var linhas=rota.paradas.map(function(p){
-      var end=(p.rua||'')+', '+(p.numero||p.num||'s/n')+(p.bairro?' - '+p.bairro:'');
       return '<tr style="border-top:1px solid #e2e8f0">'
-        +'<td style="padding:6px 8px;font-weight:700;color:#1e3a5f;text-align:center">'+p._ordem+'</td>'
-        +'<td style="padding:6px 8px"><b>'+p.prot+'</b><div style="font-size:10px;color:#64748b">'+fmtD(p.dt)+'</div></td>'
-        +'<td style="padding:6px 8px">'+p.nom+'</td>'
-        +'<td style="padding:6px 8px">'+end+'</td>'
-        +'<td style="padding:6px 8px;text-align:center"><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700">'+(p.status||'Pendente')+'</span></td>'
+        +'<td style="padding:5px 8px;font-weight:700;color:#1e3a5f;text-align:center">'+p._ordem+'</td>'
+        +'<td style="padding:5px 8px"><b>'+p.prot+'</b></td>'
+        +'<td style="padding:5px 8px">'+p.nom+'</td>'
+        +'<td style="padding:5px 8px">'+(p._endStr||'-')+(p._approx?' <i style="color:#d97706">(aprox.)</i>':'')+'</td>'
+        +'<td style="padding:5px 8px">'+(p.bairro||'-')+'</td>'
+        +'<td style="padding:5px 8px">'+(p.cn||p.sn||'-')+'</td>'
+        +'<td style="padding:5px 8px">'+fmtD(p.dt)+'</td>'
+        +'<td style="padding:5px 8px"><span style="padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700;background:#fef3c7;color:#92400e">'+(p.status||'Pendente')+'</span></td>'
         +'</tr>';
     }).join('');
-    var semEndRows=rota.semEnd.length?'<div style="margin-top:16px;padding:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px"><b style="color:#c2410c">\u26a0\ufe0f '+rota.semEnd.length+' registro(s) sem endereço completo:</b><ul style="margin:6px 0 0 16px;color:#9a3412;font-size:12px">'+rota.semEnd.map(function(r){return '<li>'+r.prot+' - '+r.nom+(r.bairro?' ('+r.bairro+')':'')+'</li>';}).join('')+'</ul></div>':'';
+    var invalRow=rota.invalidos.length?'<div style="margin-top:12px;padding:10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px"><b style="color:#c2410c">\u26a0\ufe0f Registros não incluídos ('+rota.invalidos.length+'):</b><ul style="margin:4px 0 0 16px;color:#9a3412;font-size:11px">'+rota.invalidos.map(function(x){return '<li>'+x.r.prot+' - '+x.r.nom+': '+x.motivo+'</li>';}).join('')+'</ul></div>':'';
     var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+PRINT_CSS
-      +'body{padding:20px;font-family:Arial,sans-serif}'
+      +'body{padding:16px;font-family:Arial,sans-serif}'
       +'table{width:100%;border-collapse:collapse}'
-      +'th{background:#1e3a5f;color:#fff;padding:7px 8px;font-size:11px;text-align:left}'
+      +'th{background:#1e3a5f;color:#fff;padding:6px 8px;font-size:10px;text-align:left}'
       +'</style></head><body>'
-      +buildHeader('🚗 Cronograma de Serviço','Serviço: '+rota.svc+' \u2014 Emitido em: '+new Date().toLocaleDateString('pt-BR'))
-      +'<table><thead><tr><th style="width:40px">#</th><th>Protocolo</th><th>Solicitante</th><th>Endereço</th><th>Status</th></tr></thead>'
-      +'<tbody>'+linhas+'</tbody></table>'
-      +semEndRows
-      +'<div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:24px">'
+      +buildHeader('🚗 Cronograma de Serviço','Serviço: '+rota.svc+' | '+rota.paradas.length+' parada(s) | Dist. estimada: '+rota.distKm+'km | Tempo: ~'+rota.tempoMin+'min | Emitido: '+new Date().toLocaleDateString('pt-BR'))
+      +'<table><thead><tr>'
+      +'<th style="width:35px">#</th><th>Protocolo</th><th>Solicitante</th><th>Endereço</th><th>Bairro</th><th>Serviço</th><th>Data</th><th>Status</th>'
+      +'</tr></thead><tbody>'+linhas+'</tbody></table>'
+      +invalRow
+      +'<div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px">'
       +'<div style="border-top:1px solid #1e3a5f;padding-top:4px;font-size:10px;color:#64748b;text-align:center">Assinatura do Responsável</div>'
       +'<div style="border-top:1px solid #1e3a5f;padding-top:4px;font-size:10px;color:#64748b;text-align:center">Visto do Chefe de Serviço</div>'
       +'</div></body></html>';
     imprimirDash('Cronograma - '+rota.svc,html,true);
   }
 
+  var C={navy:'#1e3a5f',accent:'#2563eb',green:'#16a34a',orange:'#d97706',red:'#dc2626'};
+
   return ce('div',{className:'page'},
     ce(Toast,{msg:t[0]}),
     ce('div',{className:'page-header'},
       ce('h2',{className:'page-title'},_tw('🚗 Cronograma de Serviços'))
     ),
+
+    // Painel de selecao
     ce('div',{style:{background:'#fff',borderRadius:12,padding:'16px 20px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',marginBottom:16}},
       ce('div',{style:{display:'flex',gap:10,alignItems:'flex-end',flexWrap:'wrap'}},
-        ce('div',{style:{flex:1,minWidth:200}},
+        ce('div',{style:{flex:1,minWidth:220}},
           ce('label',{style:{fontSize:11,fontWeight:700,color:'#475569',display:'block',marginBottom:4}},'Tipo de Serviço'),
-          ce('select',{value:selSvc,onChange:function(e){setSelSvc(e.target.value);setRota(null);},
-            style:{width:'100%',padding:'8px 10px',border:'1px solid #cbd5e1',borderRadius:8,fontSize:13}},
-            ce('option',{value:''},'-- Selecione --'),
+          ce('select',{value:selSvc,onChange:function(e){setSelSvc(e.target.value);setRota(null);setMapUrl('');},
+            style:{width:'100%',padding:'9px 10px',border:'1px solid #cbd5e1',borderRadius:8,fontSize:13,background:'#f8fafc'}},
+            ce('option',{value:''},'-- Selecione um serviço --'),
             svcsPend.map(function(s){return ce('option',{key:s,value:s},s);})
           )
         ),
-        ce('button',{className:'btn btn-p',onClick:gerarRota,disabled:loading,style:{whiteSpace:'nowrap'}},
-          loading?'Calculando..':_tw('🚗 Gerar Rota')
+        ce('button',{className:'btn btn-p',onClick:gerarRota,disabled:loading,
+          style:{whiteSpace:'nowrap',padding:'9px 20px',fontSize:14}},
+          loading?_tw('\u23f3 Calculando...'):_tw('🚗 Gerar Rota')
         )
       )
     ),
+
+    // Resultado
     rota?ce('div',null,
-      rota.semEnd.length?ce('div',{style:{background:'#fff7ed',border:'1px solid #fed7aa',borderRadius:10,padding:'12px 16px',marginBottom:12}},
-        ce('div',{style:{fontWeight:700,color:'#c2410c',marginBottom:6}},'\u26a0\ufe0f '+rota.semEnd.length+' registro(s) sem endereço completo \u2014 não incluído(s) na rota:'),
+
+      // Resumo
+      ce('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:10,marginBottom:14}},
+        ce('div',{style:{background:'#eff6ff',borderRadius:10,padding:'12px 14px',borderLeft:'4px solid '+C.accent}},
+          ce('div',{style:{fontSize:22,fontWeight:900,color:C.accent}},rota.paradas.length),
+          ce('div',{style:{fontSize:11,color:C.accent,fontWeight:600}},'Solicitações na rota')
+        ),
+        ce('div',{style:{background:'#fefce8',borderRadius:10,padding:'12px 14px',borderLeft:'4px solid '+C.orange}},
+          ce('div',{style:{fontSize:22,fontWeight:900,color:C.orange}},rota.distKm+'km'),
+          ce('div',{style:{fontSize:11,color:C.orange,fontWeight:600}},'Distância estimada')
+        ),
+        ce('div',{style:{background:'#f0fdf4',borderRadius:10,padding:'12px 14px',borderLeft:'4px solid '+C.green}},
+          ce('div',{style:{fontSize:22,fontWeight:900,color:C.green}},
+            rota.tempoMin>=60?Math.floor(rota.tempoMin/60)+'h'+(rota.tempoMin%60?rota.tempoMin%60+'min':''):rota.tempoMin+'min'
+          ),
+          ce('div',{style:{fontSize:11,color:C.green,fontWeight:600}},'Tempo estimado')
+        ),
+        ce('div',{style:{background:'#f5f3ff',borderRadius:10,padding:'12px 14px',borderLeft:'4px solid #7c3aed'}},
+          ce('div',{style:{fontSize:13,fontWeight:700,color:'#7c3aed',lineHeight:1.3}},rota.svc),
+          ce('div',{style:{fontSize:11,color:'#7c3aed',fontWeight:600}},'Tipo de Serviço')
+        )
+      ),
+
+      // Invalidos
+      rota.invalidos.length?ce('div',{style:{background:'#fff7ed',border:'1px solid #fed7aa',borderRadius:10,padding:'12px 16px',marginBottom:12}},
+        ce('div',{style:{fontWeight:700,color:'#c2410c',marginBottom:6}},
+          '\u26a0\ufe0f '+rota.invalidos.length+' registro(s) com endereço inválido ou incompleto:'
+        ),
         ce('ul',{style:{margin:0,paddingLeft:20}},
-          rota.semEnd.map(function(r){
-            return ce('li',{key:r.id,style:{fontSize:13,color:'#9a3412',marginBottom:2}},
-              ce('b',null,r.prot),' - ',r.nom,r.bairro?' ('+r.bairro+')':''
+          rota.invalidos.map(function(x){
+            return ce('li',{key:x.r.id,style:{fontSize:12,color:'#9a3412',marginBottom:2}},
+              ce('b',null,x.r.prot),' - ',x.r.nom,': ',x.motivo
             );
           })
         )
       ):null,
+
+      // Botoes de acao
+      rota.paradas.length?ce('div',{style:{display:'flex',gap:8,marginBottom:12,flexWrap:'wrap'}},
+        ce('a',{href:rota.gmUrl,target:'_blank',rel:'noopener',
+          style:{display:'inline-flex',alignItems:'center',gap:6,padding:'9px 18px',background:'#1a73e8',color:'#fff',borderRadius:8,fontWeight:700,fontSize:13,textDecoration:'none',boxShadow:'0 2px 8px rgba(26,115,232,.3)'}},
+          '🚗 Abrir Rota no Google Maps'
+        ),
+        ce('button',{className:'btn btn-s',onClick:imprimirCronograma},_tw('🖨️ Imprimir'))
+      ):null,
+
+      // Mapa embed
+      mapUrl&&rota.paradas.length?ce('div',{style:{borderRadius:12,overflow:'hidden',marginBottom:14,boxShadow:'0 2px 8px rgba(0,0,0,.1)',border:'1px solid #e2e8f0'}},
+        ce('div',{style:{background:C.navy,padding:'8px 14px',display:'flex',alignItems:'center',gap:8}},
+          ce('span',{style:{fontSize:12}},'\xf0\x9f\x97\xba\xef\xb8\x8f'),
+          ce('span',{style:{color:'#fff',fontSize:12,fontWeight:700}},'Mapa de Atendimento')
+        ),
+        ce('iframe',{
+          src:mapUrl,
+          width:'100%',height:'320',
+          style:{border:'none',display:'block'},
+          title:'Mapa de atendimento'
+        })
+      ):null,
+
+      // Tabela
       rota.paradas.length?ce('div',{style:{background:'#fff',borderRadius:12,boxShadow:'0 2px 8px rgba(0,0,0,.06)',overflow:'hidden'}},
-        ce('div',{style:{padding:'12px 16px',borderBottom:'1px solid #e2e8f0',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}},
-          ce('div',{style:{fontWeight:700,color:'#1e3a5f',fontSize:14}},
-            '📍 ',rota.paradas.length,' parada(s) \u2014 ',rota.svc
-          ),
-          ce('div',{style:{display:'flex',gap:8}},
-            ce('button',{className:'btn btn-s',onClick:function(){abrirMapaOSM();},style:{background:'#1d4ed8',color:'#fff',fontWeight:700}},'🚗 Abrir Rota no Google Maps'),
-            ce('button',{className:'btn btn-s',onClick:imprimirCronograma},_tw('🖨️ Imprimir'))
-          )
+        ce('div',{style:{padding:'10px 16px',borderBottom:'1px solid #e2e8f0',fontWeight:700,color:C.navy,fontSize:13}},
+          '📋 Ordem de Atendimento \u2014 '+rota.paradas.length+' parada(s)'
         ),
         ce('div',{style:{overflowX:'auto'}},
-          ce('table',{className:'tbl',style:{minWidth:500}},
+          ce('table',{className:'tbl',style:{minWidth:600}},
             ce('thead',null,ce('tr',null,
-              ce('th',{style:{width:40}},'#'),
+              ce('th',{style:{width:35}},'#'),
               ce('th',null,'Protocolo'),
               ce('th',null,'Solicitante'),
               ce('th',null,'Endereço'),
               ce('th',null,'Bairro'),
+              ce('th',null,'Serviço'),
+              ce('th',null,'Data'),
               ce('th',null,'Status')
             )),
             ce('tbody',null,
               rota.paradas.map(function(p){
-                return ce('tr',{key:p.id},
-                  ce('td',{style:{textAlign:'center',fontWeight:700,color:'#2563eb'}},p._ordem),
-                  ce('td',null,ce('code',null,p.prot)),
+                return ce('tr',{key:p.id,style:{borderTop:'1px solid #f1f5f9'}},
+                  ce('td',{style:{textAlign:'center',fontWeight:900,color:C.accent,fontSize:15}},p._ordem),
+                  ce('td',null,ce('code',{style:{fontSize:11}},p.prot)),
                   ce('td',null,p.nom),
-                  ce('td',null,(p.rua||'')+', '+(p.numero||p.num||'s/n')),
+                  ce('td',null,
+                    p._endStr||'-',
+                    p._approx?ce('span',{style:{fontSize:10,color:C.orange,marginLeft:4}},'(aprox.)'):null
+                  ),
                   ce('td',null,p.bairro||'\u2014'),
+                  ce('td',{style:{fontSize:11,color:'#475569'}},p.cn||p.sn||'-'),
+                  ce('td',{style:{whiteSpace:'nowrap'}},fmtD(p.dt)),
                   ce('td',null,ce('span',{style:{padding:'2px 8px',borderRadius:999,fontSize:10,fontWeight:700,
-                    background:p.status==='Concluído'?'#dcfce7':'#fef3c7',
-                    color:p.status==='Concluído'?'#166534':'#92400e'}},
+                    background:'#fef3c7',color:'#92400e'}},
                     p.status||'Pendente'
                   ))
                 );
@@ -10630,8 +10718,8 @@ function Cronograma(){
             )
           )
         )
-      ):ce('div',{style:{background:'#f8fafc',borderRadius:10,padding:24,textAlign:'center',color:'#94a3b8'}},
-        'Nenhuma solicitação com endereço completo encontrada.'
+      ):ce('div',{style:{background:'#f8fafc',borderRadius:10,padding:24,textAlign:'center',color:'#94a3b8',fontSize:13}},
+        'Nenhuma solicitação com endereço localizável encontrada.'
       )
     ):null
   );
